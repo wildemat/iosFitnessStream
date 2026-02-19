@@ -127,9 +127,9 @@ Use one branch per feature; name clearly. Suggested order:
 
 ## Current handoff state (Orchestrator updates this)
 
-- **Next work for Worker:** `feature/endpoint-config` - Endpoint URL input field + persistence. **Use the worker worktree** `iosFitnessStream-wt-worker/`, branch: `feature/endpoint-config`.
-- **Next work for Planning:** After Worker finishes endpoint-config, run compile + format in **worker worktree** on branch `feature/endpoint-config`, then tell Orchestrator "ready to merge and push."
-- **Note:** Worker worktree exists at `../iosFitnessStream-wt-worker` (branch `feature/endpoint-config`). Orchestrator merged scaffold to main and created the worktree.
+- **Next work for Worker:** `feature/workout-list` - List workouts from HealthKit / built-in fitness app; user selects one. **Use the worker worktree** `iosFitnessStream-wt-worker/`. Create/checkout branch `feature/workout-list` there (from main).
+- **Next work for Planning:** After Worker finishes workout-list, run compile + format in **worker worktree** on branch `feature/workout-list`, then tell Orchestrator "ready to merge and push."
+- **Note:** Worker worktree at `../iosFitnessStream-wt-worker` is on branch `feature/workout-list` (created from origin/main). Orchestrator merged endpoint-config to main.
 
 ---
 
