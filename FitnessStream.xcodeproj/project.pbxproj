@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		A1B2C3D4E5F6000100010001 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6000100010007 /* AppDelegate.swift */; };
 		A1B2C3D4E5F6000100010003 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6000100010008 /* ViewController.swift */; };
+		A1B2C3D4E5F6000100010017 /* EndpointStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6000100010018 /* EndpointStorage.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -38,6 +39,7 @@
 			isa = PBXGroup;
 			children = (
 				A1B2C3D4E5F6000100010007 /* AppDelegate.swift */,
+				A1B2C3D4E5F6000100010018 /* EndpointStorage.swift */,
 				A1B2C3D4E5F6000100010008 /* ViewController.swift */,
 				A1B2C3D4E5F6000100010009 /* Info.plist */,
 			);
@@ -45,6 +47,7 @@
 			sourceTree = "<group>";
 		};
 		A1B2C3D4E5F6000100010007 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F6000100010018 /* EndpointStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EndpointStorage.swift; sourceTree = "<group>"; };
 		A1B2C3D4E5F6000100010008 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		A1B2C3D4E5F6000100010009 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A1B2C3D4E5F600010001000A /* Products */ = {
@@ -119,6 +122,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				A1B2C3D4E5F6000100010001 /* AppDelegate.swift in Sources */,
+				A1B2C3D4E5F6000100010017 /* EndpointStorage.swift in Sources */,
 				A1B2C3D4E5F6000100010003 /* ViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
