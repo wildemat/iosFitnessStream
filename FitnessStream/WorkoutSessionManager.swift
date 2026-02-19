@@ -171,7 +171,7 @@ final class WorkoutSessionManager: NSObject {
         return query
     }
 
-    private func process(samples: [HKSample]?, unit: HKUnit, handler: (Double) -> Void) {
+    private func process(samples: [HKSample]?, unit: HKUnit, handler: @escaping (Double) -> Void) {
         guard let quantitySamples = samples as? [HKQuantitySample],
               let latest = quantitySamples.last else { return }
         let value = latest.quantity.doubleValue(for: unit)

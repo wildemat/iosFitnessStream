@@ -11,6 +11,11 @@
 		A1B2C3D4E5F6000100010003 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6000100010008 /* ViewController.swift */; };
 		A1B2C3D4E5F6000100010017 /* EndpointStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6000100010018 /* EndpointStorage.swift */; };
 		A1B2C3D4E5F6000100010019 /* WorkoutType.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F600010001001A /* WorkoutType.swift */; };
+		A1B2C3D4E5F600010001001D /* WorkoutSessionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F600010001001C /* WorkoutSessionManager.swift */; };
+		A1B2C3D4E5F600010001001F /* StreamClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F600010001001E /* StreamClient.swift */; };
+		A1B2C3D4E5F6000100010021 /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6000100010020 /* LocationManager.swift */; };
+		A1B2C3D4E5F6000100010023 /* WorkoutMetrics.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6000100010022 /* WorkoutMetrics.swift */; };
+		A1B2C3D4E5F6000100010025 /* LiveMetricsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6000100010024 /* LiveMetricsViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -43,6 +48,11 @@
 				A1B2C3D4E5F6000100010018 /* EndpointStorage.swift */,
 				A1B2C3D4E5F6000100010008 /* ViewController.swift */,
 				A1B2C3D4E5F600010001001A /* WorkoutType.swift */,
+				A1B2C3D4E5F600010001001C /* WorkoutSessionManager.swift */,
+				A1B2C3D4E5F600010001001E /* StreamClient.swift */,
+				A1B2C3D4E5F6000100010020 /* LocationManager.swift */,
+				A1B2C3D4E5F6000100010022 /* WorkoutMetrics.swift */,
+				A1B2C3D4E5F6000100010024 /* LiveMetricsViewController.swift */,
 				A1B2C3D4E5F600010001001B /* FitnessStream.entitlements */,
 				A1B2C3D4E5F6000100010009 /* Info.plist */,
 			);
@@ -55,6 +65,11 @@
 		A1B2C3D4E5F6000100010009 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A1B2C3D4E5F600010001001A /* WorkoutType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutType.swift; sourceTree = "<group>"; };
 		A1B2C3D4E5F600010001001B /* FitnessStream.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = FitnessStream.entitlements; sourceTree = "<group>"; };
+		A1B2C3D4E5F600010001001C /* WorkoutSessionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutSessionManager.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F600010001001E /* StreamClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamClient.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F6000100010020 /* LocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationManager.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F6000100010022 /* WorkoutMetrics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutMetrics.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F6000100010024 /* LiveMetricsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveMetricsViewController.swift; sourceTree = "<group>"; };
 		A1B2C3D4E5F600010001000A /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -130,6 +145,11 @@
 				A1B2C3D4E5F6000100010017 /* EndpointStorage.swift in Sources */,
 				A1B2C3D4E5F6000100010019 /* WorkoutType.swift in Sources */,
 				A1B2C3D4E5F6000100010003 /* ViewController.swift in Sources */,
+				A1B2C3D4E5F600010001001D /* WorkoutSessionManager.swift in Sources */,
+				A1B2C3D4E5F600010001001F /* StreamClient.swift in Sources */,
+				A1B2C3D4E5F6000100010021 /* LocationManager.swift in Sources */,
+				A1B2C3D4E5F6000100010023 /* WorkoutMetrics.swift in Sources */,
+				A1B2C3D4E5F6000100010025 /* LiveMetricsViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -186,7 +206,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
@@ -241,7 +261,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;

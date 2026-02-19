@@ -124,6 +124,7 @@ extension ViewController: UITableViewDataSource, UITableViewDelegate {
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let selected = workoutTypes[indexPath.row]
-        _ = selected // will navigate to start screen in feature/start-stream
+        let vc = LiveMetricsViewController(workoutType: selected)
+        navigationController?.pushViewController(vc, animated: true)
     }
 }
