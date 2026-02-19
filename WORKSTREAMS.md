@@ -127,9 +127,40 @@ Use one branch per feature; name clearly. Suggested order:
 
 ## Current handoff state (Orchestrator updates this)
 
-- **Next work for Worker:** `feature/workout-list` - List workouts from HealthKit / built-in fitness app; user selects one. **Use the worker worktree** `iosFitnessStream-wt-worker/`. Create/checkout branch `feature/workout-list` there (from main).
-- **Next work for Planning:** After Worker finishes workout-list, run compile + format in **worker worktree** on branch `feature/workout-list`, then tell Orchestrator "ready to merge and push."
-- **Note:** Worker worktree at `../iosFitnessStream-wt-worker` is on branch `feature/workout-list` (created from origin/main). Orchestrator merged endpoint-config to main.
+### Completed features (merged to main, pushed)
+1. `feature/scaffold` — Xcode project, minimal grayscale UIKit shell, programmatic UI
+2. `feature/endpoint-config` — Endpoint URL text field + UserDefaults persistence
+3. `feature/workout-list` — HKWorkoutActivityType table view, HealthKit entitlements, workout selection
+
+### In-progress: `feature/start-stream` (WIP committed + pushed)
+- **Branch:** `feature/start-stream` in worker worktree `../iosFitnessStream-wt-worker`
+- **Status:** 4 new Swift files committed but **not yet buildable** — pbxproj not updated, ViewController not wired
+- **Files written (need pbxproj + wiring):**
+  - `WorkoutSessionManager.swift` — HKWorkoutSession lifecycle, HKAnchoredObjectQuery for HR/energy/distance, location via LocationManager, 1-second tick timer, StreamClient integration
+  - `StreamClient.swift` — POST JSON metrics to EndpointStorage.endpointURL
+  - `LocationManager.swift` — CLLocationManager wrapper for GPS + elevation
+  - `WorkoutMetrics.swift` — Codable struct for all metric fields
+- **Still TODO for this feature:**
+  1. Add all 4 new .swift files to `project.pbxproj` (PBXBuildFile, PBXFileReference, FitnessStream group, Sources build phase). Use IDs continuing from `001A` (last used `001B` for entitlements).
+  2. Modify `ViewController.swift` `didSelectRowAt` to push a new screen (or `LiveMetricsViewController` from feature 5) passing the selected `WorkoutType`.
+  3. Build and fix any compile errors.
+  4. Commit, merge to main, push.
+
+### Remaining features (not started)
+5. `feature/live-metrics-ui` — LiveMetricsViewController: display HR, zone, energy, distance, pace, steps, location, elevation, elapsed time. Wire WorkoutSessionManager delegate to update labels.
+6. `feature/pause-end` — Pause and End buttons on the live metrics screen; call manager.pauseWorkout()/endWorkout().
+7. `feature/background-badge` — Background workout continuation + lockscreen Live Activity or local notification badge showing workout name + elapsed time.
+8. `feature/watch-sync` — Apple Watch WatchKit app + WCSession sync; collect data from watch when present.
+
+### Build command
+```bash
+xcodebuild -scheme FitnessStream -destination 'platform=iOS Simulator,id=6DAA10BC-CA09-4F3F-B2C8-D2313E7D8AEF' -quiet build
+```
+
+### Worktree
+- Worker worktree: `../iosFitnessStream-wt-worker` on branch `feature/start-stream`
+- Main repo: `/Users/wildmat/Github/iosFitnessStream` on `main`, up to date with `origin/main`
+- Merge pattern: fetch from worktree into temp ref, merge to main, delete temp, push
 
 ---
 
