@@ -31,11 +31,14 @@ final class WorkoutSessionManager: NSObject {
     let streamClient = StreamClient()
     private var updateTimer: Timer?
 
+    private let notificationManager = WorkoutNotificationManager.shared
+
     init(workoutType: WorkoutType) {
         self.workoutType = workoutType
         super.init()
         locationManager.delegate = self
         metrics.workoutType = workoutType.displayName
+        notificationManager.requestAuthorization()
     }
 
     // MARK: - Authorization
@@ -76,6 +79,7 @@ final class WorkoutSessionManager: NSObject {
         locationManager.requestAuthorization()
         locationManager.start()
         startUpdateTimer()
+        notificationManager.postWorkoutActive(name: workoutType.displayName, elapsed: 0)
 
         state = .running
         delegate?.workoutSession(self, didChangeState: state)
@@ -102,6 +106,7 @@ final class WorkoutSessionManager: NSObject {
         locationManager.stop()
         stopQueries()
         updateTimer?.invalidate()
+        notificationManager.removeWorkoutNotification()
         state = .ended
         delegate?.workoutSession(self, didChangeState: state)
     }
@@ -115,12 +120,22 @@ final class WorkoutSessionManager: NSObject {
         }
     }
 
+    private var tickCount = 0
+
     private func tick() {
         guard let start = startDate else { return }
         metrics.elapsedSeconds = Date().timeIntervalSince(start)
         metrics.timestamp = Date()
         delegate?.workoutSession(self, didUpdateMetrics: metrics)
         streamClient.send(metrics)
+
+        tickCount += 1
+        if tickCount % 5 == 0 {
+            notificationManager.postWorkoutActive(
+                name: workoutType.displayName,
+                elapsed: metrics.elapsedSeconds
+            )
+        }
     }
 
     // MARK: - HealthKit queries

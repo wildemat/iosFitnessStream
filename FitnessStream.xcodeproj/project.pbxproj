@@ -16,6 +16,7 @@
 		A1B2C3D4E5F6000100010021 /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6000100010020 /* LocationManager.swift */; };
 		A1B2C3D4E5F6000100010023 /* WorkoutMetrics.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6000100010022 /* WorkoutMetrics.swift */; };
 		A1B2C3D4E5F6000100010025 /* LiveMetricsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6000100010024 /* LiveMetricsViewController.swift */; };
+		A1B2C3D4E5F6000100010027 /* WorkoutNotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6000100010026 /* WorkoutNotificationManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -53,6 +54,7 @@
 				A1B2C3D4E5F6000100010020 /* LocationManager.swift */,
 				A1B2C3D4E5F6000100010022 /* WorkoutMetrics.swift */,
 				A1B2C3D4E5F6000100010024 /* LiveMetricsViewController.swift */,
+				A1B2C3D4E5F6000100010026 /* WorkoutNotificationManager.swift */,
 				A1B2C3D4E5F600010001001B /* FitnessStream.entitlements */,
 				A1B2C3D4E5F6000100010009 /* Info.plist */,
 			);
@@ -70,6 +72,7 @@
 		A1B2C3D4E5F6000100010020 /* LocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationManager.swift; sourceTree = "<group>"; };
 		A1B2C3D4E5F6000100010022 /* WorkoutMetrics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutMetrics.swift; sourceTree = "<group>"; };
 		A1B2C3D4E5F6000100010024 /* LiveMetricsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveMetricsViewController.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F6000100010026 /* WorkoutNotificationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutNotificationManager.swift; sourceTree = "<group>"; };
 		A1B2C3D4E5F600010001000A /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -150,6 +153,7 @@
 				A1B2C3D4E5F6000100010021 /* LocationManager.swift in Sources */,
 				A1B2C3D4E5F6000100010023 /* WorkoutMetrics.swift in Sources */,
 				A1B2C3D4E5F6000100010025 /* LiveMetricsViewController.swift in Sources */,
+				A1B2C3D4E5F6000100010027 /* WorkoutNotificationManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
