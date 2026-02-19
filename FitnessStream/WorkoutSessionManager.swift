@@ -9,6 +9,7 @@ protocol WorkoutSessionDelegate: AnyObject {
     func workoutSession(_ manager: WorkoutSessionManager, didUpdateMetrics metrics: WorkoutMetrics)
     func workoutSession(_ manager: WorkoutSessionManager, didChangeState state: WorkoutState)
     func workoutSession(_ manager: WorkoutSessionManager, didFailWith error: Error)
+    func workoutSession(_ manager: WorkoutSessionManager, didSaveWorkout success: Bool, error: Error?)
 }
 
 final class WorkoutSessionManager: NSObject {
@@ -21,7 +22,9 @@ final class WorkoutSessionManager: NSObject {
     private(set) var metrics = WorkoutMetrics()
 
     private var session: HKWorkoutSession?
+    private var workoutBuilder: HKWorkoutBuilder?
     private var startDate: Date?
+    private var endDate: Date?
 
     private var heartRateQuery: HKAnchoredObjectQuery?
     private var energyQuery: HKAnchoredObjectQuery?
@@ -50,7 +53,12 @@ final class WorkoutSessionManager: NSObject {
     // MARK: - Authorization
 
     func requestAuthorization(completion: @escaping (Bool, Error?) -> Void) {
-        let share: Set<HKSampleType> = [HKWorkoutType.workoutType()]
+        let share: Set<HKSampleType> = [
+            HKWorkoutType.workoutType(),
+            HKQuantityType(.activeEnergyBurned),
+            HKQuantityType(.distanceWalkingRunning),
+            HKQuantityType(.distanceCycling),
+        ]
         let read: Set<HKObjectType> = [
             HKWorkoutType.workoutType(),
             HKQuantityType(.heartRate),
@@ -77,9 +85,14 @@ final class WorkoutSessionManager: NSObject {
             return
         }
 
-        startDate = Date()
-        metrics.timestamp = startDate!
-        session?.startActivity(with: startDate!)
+        let now = Date()
+        startDate = now
+        endDate = nil
+        metrics.timestamp = now
+        session?.startActivity(with: now)
+
+        workoutBuilder = HKWorkoutBuilder(healthStore: healthStore, configuration: config, device: .local())
+        workoutBuilder?.beginCollection(withStart: now) { _, _ in }
 
         watchProvidedMetrics.removeAll()
         startQueries()
@@ -119,8 +132,53 @@ final class WorkoutSessionManager: NSObject {
         notificationManager.removeWorkoutNotification()
         watchSession.sendWorkoutCommand("end", workoutName: workoutType.displayName)
         watchProvidedMetrics.removeAll()
+
+        endDate = Date()
         state = .ended
         delegate?.workoutSession(self, didChangeState: state)
+
+        saveWorkoutToHealthKit()
+    }
+
+    // MARK: - Save workout to HealthKit (Fitness app)
+
+    private func saveWorkoutToHealthKit() {
+        guard let builder = workoutBuilder,
+              let start = startDate,
+              let end = endDate else { return }
+
+        var samples: [HKQuantitySample] = []
+        if let energy = metrics.activeEnergyKcal, energy > 0 {
+            let quantity = HKQuantity(unit: .kilocalorie(), doubleValue: energy)
+            let sample = HKQuantitySample(type: HKQuantityType(.activeEnergyBurned),
+                                          quantity: quantity, start: start, end: end)
+            samples.append(sample)
+        }
+        if let distance = metrics.distanceMeters, distance > 0 {
+            let distType: HKQuantityType = workoutType.activityType == .cycling
+                ? HKQuantityType(.distanceCycling)
+                : HKQuantityType(.distanceWalkingRunning)
+            let quantity = HKQuantity(unit: .meter(), doubleValue: distance)
+            let sample = HKQuantitySample(type: distType, quantity: quantity, start: start, end: end)
+            samples.append(sample)
+        }
+
+        let addSamples: (@escaping () -> Void) -> Void = { next in
+            guard !samples.isEmpty else { next(); return }
+            builder.add(samples) { _, _ in next() }
+        }
+
+        addSamples { [weak self] in
+            builder.endCollection(withEnd: end) { _, _ in
+                builder.finishWorkout { _, error in
+                    DispatchQueue.main.async {
+                        guard let self else { return }
+                        self.delegate?.workoutSession(self, didSaveWorkout: error == nil, error: error)
+                        self.workoutBuilder = nil
+                    }
+                }
+            }
+        }
     }
 
     // MARK: - Timer
@@ -153,24 +211,34 @@ final class WorkoutSessionManager: NSObject {
     // MARK: - HealthKit queries
 
     private func startQueries() {
-        heartRateQuery = makeQuery(type: HKQuantityType(.heartRate), unit: .count().unitDivided(by: .minute())) { [weak self] value in
+        heartRateQuery = makeLatestValueQuery(
+            type: HKQuantityType(.heartRate),
+            unit: .count().unitDivided(by: .minute())
+        ) { [weak self] value in
             guard self?.watchProvidedMetrics.contains("heartRate") != true else { return }
             self?.metrics.heartRate = value
             self?.metrics.heartRateZone = Self.zone(forBpm: value)
         }
-        energyQuery = makeQuery(type: HKQuantityType(.activeEnergyBurned), unit: .kilocalorie()) { [weak self] value in
+
+        energyQuery = makeCumulativeQuery(
+            type: HKQuantityType(.activeEnergyBurned),
+            unit: .kilocalorie()
+        ) { [weak self] total in
             guard self?.watchProvidedMetrics.contains("activeEnergyKcal") != true else { return }
-            self?.metrics.activeEnergyKcal = value
+            self?.metrics.activeEnergyKcal = total
         }
 
         let distanceType: HKQuantityType = workoutType.activityType == .cycling
             ? HKQuantityType(.distanceCycling)
             : HKQuantityType(.distanceWalkingRunning)
-        distanceQuery = makeQuery(type: distanceType, unit: .meter()) { [weak self] value in
+        distanceQuery = makeCumulativeQuery(
+            type: distanceType,
+            unit: .meter()
+        ) { [weak self] total in
             guard self?.watchProvidedMetrics.contains("distanceMeters") != true else { return }
-            self?.metrics.distanceMeters = value
-            if let elapsed = self?.metrics.elapsedSeconds, elapsed > 0, value > 0 {
-                self?.metrics.paceMinPerKm = (elapsed / 60.0) / (value / 1000.0)
+            self?.metrics.distanceMeters = total
+            if let elapsed = self?.metrics.elapsedSeconds, elapsed > 0, total > 0 {
+                self?.metrics.paceMinPerKm = (elapsed / 60.0) / (total / 1000.0)
             }
         }
     }
@@ -181,31 +249,61 @@ final class WorkoutSessionManager: NSObject {
         }
     }
 
-    private func makeQuery(
+    /// Query that reports the most recent sample value (heart rate, etc.)
+    private func makeLatestValueQuery(
         type: HKQuantityType,
         unit: HKUnit,
         handler: @escaping (Double) -> Void
     ) -> HKAnchoredObjectQuery {
+        let predicate = HKQuery.predicateForSamples(
+            withStart: startDate, end: nil, options: .strictStartDate)
         let query = HKAnchoredObjectQuery(
-            type: type,
-            predicate: HKQuery.predicateForSamples(withStart: startDate, end: nil),
-            anchor: nil,
-            limit: HKObjectQueryNoLimit
+            type: type, predicate: predicate, anchor: nil, limit: HKObjectQueryNoLimit
         ) { _, samples, _, _, _ in
-            self.process(samples: samples, unit: unit, handler: handler)
+            guard let quantitySamples = samples as? [HKQuantitySample],
+                  let latest = quantitySamples.last else { return }
+            let value = latest.quantity.doubleValue(for: unit)
+            DispatchQueue.main.async { handler(value) }
         }
         query.updateHandler = { _, samples, _, _, _ in
-            self.process(samples: samples, unit: unit, handler: handler)
+            guard let quantitySamples = samples as? [HKQuantitySample],
+                  let latest = quantitySamples.last else { return }
+            let value = latest.quantity.doubleValue(for: unit)
+            DispatchQueue.main.async { handler(value) }
         }
         healthStore.execute(query)
         return query
     }
 
-    private func process(samples: [HKSample]?, unit: HKUnit, handler: @escaping (Double) -> Void) {
-        guard let quantitySamples = samples as? [HKQuantitySample],
-              let latest = quantitySamples.last else { return }
-        let value = latest.quantity.doubleValue(for: unit)
-        DispatchQueue.main.async { handler(value) }
+    /// Query that sums all samples across batches (energy, distance, etc.)
+    private func makeCumulativeQuery(
+        type: HKQuantityType,
+        unit: HKUnit,
+        handler: @escaping (Double) -> Void
+    ) -> HKAnchoredObjectQuery {
+        var runningTotal: Double = 0
+        let predicate = HKQuery.predicateForSamples(
+            withStart: startDate, end: nil, options: .strictStartDate)
+        let accumulate: ([HKSample]?) -> Void = { samples in
+            guard let quantitySamples = samples as? [HKQuantitySample],
+                  !quantitySamples.isEmpty else { return }
+            let batchSum = quantitySamples.reduce(0.0) {
+                $0 + $1.quantity.doubleValue(for: unit)
+            }
+            runningTotal += batchSum
+            let total = runningTotal
+            DispatchQueue.main.async { handler(total) }
+        }
+        let query = HKAnchoredObjectQuery(
+            type: type, predicate: predicate, anchor: nil, limit: HKObjectQueryNoLimit
+        ) { _, samples, _, _, _ in
+            accumulate(samples)
+        }
+        query.updateHandler = { _, samples, _, _, _ in
+            accumulate(samples)
+        }
+        healthStore.execute(query)
+        return query
     }
 
     // MARK: - Heart rate zones (5 zones based on typical max HR ~190)

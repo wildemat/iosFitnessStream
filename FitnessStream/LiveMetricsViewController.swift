@@ -90,6 +90,7 @@ final class LiveMetricsViewController: UIViewController {
                     self.manager.startWorkout()
                 } else {
                     self.statusLabel.text = "HealthKit authorization denied"
+                    self.navigationItem.hidesBackButton = false
                 }
             }
         }
@@ -264,18 +265,29 @@ extension LiveMetricsViewController: WorkoutSessionDelegate {
             pauseButton.setTitle("Resume", for: .normal)
             pauseButton.backgroundColor = .systemGray2
         case .ended:
-            statusLabel.text = "Workout ended"
+            statusLabel.text = "Saving to Fitness…"
             pauseButton.isHidden = true
             endButton.isHidden = true
             navigationItem.hidesBackButton = false
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) { [weak self] in
-                self?.navigationController?.popViewController(animated: true)
-            }
         case .notStarted: break
         }
     }
 
     func workoutSession(_ manager: WorkoutSessionManager, didFailWith error: Error) {
         statusLabel.text = "Error: \(error.localizedDescription)"
+        pauseButton.isHidden = true
+        endButton.isHidden = true
+        navigationItem.hidesBackButton = false
+    }
+
+    func workoutSession(_ manager: WorkoutSessionManager, didSaveWorkout success: Bool, error: Error?) {
+        if success {
+            statusLabel.text = "Saved to Fitness"
+        } else {
+            statusLabel.text = "Workout ended (save failed)"
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) { [weak self] in
+            self?.navigationController?.popViewController(animated: true)
+        }
     }
 }
