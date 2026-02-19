@@ -10,6 +10,7 @@
 		A1B2C3D4E5F6000100010001 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6000100010007 /* AppDelegate.swift */; };
 		A1B2C3D4E5F6000100010003 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6000100010008 /* ViewController.swift */; };
 		A1B2C3D4E5F6000100010017 /* EndpointStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6000100010018 /* EndpointStorage.swift */; };
+		A1B2C3D4E5F6000100010019 /* WorkoutType.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F600010001001A /* WorkoutType.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -41,6 +42,8 @@
 				A1B2C3D4E5F6000100010007 /* AppDelegate.swift */,
 				A1B2C3D4E5F6000100010018 /* EndpointStorage.swift */,
 				A1B2C3D4E5F6000100010008 /* ViewController.swift */,
+				A1B2C3D4E5F600010001001A /* WorkoutType.swift */,
+				A1B2C3D4E5F600010001001B /* FitnessStream.entitlements */,
 				A1B2C3D4E5F6000100010009 /* Info.plist */,
 			);
 			path = FitnessStream;
@@ -50,6 +53,8 @@
 		A1B2C3D4E5F6000100010018 /* EndpointStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EndpointStorage.swift; sourceTree = "<group>"; };
 		A1B2C3D4E5F6000100010008 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		A1B2C3D4E5F6000100010009 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		A1B2C3D4E5F600010001001A /* WorkoutType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutType.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F600010001001B /* FitnessStream.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = FitnessStream.entitlements; sourceTree = "<group>"; };
 		A1B2C3D4E5F600010001000A /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -123,6 +128,7 @@
 			files = (
 				A1B2C3D4E5F6000100010001 /* AppDelegate.swift in Sources */,
 				A1B2C3D4E5F6000100010017 /* EndpointStorage.swift in Sources */,
+				A1B2C3D4E5F6000100010019 /* WorkoutType.swift in Sources */,
 				A1B2C3D4E5F6000100010003 /* ViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -250,6 +256,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = "";
+				CODE_SIGN_ENTITLEMENTS = FitnessStream/FitnessStream.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "";
@@ -276,6 +283,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = "";
+				CODE_SIGN_ENTITLEMENTS = FitnessStream/FitnessStream.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "";
