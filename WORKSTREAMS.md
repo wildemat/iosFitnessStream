@@ -128,6 +128,7 @@ Use one branch per feature; name clearly. Suggested order:
 ## Current handoff state (Orchestrator updates this)
 
 ### All features complete (merged to main, pushed to origin)
+
 1. `feature/scaffold` — Xcode project, minimal grayscale UIKit shell, programmatic UI
 2. `feature/endpoint-config` — Endpoint URL text field + UserDefaults persistence
 3. `feature/workout-list` — HKWorkoutActivityType table view, HealthKit entitlements, workout selection
@@ -135,18 +136,21 @@ Use one branch per feature; name clearly. Suggested order:
 5. `feature/live-metrics-ui` — Full live metrics display: HR, HR zone, energy, distance, pace, steps, GPS, elevation, elapsed time with grayscale card-row layout
 6. `feature/pause-end` — Pause/Resume toggle + End button with confirmation alert; auto-pop on end
 7. `feature/background-badge` — WorkoutNotificationManager: lockscreen notification with workout name + elapsed time, updated every 5s; removed on end
-8. `feature/watch-sync` — WatchSessionManager: WCSession activation, workout command relay, HR data from watch. Note: watchOS companion target to be added via Xcode GUI
+8. `feature/watch-sync` — WatchSessionManager: WCSession activation, workout command relay, HR data from watch. Note: watchOS companion target to be added via Xcode GUI (see notes below)
 
 ### Build command
+
 ```bash
 xcodebuild -scheme FitnessStream -destination 'platform=iOS Simulator,id=694F30E2-2B05-41BE-9B84-1A5865D423CB' build
 ```
 
 ### Notes
+
 - Deployment target: iOS 26.0 (required for HKWorkoutSession on iPhone)
 - Build simulator: iPhone 17 Pro (iOS 26.2)
 - All Beads issues closed
 - Worker worktree: `../iosFitnessStream-wt-worker` (can be removed)
+- The watchOS companion app target (for the Apple Watch side of feature 8) needs to be created via the Xcode GUI — adding a WatchKit target programmatically through pbxproj is impractical. The iPhone-side WCSession infrastructure is fully in place and ready to communicate with it.
 
 ---
 
