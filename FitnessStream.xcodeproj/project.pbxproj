@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 56;
+	objectVersion = 70;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -18,11 +18,54 @@
 		A1B2C3D4E5F6000100010025 /* LiveMetricsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6000100010024 /* LiveMetricsViewController.swift */; };
 		A1B2C3D4E5F6000100010027 /* WorkoutNotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6000100010026 /* WorkoutNotificationManager.swift */; };
 		A1B2C3D4E5F6000100010029 /* WatchSessionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6000100010028 /* WatchSessionManager.swift */; };
+		BEB71A062F47B6BB006B21FC /* FitnessStream Watch App Watch App.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = BEB719FC2F47B6BA006B21FC /* FitnessStream Watch App Watch App.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		BEB71A042F47B6BB006B21FC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A1B2C3D4E5F600010001000F /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = BEB719FB2F47B6BA006B21FC;
+			remoteInfo = "FitnessStream Watch App Watch App";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		BEB71A0A2F47B6BB006B21FC /* Embed Watch Content */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "$(CONTENTS_FOLDER_PATH)/Watch";
+			dstSubfolderSpec = 16;
+			files = (
+				BEB71A062F47B6BB006B21FC /* FitnessStream Watch App Watch App.app in Embed Watch Content */,
+			);
+			name = "Embed Watch Content";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		A1B2C3D4E5F6000100010000 /* FitnessStream.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FitnessStream.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A1B2C3D4E5F6000100010007 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F6000100010008 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F6000100010009 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		A1B2C3D4E5F6000100010018 /* EndpointStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EndpointStorage.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F600010001001A /* WorkoutType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutType.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F600010001001B /* FitnessStream.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = FitnessStream.entitlements; sourceTree = "<group>"; };
+		A1B2C3D4E5F600010001001C /* WorkoutSessionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutSessionManager.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F600010001001E /* StreamClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamClient.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F6000100010020 /* LocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationManager.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F6000100010022 /* WorkoutMetrics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutMetrics.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F6000100010024 /* LiveMetricsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveMetricsViewController.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F6000100010026 /* WorkoutNotificationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutNotificationManager.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F6000100010028 /* WatchSessionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchSessionManager.swift; sourceTree = "<group>"; };
+		BEB719FC2F47B6BA006B21FC /* FitnessStream Watch App Watch App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "FitnessStream Watch App Watch App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		BEB719FD2F47B6BA006B21FC /* FitnessStream Watch App Watch App */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = "FitnessStream Watch App Watch App"; sourceTree = "<group>"; };
+/* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		A1B2C3D4E5F6000100010005 /* Frameworks */ = {
@@ -32,17 +75,16 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		BEB719F92F47B6BA006B21FC /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		A1B2C3D4E5F6000100010011 /* FitnessStream (root) */ = {
-			isa = PBXGroup;
-			children = (
-				A1B2C3D4E5F6000100010006 /* FitnessStream */,
-				A1B2C3D4E5F600010001000A /* Products */,
-			);
-			sourceTree = "<group>";
-		};
 		A1B2C3D4E5F6000100010006 /* FitnessStream */ = {
 			isa = PBXGroup;
 			children = (
@@ -63,25 +105,22 @@
 			path = FitnessStream;
 			sourceTree = "<group>";
 		};
-		A1B2C3D4E5F6000100010007 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		A1B2C3D4E5F6000100010018 /* EndpointStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EndpointStorage.swift; sourceTree = "<group>"; };
-		A1B2C3D4E5F6000100010008 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
-		A1B2C3D4E5F6000100010009 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		A1B2C3D4E5F600010001001A /* WorkoutType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutType.swift; sourceTree = "<group>"; };
-		A1B2C3D4E5F600010001001B /* FitnessStream.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = FitnessStream.entitlements; sourceTree = "<group>"; };
-		A1B2C3D4E5F600010001001C /* WorkoutSessionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutSessionManager.swift; sourceTree = "<group>"; };
-		A1B2C3D4E5F600010001001E /* StreamClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamClient.swift; sourceTree = "<group>"; };
-		A1B2C3D4E5F6000100010020 /* LocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationManager.swift; sourceTree = "<group>"; };
-		A1B2C3D4E5F6000100010022 /* WorkoutMetrics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutMetrics.swift; sourceTree = "<group>"; };
-		A1B2C3D4E5F6000100010024 /* LiveMetricsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveMetricsViewController.swift; sourceTree = "<group>"; };
-		A1B2C3D4E5F6000100010026 /* WorkoutNotificationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutNotificationManager.swift; sourceTree = "<group>"; };
-		A1B2C3D4E5F6000100010028 /* WatchSessionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchSessionManager.swift; sourceTree = "<group>"; };
 		A1B2C3D4E5F600010001000A /* Products */ = {
 			isa = PBXGroup;
 			children = (
 				A1B2C3D4E5F6000100010000 /* FitnessStream.app */,
+				BEB719FC2F47B6BA006B21FC /* FitnessStream Watch App Watch App.app */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		A1B2C3D4E5F6000100010011 = {
+			isa = PBXGroup;
+			children = (
+				A1B2C3D4E5F6000100010006 /* FitnessStream */,
+				BEB719FD2F47B6BA006B21FC /* FitnessStream Watch App Watch App */,
+				A1B2C3D4E5F600010001000A /* Products */,
+			);
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -94,14 +133,38 @@
 				A1B2C3D4E5F600010001000D /* Sources */,
 				A1B2C3D4E5F6000100010005 /* Frameworks */,
 				A1B2C3D4E5F600010001000E /* Resources */,
+				BEB71A0A2F47B6BB006B21FC /* Embed Watch Content */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				BEB71A052F47B6BB006B21FC /* PBXTargetDependency */,
+			);
+			name = FitnessStream;
+			productName = FitnessStream;
+			productReference = A1B2C3D4E5F6000100010000 /* FitnessStream.app */;
+			productType = "com.apple.product-type.application";
+		};
+		BEB719FB2F47B6BA006B21FC /* FitnessStream Watch App Watch App */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = BEB71A072F47B6BB006B21FC /* Build configuration list for PBXNativeTarget "FitnessStream Watch App Watch App" */;
+			buildPhases = (
+				BEB719F82F47B6BA006B21FC /* Sources */,
+				BEB719F92F47B6BA006B21FC /* Frameworks */,
+				BEB719FA2F47B6BA006B21FC /* Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
-			name = FitnessStream;
-			productName = FitnessStream;
-			productReference = A1B2C3D4E5F6000100010000 /* FitnessStream.app */;
+			fileSystemSynchronizedGroups = (
+				BEB719FD2F47B6BA006B21FC /* FitnessStream Watch App Watch App */,
+			);
+			name = "FitnessStream Watch App Watch App";
+			packageProductDependencies = (
+			);
+			productName = "FitnessStream Watch App Watch App";
+			productReference = BEB719FC2F47B6BA006B21FC /* FitnessStream Watch App Watch App.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -111,8 +174,13 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
-				LastSwiftUpdateCheck = 1500;
+				LastSwiftUpdateCheck = 2620;
 				LastUpgradeCheck = 1500;
+				TargetAttributes = {
+					BEB719FB2F47B6BA006B21FC = {
+						CreatedOnToolsVersion = 26.2;
+					};
+				};
 			};
 			buildConfigurationList = A1B2C3D4E5F6000100010010 /* Build configuration list for PBXProject "FitnessStream" */;
 			compatibilityVersion = "Xcode 14.0";
@@ -128,12 +196,20 @@
 			projectRoot = "";
 			targets = (
 				A1B2C3D4E5F600010001000B /* FitnessStream */,
+				BEB719FB2F47B6BA006B21FC /* FitnessStream Watch App Watch App */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
 		A1B2C3D4E5F600010001000E /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BEB719FA2F47B6BA006B21FC /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -161,7 +237,22 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		BEB719F82F47B6BA006B21FC /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		BEB71A052F47B6BB006B21FC /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = BEB719FB2F47B6BA006B21FC /* FitnessStream Watch App Watch App */;
+			targetProxy = BEB71A042F47B6BB006B21FC /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		A1B2C3D4E5F6000100010013 /* Debug */ = {
@@ -288,6 +379,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "";
+				DEVELOPMENT_TEAM = 822U6S62YP;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = FitnessStream/Info.plist;
@@ -315,6 +407,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "";
+				DEVELOPMENT_TEAM = 822U6S62YP;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = FitnessStream/Info.plist;
@@ -330,6 +423,78 @@
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		BEB71A082F47B6BB006B21FC /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_ENTITLEMENTS = "FitnessStream Watch App Watch App/FitnessStream Watch App Watch App.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 822U6S62YP;
+				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "FitnessStream Watch App";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.fitnessstream.app;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.fitnessstream.app.watchkitapp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 26.2;
+			};
+			name = Debug;
+		};
+		BEB71A092F47B6BB006B21FC /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_ENTITLEMENTS = "FitnessStream Watch App Watch App/FitnessStream Watch App Watch App.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 822U6S62YP;
+				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "FitnessStream Watch App";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.fitnessstream.app;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.fitnessstream.app.watchkitapp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 26.2;
 			};
 			name = Release;
 		};
@@ -350,6 +515,15 @@
 			buildConfigurations = (
 				A1B2C3D4E5F6000100010013 /* Debug */,
 				A1B2C3D4E5F6000100010014 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		BEB71A072F47B6BB006B21FC /* Build configuration list for PBXNativeTarget "FitnessStream Watch App Watch App" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BEB71A082F47B6BB006B21FC /* Debug */,
+				BEB71A092F47B6BB006B21FC /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

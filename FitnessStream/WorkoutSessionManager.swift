@@ -34,6 +34,10 @@ final class WorkoutSessionManager: NSObject {
     private let notificationManager = WorkoutNotificationManager.shared
     private let watchSession = WatchSessionManager.shared
 
+    /// Tracks which metric fields are currently being provided by the Apple Watch.
+    /// iPhone HealthKit queries skip updating any field in this set.
+    private var watchProvidedMetrics: Set<String> = []
+
     init(workoutType: WorkoutType) {
         self.workoutType = workoutType
         super.init()
@@ -77,6 +81,7 @@ final class WorkoutSessionManager: NSObject {
         metrics.timestamp = startDate!
         session?.startActivity(with: startDate!)
 
+        watchProvidedMetrics.removeAll()
         startQueries()
         locationManager.requestAuthorization()
         locationManager.start()
@@ -113,6 +118,7 @@ final class WorkoutSessionManager: NSObject {
         updateTimer?.invalidate()
         notificationManager.removeWorkoutNotification()
         watchSession.sendWorkoutCommand("end", workoutName: workoutType.displayName)
+        watchProvidedMetrics.removeAll()
         state = .ended
         delegate?.workoutSession(self, didChangeState: state)
     }
@@ -148,10 +154,12 @@ final class WorkoutSessionManager: NSObject {
 
     private func startQueries() {
         heartRateQuery = makeQuery(type: HKQuantityType(.heartRate), unit: .count().unitDivided(by: .minute())) { [weak self] value in
+            guard self?.watchProvidedMetrics.contains("heartRate") != true else { return }
             self?.metrics.heartRate = value
             self?.metrics.heartRateZone = Self.zone(forBpm: value)
         }
         energyQuery = makeQuery(type: HKQuantityType(.activeEnergyBurned), unit: .kilocalorie()) { [weak self] value in
+            guard self?.watchProvidedMetrics.contains("activeEnergyKcal") != true else { return }
             self?.metrics.activeEnergyKcal = value
         }
 
@@ -159,6 +167,7 @@ final class WorkoutSessionManager: NSObject {
             ? HKQuantityType(.distanceCycling)
             : HKQuantityType(.distanceWalkingRunning)
         distanceQuery = makeQuery(type: distanceType, unit: .meter()) { [weak self] value in
+            guard self?.watchProvidedMetrics.contains("distanceMeters") != true else { return }
             self?.metrics.distanceMeters = value
             if let elapsed = self?.metrics.elapsedSeconds, elapsed > 0, value > 0 {
                 self?.metrics.paceMinPerKm = (elapsed / 60.0) / (value / 1000.0)
@@ -243,10 +252,33 @@ extension WorkoutSessionManager: LocationManagerDelegate {
 // MARK: - WatchSessionDelegate
 
 extension WorkoutSessionManager: WatchSessionDelegate {
-    func watchSession(_ manager: WatchSessionManager, didReceiveHeartRate bpm: Double) {
-        metrics.heartRate = bpm
-        metrics.heartRateZone = Self.zone(forBpm: bpm)
+    func watchSession(_ manager: WatchSessionManager, didReceiveMetrics watchMetrics: [String: Double]) {
+        if let hr = watchMetrics["heartRate"] {
+            metrics.heartRate = hr
+            metrics.heartRateZone = Self.zone(forBpm: hr)
+            watchProvidedMetrics.insert("heartRate")
+        }
+        if let energy = watchMetrics["activeEnergyKcal"] {
+            metrics.activeEnergyKcal = energy
+            watchProvidedMetrics.insert("activeEnergyKcal")
+        }
+        if let distance = watchMetrics["distanceMeters"] {
+            metrics.distanceMeters = distance
+            watchProvidedMetrics.insert("distanceMeters")
+        }
+        if let pace = watchMetrics["paceMinPerKm"], pace.isFinite {
+            metrics.paceMinPerKm = pace
+            watchProvidedMetrics.insert("paceMinPerKm")
+        }
+        if let steps = watchMetrics["stepCount"] {
+            metrics.stepCount = Int(steps)
+            watchProvidedMetrics.insert("stepCount")
+        }
     }
 
-    func watchSession(_ manager: WatchSessionManager, didChangeReachability reachable: Bool) {}
+    func watchSession(_ manager: WatchSessionManager, didChangeReachability reachable: Bool) {
+        if !reachable {
+            watchProvidedMetrics.removeAll()
+        }
+    }
 }

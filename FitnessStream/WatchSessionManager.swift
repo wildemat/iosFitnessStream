@@ -1,7 +1,7 @@
 import WatchConnectivity
 
 protocol WatchSessionDelegate: AnyObject {
-    func watchSession(_ manager: WatchSessionManager, didReceiveHeartRate bpm: Double)
+    func watchSession(_ manager: WatchSessionManager, didReceiveMetrics metrics: [String: Double])
     func watchSession(_ manager: WatchSessionManager, didChangeReachability reachable: Bool)
 }
 
@@ -71,11 +71,19 @@ extension WatchSessionManager: WCSessionDelegate {
     }
 
     func session(_ session: WCSession, didReceiveMessage message: [String: Any]) {
-        if let bpm = message["heartRate"] as? Double {
-            DispatchQueue.main.async { [weak self] in
-                guard let self else { return }
-                self.delegate?.watchSession(self, didReceiveHeartRate: bpm)
+        let metricKeys = ["heartRate", "activeEnergyKcal", "distanceMeters", "stepCount", "paceMinPerKm"]
+        var parsed: [String: Double] = [:]
+        for key in metricKeys {
+            if let value = message[key] as? Double {
+                parsed[key] = value
             }
+        }
+
+        guard !parsed.isEmpty else { return }
+
+        DispatchQueue.main.async { [weak self] in
+            guard let self else { return }
+            self.delegate?.watchSession(self, didReceiveMetrics: parsed)
         }
     }
 }

@@ -1,0 +1,12 @@
+{
+  "name": "fitnessstream-local-receiver",
+  "version": "1.0.0",
+  "description": "Local HTTP server that receives and logs FitnessStream workout metrics",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
