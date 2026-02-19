@@ -26,6 +26,28 @@ final class LiveMetricsViewController: UIViewController {
     private let locationLabel = metricLabel(size: 13)
     private let elevationLabel = metricLabel()
 
+    private let pauseButton: UIButton = {
+        let b = UIButton(type: .system)
+        b.setTitle("Pause", for: .normal)
+        b.titleLabel?.font = .systemFont(ofSize: 17, weight: .semibold)
+        b.setTitleColor(.white, for: .normal)
+        b.backgroundColor = .darkGray
+        b.layer.cornerRadius = 12
+        b.translatesAutoresizingMaskIntoConstraints = false
+        return b
+    }()
+
+    private let endButton: UIButton = {
+        let b = UIButton(type: .system)
+        b.setTitle("End", for: .normal)
+        b.titleLabel?.font = .systemFont(ofSize: 17, weight: .semibold)
+        b.setTitleColor(.white, for: .normal)
+        b.backgroundColor = .black
+        b.layer.cornerRadius = 12
+        b.translatesAutoresizingMaskIntoConstraints = false
+        return b
+    }()
+
     private let statusLabel: UILabel = {
         let l = UILabel()
         l.font = .preferredFont(forTextStyle: .footnote)
@@ -54,6 +76,10 @@ final class LiveMetricsViewController: UIViewController {
         navigationItem.hidesBackButton = true
 
         buildLayout()
+        pauseButton.addTarget(self, action: #selector(pauseTapped), for: .touchUpInside)
+        endButton.addTarget(self, action: #selector(endTapped), for: .touchUpInside)
+        pauseButton.isHidden = true
+        endButton.isHidden = true
 
         statusLabel.text = "Requesting authorization…"
         manager.delegate = self
@@ -96,8 +122,15 @@ final class LiveMetricsViewController: UIViewController {
         let scroll = UIScrollView()
         scroll.translatesAutoresizingMaskIntoConstraints = false
 
+        let buttonStack = UIStackView(arrangedSubviews: [pauseButton, endButton])
+        buttonStack.axis = .horizontal
+        buttonStack.spacing = 16
+        buttonStack.distribution = .fillEqually
+        buttonStack.translatesAutoresizingMaskIntoConstraints = false
+
         view.addSubview(elapsedLabel)
         view.addSubview(scroll)
+        view.addSubview(buttonStack)
         view.addSubview(statusLabel)
         scroll.addSubview(grid)
 
@@ -108,13 +141,19 @@ final class LiveMetricsViewController: UIViewController {
             scroll.topAnchor.constraint(equalTo: elapsedLabel.bottomAnchor, constant: 20),
             scroll.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             scroll.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            scroll.bottomAnchor.constraint(equalTo: statusLabel.topAnchor, constant: -8),
+            scroll.bottomAnchor.constraint(equalTo: buttonStack.topAnchor, constant: -12),
 
             grid.topAnchor.constraint(equalTo: scroll.contentLayoutGuide.topAnchor),
             grid.leadingAnchor.constraint(equalTo: scroll.frameLayoutGuide.leadingAnchor),
             grid.trailingAnchor.constraint(equalTo: scroll.frameLayoutGuide.trailingAnchor),
             grid.bottomAnchor.constraint(equalTo: scroll.contentLayoutGuide.bottomAnchor),
 
+            buttonStack.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            buttonStack.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
+            pauseButton.heightAnchor.constraint(equalToConstant: 50),
+            endButton.heightAnchor.constraint(equalToConstant: 50),
+
+            statusLabel.topAnchor.constraint(equalTo: buttonStack.bottomAnchor, constant: 8),
             statusLabel.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -12),
             statusLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
         ])
@@ -147,6 +186,25 @@ final class LiveMetricsViewController: UIViewController {
             stack.bottomAnchor.constraint(equalTo: container.bottomAnchor, constant: -12),
         ])
         return container
+    }
+
+    // MARK: - Actions
+
+    @objc private func pauseTapped() {
+        if manager.state == .running {
+            manager.pauseWorkout()
+        } else if manager.state == .paused {
+            manager.resumeWorkout()
+        }
+    }
+
+    @objc private func endTapped() {
+        let alert = UIAlertController(title: "End Workout?", message: nil, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+        alert.addAction(UIAlertAction(title: "End", style: .destructive) { [weak self] _ in
+            self?.manager.endWorkout()
+        })
+        present(alert, animated: true)
     }
 
     // MARK: - Helpers
@@ -195,9 +253,24 @@ extension LiveMetricsViewController: WorkoutSessionDelegate {
 
     func workoutSession(_ manager: WorkoutSessionManager, didChangeState state: WorkoutState) {
         switch state {
-        case .running:    statusLabel.text = "Streaming to endpoint…"
-        case .paused:     statusLabel.text = "Paused"
-        case .ended:      statusLabel.text = "Workout ended"
+        case .running:
+            statusLabel.text = "Streaming to endpoint…"
+            pauseButton.isHidden = false
+            endButton.isHidden = false
+            pauseButton.setTitle("Pause", for: .normal)
+            pauseButton.backgroundColor = .darkGray
+        case .paused:
+            statusLabel.text = "Paused"
+            pauseButton.setTitle("Resume", for: .normal)
+            pauseButton.backgroundColor = .systemGray2
+        case .ended:
+            statusLabel.text = "Workout ended"
+            pauseButton.isHidden = true
+            endButton.isHidden = true
+            navigationItem.hidesBackButton = false
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) { [weak self] in
+                self?.navigationController?.popViewController(animated: true)
+            }
         case .notStarted: break
         }
     }
