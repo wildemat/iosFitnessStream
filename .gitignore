@@ -1,0 +1,15 @@
+# Xcode
+build/
+DerivedData/
+*.xcuserstate
+*.xcworkspace/xcuserdata/
+
+# Cursor / IDE
+.cursor/
+.claude/
+
+# Beads (task DB; uncomment to ignore)
+# .beads/
+
+# macOS
+.DS_Store
