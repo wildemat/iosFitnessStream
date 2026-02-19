@@ -127,9 +127,9 @@ Use one branch per feature; name clearly. Suggested order:
 
 ## Current handoff state (Orchestrator updates this)
 
-- **Next work for Worker:** `feature/scaffold` - scaffold iOS app (Xcode project, minimal grayscale UX). **Use the main repo** (`iosFitnessStream/`), branch: `feature/scaffold`. (No worktree yet; worktree will be created after first merge to main.)
-- **Next work for Planning:** After Worker finishes scaffold, run compile + format in the **main repo** on branch `feature/scaffold`, then tell Orchestrator "ready to merge and push."
-- **Note:** Worker worktree does not exist yet. Worker and Planning use the main repo for this first feature. After Orchestrator merges scaffold to main, create worktree from repo root: `git worktree add ../iosFitnessStream-wt-worker -b feature/endpoint-config`.
+- **Next work for Worker:** `feature/endpoint-config` - Endpoint URL input field + persistence. **Use the worker worktree** `iosFitnessStream-wt-worker/`, branch: `feature/endpoint-config`.
+- **Next work for Planning:** After Worker finishes endpoint-config, run compile + format in **worker worktree** on branch `feature/endpoint-config`, then tell Orchestrator "ready to merge and push."
+- **Note:** Worker worktree exists at `../iosFitnessStream-wt-worker` (branch `feature/endpoint-config`). Orchestrator merged scaffold to main and created the worktree.
 
 ---
 
