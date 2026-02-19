@@ -17,6 +17,7 @@
 		A1B2C3D4E5F6000100010023 /* WorkoutMetrics.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6000100010022 /* WorkoutMetrics.swift */; };
 		A1B2C3D4E5F6000100010025 /* LiveMetricsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6000100010024 /* LiveMetricsViewController.swift */; };
 		A1B2C3D4E5F6000100010027 /* WorkoutNotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6000100010026 /* WorkoutNotificationManager.swift */; };
+		A1B2C3D4E5F6000100010029 /* WatchSessionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6000100010028 /* WatchSessionManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -55,6 +56,7 @@
 				A1B2C3D4E5F6000100010022 /* WorkoutMetrics.swift */,
 				A1B2C3D4E5F6000100010024 /* LiveMetricsViewController.swift */,
 				A1B2C3D4E5F6000100010026 /* WorkoutNotificationManager.swift */,
+				A1B2C3D4E5F6000100010028 /* WatchSessionManager.swift */,
 				A1B2C3D4E5F600010001001B /* FitnessStream.entitlements */,
 				A1B2C3D4E5F6000100010009 /* Info.plist */,
 			);
@@ -73,6 +75,7 @@
 		A1B2C3D4E5F6000100010022 /* WorkoutMetrics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutMetrics.swift; sourceTree = "<group>"; };
 		A1B2C3D4E5F6000100010024 /* LiveMetricsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveMetricsViewController.swift; sourceTree = "<group>"; };
 		A1B2C3D4E5F6000100010026 /* WorkoutNotificationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutNotificationManager.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F6000100010028 /* WatchSessionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchSessionManager.swift; sourceTree = "<group>"; };
 		A1B2C3D4E5F600010001000A /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -154,6 +157,7 @@
 				A1B2C3D4E5F6000100010023 /* WorkoutMetrics.swift in Sources */,
 				A1B2C3D4E5F6000100010025 /* LiveMetricsViewController.swift in Sources */,
 				A1B2C3D4E5F6000100010027 /* WorkoutNotificationManager.swift in Sources */,
+				A1B2C3D4E5F6000100010029 /* WatchSessionManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

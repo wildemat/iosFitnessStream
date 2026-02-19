@@ -13,6 +13,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         window?.rootViewController = UINavigationController(rootViewController: ViewController())
         window?.makeKeyAndVisible()
         window?.overrideUserInterfaceStyle = .light
+        WatchSessionManager.shared.activate()
         return true
     }
 }

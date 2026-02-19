@@ -32,11 +32,13 @@ final class WorkoutSessionManager: NSObject {
     private var updateTimer: Timer?
 
     private let notificationManager = WorkoutNotificationManager.shared
+    private let watchSession = WatchSessionManager.shared
 
     init(workoutType: WorkoutType) {
         self.workoutType = workoutType
         super.init()
         locationManager.delegate = self
+        watchSession.delegate = self
         metrics.workoutType = workoutType.displayName
         notificationManager.requestAuthorization()
     }
@@ -80,6 +82,7 @@ final class WorkoutSessionManager: NSObject {
         locationManager.start()
         startUpdateTimer()
         notificationManager.postWorkoutActive(name: workoutType.displayName, elapsed: 0)
+        watchSession.sendWorkoutCommand("start", workoutName: workoutType.displayName)
 
         state = .running
         delegate?.workoutSession(self, didChangeState: state)
@@ -89,6 +92,7 @@ final class WorkoutSessionManager: NSObject {
         session?.pause()
         locationManager.stop()
         updateTimer?.invalidate()
+        watchSession.sendWorkoutCommand("pause", workoutName: workoutType.displayName)
         state = .paused
         delegate?.workoutSession(self, didChangeState: state)
     }
@@ -97,6 +101,7 @@ final class WorkoutSessionManager: NSObject {
         session?.resume()
         locationManager.start()
         startUpdateTimer()
+        watchSession.sendWorkoutCommand("resume", workoutName: workoutType.displayName)
         state = .running
         delegate?.workoutSession(self, didChangeState: state)
     }
@@ -107,6 +112,7 @@ final class WorkoutSessionManager: NSObject {
         stopQueries()
         updateTimer?.invalidate()
         notificationManager.removeWorkoutNotification()
+        watchSession.sendWorkoutCommand("end", workoutName: workoutType.displayName)
         state = .ended
         delegate?.workoutSession(self, didChangeState: state)
     }
@@ -232,4 +238,15 @@ extension WorkoutSessionManager: LocationManagerDelegate {
         metrics.longitude = location.coordinate.longitude
         metrics.elevationMeters = location.altitude
     }
+}
+
+// MARK: - WatchSessionDelegate
+
+extension WorkoutSessionManager: WatchSessionDelegate {
+    func watchSession(_ manager: WatchSessionManager, didReceiveHeartRate bpm: Double) {
+        metrics.heartRate = bpm
+        metrics.heartRateZone = Self.zone(forBpm: bpm)
+    }
+
+    func watchSession(_ manager: WatchSessionManager, didChangeReachability reachable: Bool) {}
 }
