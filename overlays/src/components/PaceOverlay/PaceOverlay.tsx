@@ -22,9 +22,10 @@ function getTrend(current: number, previous: number | null): TrendDir {
 
 export interface PaceOverlayProps {
   metrics: WorkoutMetrics | null;
+  transparent?: boolean;
 }
 
-export function PaceOverlay({ metrics }: PaceOverlayProps) {
+export function PaceOverlay({ metrics, transparent = false }: PaceOverlayProps) {
   const pace    = metrics?.pace_min_per_km;
   const hasData = pace != null;
 
@@ -51,7 +52,7 @@ export function PaceOverlay({ metrics }: PaceOverlayProps) {
 
   return (
     <OverlayWrapper hasData={hasData}>
-      <div className="pace-overlay">
+      <div className={`pace-overlay${transparent ? ' pace-overlay--transparent' : ''}`}>
         <div className="pace-overlay__header">
           <span className="pace-overlay__icon" aria-hidden="true">⟳</span>
           <span className="pace-overlay__label">Pace</span>

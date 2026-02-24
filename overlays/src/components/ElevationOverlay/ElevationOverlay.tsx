@@ -7,9 +7,10 @@ type DeltaDir = 'gain' | 'loss' | 'flat';
 
 export interface ElevationOverlayProps {
   metrics: WorkoutMetrics | null;
+  transparent?: boolean;
 }
 
-export function ElevationOverlay({ metrics }: ElevationOverlayProps) {
+export function ElevationOverlay({ metrics, transparent = false }: ElevationOverlayProps) {
   const elev    = metrics?.elevation_meters;
   const hasData = elev != null;
 
@@ -42,7 +43,7 @@ export function ElevationOverlay({ metrics }: ElevationOverlayProps) {
 
   return (
     <OverlayWrapper hasData={hasData}>
-      <div className="elevation-overlay">
+      <div className={`elevation-overlay${transparent ? ' elevation-overlay--transparent' : ''}`}>
         <div className="elevation-overlay__header">
           <span className="elevation-overlay__icon" aria-hidden="true">△</span>
           <span className="elevation-overlay__label">Elevation</span>

@@ -4,15 +4,16 @@ import './StepsOverlay.css';
 
 export interface StepsOverlayProps {
   metrics: WorkoutMetrics | null;
+  transparent?: boolean;
 }
 
-export function StepsOverlay({ metrics }: StepsOverlayProps) {
+export function StepsOverlay({ metrics, transparent = false }: StepsOverlayProps) {
   const steps   = metrics?.step_count;
   const hasData = steps != null;
 
   return (
     <OverlayWrapper hasData={hasData}>
-      <div className="steps-overlay">
+      <div className={`steps-overlay${transparent ? ' steps-overlay--transparent' : ''}`}>
         <div className="steps-overlay__header">
           <span className="steps-overlay__icon" aria-hidden="true">⊹</span>
           <span className="steps-overlay__label">Steps</span>

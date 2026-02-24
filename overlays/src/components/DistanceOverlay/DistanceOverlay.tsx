@@ -4,9 +4,10 @@ import './DistanceOverlay.css';
 
 export interface DistanceOverlayProps {
   metrics: WorkoutMetrics | null;
+  transparent?: boolean;
 }
 
-export function DistanceOverlay({ metrics }: DistanceOverlayProps) {
+export function DistanceOverlay({ metrics, transparent = false }: DistanceOverlayProps) {
   const meters  = metrics?.distance_meters;
   const hasData = meters != null;
 
@@ -18,7 +19,7 @@ export function DistanceOverlay({ metrics }: DistanceOverlayProps) {
 
   return (
     <OverlayWrapper hasData={hasData}>
-      <div className="distance-overlay">
+      <div className={`distance-overlay${transparent ? ' distance-overlay--transparent' : ''}`}>
         <div className="distance-overlay__header">
           <span className="distance-overlay__icon" aria-hidden="true">◈</span>
           <span className="distance-overlay__label">Distance</span>

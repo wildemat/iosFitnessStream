@@ -57,11 +57,12 @@ export interface MinimapOverlayProps {
   metrics: WorkoutMetrics | null;
   /** Initial zoom level (default 15 — street level) */
   zoom?: number;
+  transparent?: boolean;
 }
 
 const DEFAULT_CENTER: [number, number] = [0, 0];
 
-export function MinimapOverlay({ metrics, zoom = 15 }: MinimapOverlayProps) {
+export function MinimapOverlay({ metrics, zoom = 15, transparent = false }: MinimapOverlayProps) {
   const lat    = metrics?.latitude;
   const lon    = metrics?.longitude;
   const hasGPS = lat != null && lon != null;
@@ -86,7 +87,7 @@ export function MinimapOverlay({ metrics, zoom = 15 }: MinimapOverlayProps) {
 
   return (
     <OverlayWrapper hasData={hasGPS}>
-      <div className="minimap-overlay">
+      <div className={`minimap-overlay${transparent ? ' minimap-overlay--transparent' : ''}`}>
         {hasGPS ? (
           <MapContainer
             center={center}

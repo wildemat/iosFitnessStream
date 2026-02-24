@@ -14,9 +14,10 @@ const ZONE_CONFIG = [
 
 export interface HeartRateOverlayProps {
   metrics: WorkoutMetrics | null;
+  transparent?: boolean;
 }
 
-export function HeartRateOverlay({ metrics }: HeartRateOverlayProps) {
+export function HeartRateOverlay({ metrics, transparent = false }: HeartRateOverlayProps) {
   const hr   = metrics?.heart_rate;
   const zone = metrics?.heart_rate_zone;
   const hasData = hr != null;
@@ -28,7 +29,7 @@ export function HeartRateOverlay({ metrics }: HeartRateOverlayProps) {
 
   return (
     <OverlayWrapper hasData={hasData}>
-      <div className="hr-overlay">
+      <div className={`hr-overlay${transparent ? ' hr-overlay--transparent' : ''}`}>
         <div className="hr-overlay__header">
           <span
             className={`hr-overlay__heart${hasData ? ' hr-overlay__heart--beating' : ''}`}

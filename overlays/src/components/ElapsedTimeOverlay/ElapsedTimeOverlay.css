@@ -41,3 +41,11 @@
 .elapsed-overlay__value--empty {
   color: var(--color-text-dim);
 }
+
+/* ─── Transparent mode (no card chrome) ─────────────────────────── */
+.elapsed-overlay--transparent {
+  background: transparent;
+  border-color: transparent;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}

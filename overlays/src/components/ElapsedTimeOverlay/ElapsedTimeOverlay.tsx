@@ -16,6 +16,7 @@ function formatTime(totalSeconds: number): string {
 
 export interface ElapsedTimeOverlayProps {
   metrics: WorkoutMetrics | null;
+  transparent?: boolean;
 }
 
 /**
@@ -23,7 +24,7 @@ export interface ElapsedTimeOverlayProps {
  * Once data arrives, a local interval keeps the counter ticking between
  * server updates so the display never appears frozen.
  */
-export function ElapsedTimeOverlay({ metrics }: ElapsedTimeOverlayProps) {
+export function ElapsedTimeOverlay({ metrics, transparent = false }: ElapsedTimeOverlayProps) {
   const hasData = metrics?.elapsed_seconds != null;
   const [displaySeconds, setDisplaySeconds] = useState(0);
 
@@ -56,7 +57,7 @@ export function ElapsedTimeOverlay({ metrics }: ElapsedTimeOverlayProps) {
 
   return (
     <OverlayWrapper hasData={hasData}>
-      <div className="elapsed-overlay">
+      <div className={`elapsed-overlay${transparent ? ' elapsed-overlay--transparent' : ''}`}>
         <div className="elapsed-overlay__header">
           <span className="elapsed-overlay__icon" aria-hidden="true">◷</span>
           <span className="elapsed-overlay__label">Elapsed</span>

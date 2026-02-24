@@ -117,3 +117,14 @@
   text-transform: uppercase;
   opacity: 0.5;
 }
+
+/* ─── Transparent mode ──────────────────────────────────────────── */
+.minimap-overlay--transparent {
+  background: transparent;
+  border-color: transparent;
+}
+
+.minimap-overlay--transparent .minimap-overlay__footer {
+  background: transparent;
+  border-top-color: transparent;
+}

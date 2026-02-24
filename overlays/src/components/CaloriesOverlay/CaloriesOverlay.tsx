@@ -4,15 +4,16 @@ import './CaloriesOverlay.css';
 
 export interface CaloriesOverlayProps {
   metrics: WorkoutMetrics | null;
+  transparent?: boolean;
 }
 
-export function CaloriesOverlay({ metrics }: CaloriesOverlayProps) {
+export function CaloriesOverlay({ metrics, transparent = false }: CaloriesOverlayProps) {
   const kcal    = metrics?.active_energy_kcal;
   const hasData = kcal != null;
 
   return (
     <OverlayWrapper hasData={hasData}>
-      <div className="calories-overlay">
+      <div className={`calories-overlay${transparent ? ' calories-overlay--transparent' : ''}`}>
         <div className="calories-overlay__header">
           <span className="calories-overlay__icon" aria-hidden="true">◉</span>
           <span className="calories-overlay__label">Calories</span>

@@ -79,3 +79,11 @@
   font-size: 13px;
   color: var(--color-text-dim);
 }
+
+/* ─── Transparent mode (no card chrome) ─────────────────────────── */
+.hr-overlay--transparent {
+  background: transparent;
+  border-color: transparent;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}

@@ -25,27 +25,31 @@ import { MinimapOverlay }     from './components/MinimapOverlay/MinimapOverlay';
  *   http://localhost:5173/?overlay=minimap
  *   http://localhost:5173/?overlay=minimap&zoom=17
  *
+ * Append &transparent=true to any overlay URL to remove the card
+ * background and border, leaving just the content floating on the stream.
+ *
  * The Vite dev server and local/server.js must both be running.
  * Set the server URL via ?server=http://your-mac-ip:8080
  */
 export default function App() {
-  const params     = new URLSearchParams(window.location.search);
-  const overlay    = params.get('overlay') ?? 'workout';
-  const serverUrl  = params.get('server')  ?? 'http://localhost:8080/events';
-  const zoom       = params.get('zoom')    != null ? Number(params.get('zoom')) : undefined;
+  const params      = new URLSearchParams(window.location.search);
+  const overlay     = params.get('overlay')     ?? 'workout';
+  const serverUrl   = params.get('server')      ?? 'http://localhost:8080/events';
+  const zoom        = params.get('zoom')        != null ? Number(params.get('zoom')) : undefined;
+  const transparent = params.get('transparent') === 'true';
 
   const metrics = useMetricsStream(serverUrl);
 
   const components: Record<string, React.ReactNode> = {
-    heartrate: <HeartRateOverlay   metrics={metrics} />,
-    elapsed:   <ElapsedTimeOverlay metrics={metrics} />,
-    pace:      <PaceOverlay        metrics={metrics} />,
-    distance:  <DistanceOverlay    metrics={metrics} />,
-    calories:  <CaloriesOverlay    metrics={metrics} />,
-    steps:     <StepsOverlay       metrics={metrics} />,
-    elevation: <ElevationOverlay   metrics={metrics} />,
-    workout:   <WorkoutTypeOverlay metrics={metrics} />,
-    minimap:   <MinimapOverlay     metrics={metrics} zoom={zoom} />,
+    heartrate: <HeartRateOverlay   metrics={metrics} transparent={transparent} />,
+    elapsed:   <ElapsedTimeOverlay metrics={metrics} transparent={transparent} />,
+    pace:      <PaceOverlay        metrics={metrics} transparent={transparent} />,
+    distance:  <DistanceOverlay    metrics={metrics} transparent={transparent} />,
+    calories:  <CaloriesOverlay    metrics={metrics} transparent={transparent} />,
+    steps:     <StepsOverlay       metrics={metrics} transparent={transparent} />,
+    elevation: <ElevationOverlay   metrics={metrics} transparent={transparent} />,
+    workout:   <WorkoutTypeOverlay metrics={metrics} transparent={transparent} />,
+    minimap:   <MinimapOverlay     metrics={metrics} zoom={zoom} transparent={transparent} />,
   };
 
   return (

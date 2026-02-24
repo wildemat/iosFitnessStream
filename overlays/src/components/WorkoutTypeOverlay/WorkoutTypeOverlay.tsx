@@ -31,9 +31,10 @@ function formatTime(totalSeconds: number): string {
 
 export interface WorkoutTypeOverlayProps {
   metrics: WorkoutMetrics | null;
+  transparent?: boolean;
 }
 
-export function WorkoutTypeOverlay({ metrics }: WorkoutTypeOverlayProps) {
+export function WorkoutTypeOverlay({ metrics, transparent = false }: WorkoutTypeOverlayProps) {
   const hasData    = metrics != null && metrics.workout_type !== '';
   const workoutType = metrics?.workout_type ?? '';
   const icon        = TYPE_ICONS[workoutType] ?? '◉';
@@ -65,7 +66,7 @@ export function WorkoutTypeOverlay({ metrics }: WorkoutTypeOverlayProps) {
 
   return (
     <OverlayWrapper hasData={hasData}>
-      <div className="workout-overlay">
+      <div className={`workout-overlay${transparent ? ' workout-overlay--transparent' : ''}`}>
         <div className="workout-overlay__top">
           <span className="workout-overlay__type-icon" aria-hidden="true">
             {hasData ? icon : '◉'}
