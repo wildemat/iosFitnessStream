@@ -1,0 +1,76 @@
+.elevation-overlay {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 16px 20px 14px;
+  backdrop-filter: blur(var(--blur));
+  -webkit-backdrop-filter: blur(var(--blur));
+  min-width: 168px;
+  user-select: none;
+}
+
+.elevation-overlay__header {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-bottom: 10px;
+}
+
+.elevation-overlay__icon {
+  font-size: 13px;
+  color: var(--accent-elevation);
+}
+
+.elevation-overlay__label {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--color-text-secondary);
+}
+
+.elevation-overlay__value {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+
+.elevation-overlay__number {
+  font-size: 46px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text-primary);
+  line-height: 1;
+  letter-spacing: -0.02em;
+  animation: number-pop 250ms var(--ease-out);
+}
+
+.elevation-overlay__unit {
+  font-size: 14px;
+  color: var(--color-text-secondary);
+  margin-bottom: 5px;
+}
+
+/* ─── Gain/loss relative to start ─────────────── */
+.elevation-overlay__delta {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  animation: fade-in-up 250ms var(--ease-out) both;
+}
+
+.elevation-overlay__delta--gain {
+  color: var(--accent-pace);     /* sage — climbing */
+}
+
+.elevation-overlay__delta--loss {
+  color: var(--accent-elevation); /* terracotta — descending */
+}
+
+.elevation-overlay__delta--flat {
+  color: var(--color-text-dim);
+}

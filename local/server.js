@@ -2,8 +2,10 @@
 /**
  * FitnessStream local receiver
  *
- * Starts an HTTP server that accepts POST requests from the iOS app
- * and pretty-prints each workout metrics payload to stdout.
+ * Accepts POST requests from the iOS app and:
+ *   1. Pretty-prints each metrics payload to stdout.
+ *   2. Broadcasts metrics to any connected SSE clients (used by the
+ *      React overlay components running in OBS Browser Source).
  *
  * Usage:
  *   node server.js          # listens on port 8080
@@ -11,6 +13,9 @@
  *
  * Set your iPhone's endpoint to:
  *   http://<your-mac-local-ip>:<PORT>/
+ *
+ * Overlay SSE endpoint (consumed by overlays/):
+ *   http://localhost:<PORT>/events
  *
  * Find your Mac's local IP with: ipconfig getifaddr en0
  */
@@ -25,9 +30,69 @@ const CYAN  = '\x1b[36m';
 const GREEN = '\x1b[32m';
 const RESET = '\x1b[0m';
 
+// ─── SSE client registry ───────────────────────────────────────────────────
+/** @type {Set<import('http').ServerResponse>} */
+const sseClients = new Set();
+
+function broadcastMetrics(payload) {
+  if (sseClients.size === 0) return;
+  const data  = JSON.stringify(payload);
+  const frame = `event: metrics\ndata: ${data}\n\n`;
+  for (const res of sseClients) {
+    try {
+      res.write(frame);
+    } catch {
+      sseClients.delete(res);
+    }
+  }
+}
+
+// ─── HTTP server ───────────────────────────────────────────────────────────
 const server = http.createServer((req, res) => {
+  // CORS — allow the Vite dev server (any localhost origin) to subscribe
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
+  // Preflight
+  if (req.method === 'OPTIONS') {
+    res.writeHead(204);
+    res.end();
+    return;
+  }
+
+  // ── SSE subscription (/events) ──────────────────────────────────────────
+  if (req.method === 'GET' && req.url === '/events') {
+    res.writeHead(200, {
+      'Content-Type':      'text/event-stream',
+      'Cache-Control':     'no-cache',
+      'Connection':        'keep-alive',
+      'X-Accel-Buffering': 'no',  // disable nginx buffering if behind a proxy
+    });
+
+    // Tell clients to reconnect after 3 s if the stream drops
+    res.write('retry: 3000\n\n');
+
+    sseClients.add(res);
+    process.stdout.write(`${DIM}[SSE]${RESET} client connected (${sseClients.size} total)\n`);
+
+    // Heartbeat — keeps the TCP connection alive during idle periods
+    const heartbeat = setInterval(() => {
+      try { res.write(': ping\n\n'); } catch { /* client gone */ }
+    }, 15_000);
+
+    req.on('close', () => {
+      clearInterval(heartbeat);
+      sseClients.delete(res);
+      process.stdout.write(`${DIM}[SSE]${RESET} client disconnected (${sseClients.size} remaining)\n`);
+    });
+
+    return;
+  }
+
+  // ── Metrics POST (from iOS app) ─────────────────────────────────────────
   if (req.method !== 'POST') {
-    res.writeHead(405, { Allow: 'POST' });
+    res.writeHead(405, { Allow: 'POST, GET' });
     res.end('Method Not Allowed');
     return;
   }
@@ -74,11 +139,15 @@ const server = http.createServer((req, res) => {
 
     process.stdout.write(lines.join('\n') + '\n\n');
 
+    // Broadcast to SSE subscribers (the overlay components)
+    broadcastMetrics(parsed);
+
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ ok: true }));
   });
 });
 
+// ─── Helpers ───────────────────────────────────────────────────────────────
 function fmt(val, unit = '') {
   if (val == null) return '—';
   const n = typeof val === 'number' ? val.toFixed(2) : val;
@@ -99,10 +168,12 @@ function formatElapsed(secs) {
   return `${m}:${String(sec).padStart(2, '0')}`;
 }
 
+// ─── Start ─────────────────────────────────────────────────────────────────
 server.listen(PORT, '0.0.0.0', () => {
   const ip = getLocalIP();
   console.log(`FitnessStream receiver listening on port ${PORT}`);
-  console.log(`Set the app endpoint to: http://${ip}:${PORT}/`);
+  console.log(`Set the app endpoint to:  http://${ip}:${PORT}/`);
+  console.log(`SSE overlay endpoint:     http://localhost:${PORT}/events`);
   console.log('Waiting for workout data...\n');
 });
 

@@ -1,0 +1,63 @@
+.distance-overlay {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 16px 20px 14px;
+  backdrop-filter: blur(var(--blur));
+  -webkit-backdrop-filter: blur(var(--blur));
+  min-width: 168px;
+  user-select: none;
+}
+
+.distance-overlay__header {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-bottom: 10px;
+}
+
+.distance-overlay__icon {
+  font-size: 13px;
+  color: var(--accent-distance);
+}
+
+.distance-overlay__label {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--color-text-secondary);
+}
+
+.distance-overlay__value {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+
+.distance-overlay__number {
+  font-size: 46px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text-primary);
+  line-height: 1;
+  letter-spacing: -0.02em;
+  animation: number-pop 250ms var(--ease-out);
+}
+
+.distance-overlay__unit {
+  font-size: 14px;
+  color: var(--color-text-secondary);
+  margin-bottom: 5px;
+  min-width: 20px;
+  transition: opacity 200ms ease;
+}
+
+/* ─── Sub-distance in meters when < 1 km ──────── */
+.distance-overlay__sub {
+  font-size: 11px;
+  color: var(--color-text-secondary);
+  letter-spacing: 0.04em;
+  animation: fade-in-up 250ms var(--ease-out) both;
+}

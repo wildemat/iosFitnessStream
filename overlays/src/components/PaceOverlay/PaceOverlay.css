@@ -1,0 +1,76 @@
+.pace-overlay {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 16px 20px 14px;
+  backdrop-filter: blur(var(--blur));
+  -webkit-backdrop-filter: blur(var(--blur));
+  min-width: 168px;
+  user-select: none;
+}
+
+.pace-overlay__header {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-bottom: 10px;
+}
+
+.pace-overlay__icon {
+  font-size: 13px;
+  color: var(--accent-pace);
+}
+
+.pace-overlay__label {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--color-text-secondary);
+}
+
+.pace-overlay__value {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+
+.pace-overlay__number {
+  font-size: 46px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text-primary);
+  line-height: 1;
+  letter-spacing: -0.02em;
+  animation: number-pop 250ms var(--ease-out);
+}
+
+.pace-overlay__unit {
+  font-size: 14px;
+  color: var(--color-text-secondary);
+  margin-bottom: 5px;
+}
+
+/* ─── Trend indicator ──────────────────────────── */
+.pace-overlay__trend {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  animation: fade-in-up 250ms var(--ease-out) both;
+}
+
+.pace-overlay__trend--faster {
+  color: var(--zone-1); /* sage — good */
+}
+
+.pace-overlay__trend--slower {
+  color: var(--zone-4); /* peach — slowing */
+}
+
+.pace-overlay__trend--steady {
+  color: var(--color-text-dim);
+}

@@ -1,0 +1,97 @@
+.workout-overlay {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 14px 18px;
+  backdrop-filter: blur(var(--blur));
+  -webkit-backdrop-filter: blur(var(--blur));
+  min-width: 200px;
+  user-select: none;
+}
+
+/* ─── Top row: icon + name + live dot ─────────── */
+.workout-overlay__top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.workout-overlay__type-icon {
+  font-size: 22px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.workout-overlay__name {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  letter-spacing: -0.01em;
+  flex: 1;
+  animation: fade-in-up 250ms var(--ease-out) both;
+}
+
+.workout-overlay__name--empty {
+  color: var(--color-text-dim);
+  font-weight: 400;
+}
+
+/* ─── Live status dot ──────────────────────────── */
+.workout-overlay__status {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.workout-overlay__dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--accent-pace);
+  animation: blink-dot 2s ease-in-out infinite;
+}
+
+.workout-overlay__dot--inactive {
+  background: var(--color-text-dim);
+  animation: none;
+}
+
+.workout-overlay__status-text {
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-text-secondary);
+}
+
+/* ─── Divider ──────────────────────────────────── */
+.workout-overlay__divider {
+  height: 1px;
+  background: var(--color-border);
+  margin-bottom: 10px;
+}
+
+/* ─── Time row ─────────────────────────────────── */
+.workout-overlay__time-row {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.workout-overlay__time-label {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-secondary);
+  flex-shrink: 0;
+}
+
+.workout-overlay__time-value {
+  font-size: 20px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--accent-time);
+  letter-spacing: -0.01em;
+}
