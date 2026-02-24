@@ -1,0 +1,119 @@
+.minimap-overlay {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  backdrop-filter: blur(var(--blur));
+  -webkit-backdrop-filter: blur(var(--blur));
+  user-select: none;
+  width: 280px;
+}
+
+/* ─── Map canvas ────────────────────────────────── */
+.minimap-overlay__map {
+  width: 100%;
+  height: 200px;
+  /* Override leaflet's default grey background */
+  background: #0e0b18 !important;
+}
+
+/* Remove Leaflet's attribution, we show our own minimal one */
+.minimap-overlay__map .leaflet-control-attribution {
+  display: none;
+}
+
+/* ─── Coordinate bar ─────────────────────────────── */
+.minimap-overlay__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 14px;
+  border-top: 1px solid var(--color-border);
+  background: var(--color-surface-raised);
+}
+
+.minimap-overlay__coords {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text-secondary);
+  letter-spacing: 0.03em;
+  font-family: 'SF Mono', 'Fira Mono', 'Consolas', monospace;
+}
+
+.minimap-overlay__coords-sep {
+  color: var(--color-text-dim);
+}
+
+.minimap-overlay__attribution {
+  font-size: 9px;
+  color: var(--color-text-dim);
+  letter-spacing: 0.02em;
+}
+
+/* ─── Pulsing location marker ────────────────────── */
+/* Leaflet DivIcon — styles must be global (Leaflet appends to its own container) */
+.minimap-marker {
+  position: relative;
+  width: 24px;
+  height: 24px;
+}
+
+.minimap-marker__dot {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 10px;
+  height: 10px;
+  background: #88c0a8;        /* --accent-pace resolved */
+  border: 2px solid rgba(232, 224, 244, 0.9);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+}
+
+.minimap-marker__ring {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 22px;
+  height: 22px;
+  border: 2px solid #88c0a8;
+  border-radius: 50%;
+  transform: translate(-50%, -50%) scale(0.5);
+  opacity: 1;
+  animation: marker-ring-pulse 1.8s ease-out infinite;
+  z-index: 1;
+}
+
+@keyframes marker-ring-pulse {
+  0%   { transform: translate(-50%, -50%) scale(0.5); opacity: 0.9; }
+  100% { transform: translate(-50%, -50%) scale(2.2); opacity: 0;   }
+}
+
+/* ─── Empty state placeholder ────────────────────── */
+.minimap-overlay__empty {
+  width: 100%;
+  height: 200px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: rgba(14, 11, 24, 0.6);
+  color: var(--color-text-dim);
+}
+
+.minimap-overlay__empty-icon {
+  font-size: 24px;
+  opacity: 0.4;
+}
+
+.minimap-overlay__empty-text {
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  opacity: 0.5;
+}

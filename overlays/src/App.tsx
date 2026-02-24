@@ -8,6 +8,7 @@ import { CaloriesOverlay }    from './components/CaloriesOverlay/CaloriesOverlay
 import { StepsOverlay }       from './components/StepsOverlay/StepsOverlay';
 import { ElevationOverlay }   from './components/ElevationOverlay/ElevationOverlay';
 import { WorkoutTypeOverlay } from './components/WorkoutTypeOverlay/WorkoutTypeOverlay';
+import { MinimapOverlay }     from './components/MinimapOverlay/MinimapOverlay';
 
 /**
  * OBS Browser Source routing.
@@ -21,6 +22,8 @@ import { WorkoutTypeOverlay } from './components/WorkoutTypeOverlay/WorkoutTypeO
  *   http://localhost:5173/?overlay=steps
  *   http://localhost:5173/?overlay=elevation
  *   http://localhost:5173/?overlay=workout
+ *   http://localhost:5173/?overlay=minimap
+ *   http://localhost:5173/?overlay=minimap&zoom=17
  *
  * The Vite dev server and local/server.js must both be running.
  * Set the server URL via ?server=http://your-mac-ip:8080
@@ -29,6 +32,7 @@ export default function App() {
   const params     = new URLSearchParams(window.location.search);
   const overlay    = params.get('overlay') ?? 'workout';
   const serverUrl  = params.get('server')  ?? 'http://localhost:8080/events';
+  const zoom       = params.get('zoom')    != null ? Number(params.get('zoom')) : undefined;
 
   const metrics = useMetricsStream(serverUrl);
 
@@ -41,6 +45,7 @@ export default function App() {
     steps:     <StepsOverlay       metrics={metrics} />,
     elevation: <ElevationOverlay   metrics={metrics} />,
     workout:   <WorkoutTypeOverlay metrics={metrics} />,
+    minimap:   <MinimapOverlay     metrics={metrics} zoom={zoom} />,
   };
 
   return (

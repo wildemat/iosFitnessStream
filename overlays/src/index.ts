@@ -1,4 +1,5 @@
 // Components
+export { MinimapOverlay }     from './components/MinimapOverlay/MinimapOverlay';
 export { HeartRateOverlay }   from './components/HeartRateOverlay/HeartRateOverlay';
 export { ElapsedTimeOverlay } from './components/ElapsedTimeOverlay/ElapsedTimeOverlay';
 export { PaceOverlay }        from './components/PaceOverlay/PaceOverlay';
@@ -24,3 +25,4 @@ export type { CaloriesOverlayProps }    from './components/CaloriesOverlay/Calor
 export type { StepsOverlayProps }       from './components/StepsOverlay/StepsOverlay';
 export type { ElevationOverlayProps }   from './components/ElevationOverlay/ElevationOverlay';
 export type { WorkoutTypeOverlayProps } from './components/WorkoutTypeOverlay/WorkoutTypeOverlay';
+export type { MinimapOverlayProps }     from './components/MinimapOverlay/MinimapOverlay';
