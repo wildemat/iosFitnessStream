@@ -1,0 +1,38 @@
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  padding: 20px;
+  width: 100vw;
+  min-height: 100vh;
+  align-content: start;
+}
+
+.dashboard-grid__cell {
+  display: flex;
+  align-items: stretch;
+}
+
+.dashboard-grid__cell > * {
+  flex: 1;
+}
+
+/* Let OverlayWrapper fill its grid cell instead of shrink-wrapping */
+.dashboard-grid__cell .overlay-wrapper {
+  display: flex;
+  width: 100%;
+}
+
+.dashboard-grid__cell .overlay-wrapper__inner {
+  flex: 1;
+}
+
+/* Make inner overlay cards fill the cell */
+.dashboard-grid__cell [class$="-overlay"] {
+  width: 100%;
+}
+
+/* Minimap needs a minimum height so Leaflet can render */
+.dashboard-grid__cell .minimap-overlay {
+  min-height: 240px;
+}

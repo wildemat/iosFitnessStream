@@ -9,9 +9,13 @@ import { StepsOverlay }       from './components/StepsOverlay/StepsOverlay';
 import { ElevationOverlay }   from './components/ElevationOverlay/ElevationOverlay';
 import { WorkoutTypeOverlay } from './components/WorkoutTypeOverlay/WorkoutTypeOverlay';
 import { MinimapOverlay }     from './components/MinimapOverlay/MinimapOverlay';
+import { DashboardGrid }      from './components/DashboardGrid/DashboardGrid';
 
 /**
  * OBS Browser Source routing.
+ *
+ * Visit with no params to see the full 3×3 dashboard:
+ *   http://localhost:5173/
  *
  * Add a Browser Source in OBS and point it to one of:
  *   http://localhost:5173/?overlay=heartrate
@@ -25,7 +29,7 @@ import { MinimapOverlay }     from './components/MinimapOverlay/MinimapOverlay';
  *   http://localhost:5173/?overlay=minimap
  *   http://localhost:5173/?overlay=minimap&zoom=17
  *
- * Append &transparent=true to any overlay URL to remove the card
+ * Append &transparent=true to any URL to remove the card
  * background and border, leaving just the content floating on the stream.
  *
  * The Vite dev server and local/server.js must both be running.
@@ -33,12 +37,16 @@ import { MinimapOverlay }     from './components/MinimapOverlay/MinimapOverlay';
  */
 export default function App() {
   const params      = new URLSearchParams(window.location.search);
-  const overlay     = params.get('overlay')     ?? 'workout';
+  const overlay     = params.get('overlay');
   const serverUrl   = params.get('server')      ?? 'http://localhost:8080/events';
   const zoom        = params.get('zoom')        != null ? Number(params.get('zoom')) : undefined;
   const transparent = params.get('transparent') === 'true';
 
   const metrics = useMetricsStream(serverUrl);
+
+  if (!overlay) {
+    return <DashboardGrid metrics={metrics} transparent={transparent} />;
+  }
 
   const components: Record<string, React.ReactNode> = {
     heartrate: <HeartRateOverlay   metrics={metrics} transparent={transparent} />,

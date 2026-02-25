@@ -19,6 +19,24 @@ A lightweight iOS app that collects live fitness data during a workout and strea
 - An Apple Developer account (free or paid) for device builds
 - A physical iPhone or iOS 26 simulator
 
+## Sample
+
+### Overlays in browser:
+
+<img src='overlays/assets/overlays.png'/>
+
+### Watch interface:
+
+<img src='overlays/assets/watch.png'/>
+
+### Phone interface:
+
+<img src='overlays/assets/phone.png'/>
+
+### Server interface:
+
+<img src='overlays/assets/server.png'/>
+
 ## Development Setup
 
 ### 1. Clone and open
@@ -59,13 +77,13 @@ Xcode will provision a development certificate and profile automatically with "A
 
 The app requires these entitlements and permissions (already configured):
 
-| Entitlement / Key | Purpose |
-|---|---|
-| `com.apple.developer.healthkit` | Read/write workout and health data |
-| `NSHealthShareUsageDescription` | HealthKit read prompt |
-| `NSHealthUpdateUsageDescription` | HealthKit write prompt |
-| `NSLocationWhenInUseUsageDescription` | GPS for distance, pace, route |
-| `UIBackgroundModes: location, processing` | Background workout + GPS |
+| Entitlement / Key                         | Purpose                            |
+| ----------------------------------------- | ---------------------------------- |
+| `com.apple.developer.healthkit`           | Read/write workout and health data |
+| `NSHealthShareUsageDescription`           | HealthKit read prompt              |
+| `NSHealthUpdateUsageDescription`          | HealthKit write prompt             |
+| `NSLocationWhenInUseUsageDescription`     | GPS for distance, pace, route      |
+| `UIBackgroundModes: location, processing` | Background workout + GPS           |
 
 ## Publishing to TestFlight (Beta)
 

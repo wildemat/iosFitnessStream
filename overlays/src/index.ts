@@ -8,6 +8,7 @@ export { CaloriesOverlay }    from './components/CaloriesOverlay/CaloriesOverlay
 export { StepsOverlay }       from './components/StepsOverlay/StepsOverlay';
 export { ElevationOverlay }   from './components/ElevationOverlay/ElevationOverlay';
 export { WorkoutTypeOverlay } from './components/WorkoutTypeOverlay/WorkoutTypeOverlay';
+export { DashboardGrid }     from './components/DashboardGrid/DashboardGrid';
 
 // Shared
 export { OverlayWrapper } from './components/shared/OverlayWrapper';
@@ -26,3 +27,4 @@ export type { StepsOverlayProps }       from './components/StepsOverlay/StepsOve
 export type { ElevationOverlayProps }   from './components/ElevationOverlay/ElevationOverlay';
 export type { WorkoutTypeOverlayProps } from './components/WorkoutTypeOverlay/WorkoutTypeOverlay';
 export type { MinimapOverlayProps }     from './components/MinimapOverlay/MinimapOverlay';
+export type { DashboardGridProps }     from './components/DashboardGrid/DashboardGrid';
