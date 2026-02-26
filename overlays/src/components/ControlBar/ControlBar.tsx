@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useLayoutStore } from "../../store/useLayoutStore";
 import "./ControlBar.css";
 
 const OVERLAYS = [
@@ -42,6 +43,8 @@ export const ControlBar = ({
 }: ControlBarProps) => {
   const [draft, setDraft] = useState(activeUrl);
   const isDirty = draft !== activeUrl;
+  const resetLayout = useLayoutStore((s) => s.resetLayout);
+  const isDashboard = overlay === null;
 
   return (
     <div className="control-bar">
@@ -77,6 +80,15 @@ export const ControlBar = ({
           >
             Transparent
           </button>
+
+          {isDashboard && (
+            <button
+              className="control-bar__btn"
+              onClick={() => resetLayout()}
+            >
+              Reset Layout
+            </button>
+          )}
 
           {overlay === "minimap" && (
             <div className="control-bar__zoom">
