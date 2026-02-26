@@ -1,0 +1,106 @@
+.control-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+  backdrop-filter: blur(var(--blur));
+  -webkit-backdrop-filter: blur(var(--blur));
+  overflow-x: auto;
+  flex-wrap: wrap;
+}
+
+.control-bar__section {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.control-bar__label {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-text-dim);
+  white-space: nowrap;
+}
+
+.control-bar__group {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.control-bar__btn {
+  padding: 5px 10px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--color-text-secondary);
+  font-size: 12px;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.15s var(--ease-out);
+  white-space: nowrap;
+}
+
+.control-bar__btn:hover {
+  background: var(--color-surface-raised);
+  color: var(--color-text-primary);
+  border-color: var(--color-border-active);
+}
+
+.control-bar__btn--active {
+  background: var(--color-surface-raised);
+  color: var(--color-text-primary);
+  border-color: var(--color-border-active);
+  box-shadow: inset 0 0 0 1px var(--color-border-active);
+}
+
+.control-bar__btn--small {
+  padding: 4px 8px;
+  min-width: 28px;
+  text-align: center;
+  font-weight: 600;
+}
+
+.control-bar__zoom {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.control-bar__zoom-value {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  min-width: 56px;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.control-bar__input {
+  padding: 5px 8px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-bg);
+  color: var(--color-text-primary);
+  font-size: 12px;
+  font-family: inherit;
+  min-width: 220px;
+  transition: border-color 0.15s var(--ease-out);
+}
+
+.control-bar__input:focus {
+  outline: none;
+  border-color: var(--color-border-active);
+}
+
+.control-bar__divider {
+  width: 1px;
+  height: 24px;
+  background: var(--color-border);
+  flex-shrink: 0;
+}

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useCallback } from 'react';
 import { useMetricsStream } from './hooks/useMetricsStream';
 import { HeartRateOverlay }   from './components/HeartRateOverlay/HeartRateOverlay';
 import { ElapsedTimeOverlay } from './components/ElapsedTimeOverlay/ElapsedTimeOverlay';
@@ -10,43 +10,79 @@ import { ElevationOverlay }   from './components/ElevationOverlay/ElevationOverl
 import { WorkoutTypeOverlay } from './components/WorkoutTypeOverlay/WorkoutTypeOverlay';
 import { MinimapOverlay }     from './components/MinimapOverlay/MinimapOverlay';
 import { DashboardGrid }      from './components/DashboardGrid/DashboardGrid';
+import { ControlBar }         from './components/ControlBar/ControlBar';
 
-/**
- * OBS Browser Source routing.
- *
- * Visit with no params to see the full 3×3 dashboard:
- *   http://localhost:5173/
- *
- * Add a Browser Source in OBS and point it to one of:
- *   http://localhost:5173/?overlay=heartrate
- *   http://localhost:5173/?overlay=elapsed
- *   http://localhost:5173/?overlay=pace
- *   http://localhost:5173/?overlay=distance
- *   http://localhost:5173/?overlay=calories
- *   http://localhost:5173/?overlay=steps
- *   http://localhost:5173/?overlay=elevation
- *   http://localhost:5173/?overlay=workout
- *   http://localhost:5173/?overlay=minimap
- *   http://localhost:5173/?overlay=minimap&zoom=17
- *
- * Append &transparent=true to any URL to remove the card
- * background and border, leaving just the content floating on the stream.
- *
- * The Vite dev server and local/server.js must both be running.
- * Set the server URL via ?server=http://your-mac-ip:8080
- */
+const DEFAULT_SERVER = 'http://localhost:8080/events';
+
+function readParams() {
+  const p = new URLSearchParams(window.location.search);
+  return {
+    overlay:     p.get('overlay'),
+    serverUrl:   p.get('server')      ?? DEFAULT_SERVER,
+    zoom:        p.get('zoom')        != null ? Number(p.get('zoom')) : undefined,
+    transparent: p.get('transparent') === 'true',
+  };
+}
+
+function pushParams(state: {
+  overlay: string | null;
+  transparent: boolean;
+  zoom: number | undefined;
+  serverUrl: string;
+}) {
+  const p = new URLSearchParams();
+  if (state.overlay)                       p.set('overlay', state.overlay);
+  if (state.transparent)                   p.set('transparent', 'true');
+  if (state.zoom != null)                  p.set('zoom', String(state.zoom));
+  if (state.serverUrl !== DEFAULT_SERVER)  p.set('server', state.serverUrl);
+  const qs = p.toString();
+  window.history.replaceState(null, '', qs ? `?${qs}` : window.location.pathname);
+}
+
 export default function App() {
-  const params      = new URLSearchParams(window.location.search);
-  const overlay     = params.get('overlay');
-  const serverUrl   = params.get('server')      ?? 'http://localhost:8080/events';
-  const zoom        = params.get('zoom')        != null ? Number(params.get('zoom')) : undefined;
-  const transparent = params.get('transparent') === 'true';
+  const init = readParams();
+  const [overlay,     setOverlay]     = useState(init.overlay);
+  const [transparent, setTransparent] = useState(init.transparent);
+  const [zoom,        setZoom]        = useState(init.zoom);
+  const [serverUrl,   setServerUrl]   = useState(init.serverUrl);
+
+  const sync = useCallback(
+    (next: Partial<{ overlay: string | null; transparent: boolean; zoom: number | undefined; serverUrl: string }>) => {
+      const state = {
+        overlay:     next.overlay     !== undefined ? next.overlay     : overlay,
+        transparent: next.transparent !== undefined ? next.transparent : transparent,
+        zoom:        next.zoom        !== undefined ? next.zoom        : zoom,
+        serverUrl:   next.serverUrl   !== undefined ? next.serverUrl   : serverUrl,
+      };
+      pushParams(state);
+    },
+    [overlay, transparent, zoom, serverUrl],
+  );
+
+  const handleOverlay = useCallback((v: string | null) => {
+    setOverlay(v);
+    const nextZoom = v !== 'minimap' ? undefined : zoom;
+    if (v !== 'minimap') setZoom(undefined);
+    sync({ overlay: v, zoom: nextZoom });
+  }, [sync, zoom]);
+
+  const handleTransparent = useCallback((v: boolean) => {
+    setTransparent(v);
+    sync({ transparent: v });
+  }, [sync]);
+
+  const handleZoom = useCallback((v: number) => {
+    const clamped = Math.max(1, Math.min(20, v));
+    setZoom(clamped);
+    sync({ zoom: clamped });
+  }, [sync]);
+
+  const handleServer = useCallback((v: string) => {
+    setServerUrl(v);
+    sync({ serverUrl: v });
+  }, [sync]);
 
   const metrics = useMetricsStream(serverUrl);
-
-  if (!overlay) {
-    return <DashboardGrid metrics={metrics} transparent={transparent} />;
-  }
 
   const components: Record<string, React.ReactNode> = {
     heartrate: <HeartRateOverlay   metrics={metrics} transparent={transparent} />,
@@ -60,9 +96,23 @@ export default function App() {
     minimap:   <MinimapOverlay     metrics={metrics} zoom={zoom} transparent={transparent} />,
   };
 
+  const content = overlay
+    ? <div style={{ display: 'inline-block' }}>{components[overlay] ?? components['workout']}</div>
+    : <DashboardGrid metrics={metrics} transparent={transparent} />;
+
   return (
-    <div style={{ display: 'inline-block' }}>
-      {components[overlay] ?? components['workout']}
-    </div>
+    <>
+      <ControlBar
+        overlay={overlay}
+        transparent={transparent}
+        zoom={zoom}
+        serverUrl={serverUrl}
+        onOverlayChange={handleOverlay}
+        onTransparentChange={handleTransparent}
+        onZoomChange={handleZoom}
+        onServerUrlChange={handleServer}
+      />
+      {content}
+    </>
   );
 }
