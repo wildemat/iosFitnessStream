@@ -2,3 +2,5 @@
 - Require API key for GET on the fitness events
 - Save layout state of the overlays into loadable configs
 - auto bump version
+
+test
