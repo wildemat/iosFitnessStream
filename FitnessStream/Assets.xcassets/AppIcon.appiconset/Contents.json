@@ -3,7 +3,12 @@
     {
       "filename" : "AppIcon.png",
       "idiom" : "universal",
-      "platform" : "watchos",
+      "platform" : "ios",
+      "size" : "1024x1024"
+    },
+    {
+      "filename" : "AppIcon.png",
+      "idiom" : "universal",
       "size" : "1024x1024"
     }
   ],

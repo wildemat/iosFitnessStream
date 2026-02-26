@@ -1,0 +1,1 @@
+- Pausing workout in the app sends a pause event to the server to keep UI updated

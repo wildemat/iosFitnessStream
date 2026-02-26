@@ -27,19 +27,18 @@
 		<key>UIApplicationSupportsMultipleScenes</key>
 		<false/>
 	</dict>
-	<key>UILaunchStoryboardName</key>
-	<string></string>
+	<key>UILaunchScreen</key>
+	<dict/>
 	<key>UIRequiredDeviceCapabilities</key>
 	<array>
-		<string>location</string>
 		<string>healthkit</string>
-		<string>motion</string>
 	</array>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
+		<string>UIInterfaceOrientationPortraitUpsideDown</string>
 	</array>
 	<key>NSHealthShareUsageDescription</key>
 	<string>Fitness Stream reads your workout and health data to stream live metrics to your configured endpoint.</string>
@@ -52,6 +51,10 @@
 		<string>location</string>
 		<string>processing</string>
 	</array>
+	<key>BGTaskSchedulerPermittedIdentifiers</key>
+	<array>
+		<string>com.fitnessstream.app.workout-refresh</string>
+	</array>
 	<key>NSAppTransportSecurity</key>
 	<dict>
 		<key>NSAllowsLocalNetworking</key>
@@ -63,5 +66,7 @@
 	<array>
 		<string>_http._tcp</string>
 	</array>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
 </dict>
 </plist>
