@@ -3,18 +3,17 @@ import type { WorkoutMetrics } from '../types/metrics';
 
 /**
  * Connects to the local server's SSE endpoint and returns the latest metrics.
- * The server must be running with SSE support (local/server.js).
- *
- * Usage in OBS browser source:
- *   http://localhost:5173/?overlay=heartrate
- *   (The Vite dev server must be running alongside local/server.js)
+ * Pass `listening = false` to disconnect without losing the last-received data.
  */
 export function useMetricsStream(
   url = 'http://localhost:8080/events',
+  listening = true,
 ): WorkoutMetrics | null {
   const [metrics, setMetrics] = useState<WorkoutMetrics | null>(null);
 
   useEffect(() => {
+    if (!listening) return;
+
     let source: EventSource;
     let retryTimer: ReturnType<typeof setTimeout>;
     let alive = true;
@@ -44,7 +43,7 @@ export function useMetricsStream(
       source?.close();
       clearTimeout(retryTimer);
     };
-  }, [url]);
+  }, [url, listening]);
 
   return metrics;
 }

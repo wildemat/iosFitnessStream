@@ -20,10 +20,12 @@ export interface ControlBarProps {
   transparent: boolean;
   zoom: number | undefined;
   serverUrl: string;
+  listening: boolean;
   onOverlayChange: (value: string | null) => void;
   onTransparentChange: (value: boolean) => void;
   onZoomChange: (value: number) => void;
   onServerUrlChange: (value: string) => void;
+  onListeningChange: (value: boolean) => void;
 }
 
 export const ControlBar = ({
@@ -31,10 +33,12 @@ export const ControlBar = ({
   transparent,
   zoom,
   serverUrl: activeUrl,
+  listening,
   onOverlayChange,
   onTransparentChange,
   onZoomChange,
   onServerUrlChange,
+  onListeningChange,
 }: ControlBarProps) => {
   const [draft, setDraft] = useState(activeUrl);
   const isDirty = draft !== activeUrl;
@@ -99,6 +103,12 @@ export const ControlBar = ({
       <div className="control-bar__section">
         <span className="control-bar__label">Server</span>
         <div className="control-bar__server-row">
+          <button
+            className={`control-bar__btn ${listening ? "control-bar__btn--listening" : "control-bar__btn--stopped"}`}
+            onClick={() => onListeningChange(!listening)}
+          >
+            {listening ? "● Live" : "○ Stopped"}
+          </button>
           <input
             className="control-bar__input"
             type="text"

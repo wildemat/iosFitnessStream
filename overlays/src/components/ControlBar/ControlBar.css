@@ -104,6 +104,29 @@
   border-color: var(--color-border-active);
 }
 
+.control-bar__btn--listening {
+  color: #22c55e;
+  border-color: #22c55e55;
+  font-weight: 600;
+}
+
+.control-bar__btn--listening:hover {
+  background: #22c55e18;
+  border-color: #22c55e88;
+  color: #22c55e;
+}
+
+.control-bar__btn--stopped {
+  color: var(--color-text-dim);
+  border-color: var(--color-border);
+  font-weight: 600;
+}
+
+.control-bar__btn--stopped:hover {
+  color: #22c55e;
+  border-color: #22c55e55;
+}
+
 .control-bar__btn--save {
   font-weight: 600;
 }

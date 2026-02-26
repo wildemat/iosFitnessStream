@@ -47,6 +47,7 @@ export default function App() {
   const [transparent, setTransparent] = useState(init.transparent);
   const [zoom, setZoom] = useState(init.zoom);
   const [serverUrl, setServerUrl] = useState(init.serverUrl);
+  const [listening, setListening] = useState(true);
 
   const sync = useCallback(
     (
@@ -107,7 +108,7 @@ export default function App() {
     [sync],
   );
 
-  const metrics = useMetricsStream(serverUrl);
+  const metrics = useMetricsStream(serverUrl, listening);
 
   const components: Record<string, React.ReactNode> = {
     heartrate: <HeartRateOverlay metrics={metrics} transparent={transparent} />,
@@ -138,10 +139,12 @@ export default function App() {
         transparent={transparent}
         zoom={zoom}
         serverUrl={serverUrl}
+        listening={listening}
         onOverlayChange={handleOverlay}
         onTransparentChange={handleTransparent}
         onZoomChange={handleZoom}
         onServerUrlChange={handleServer}
+        onListeningChange={setListening}
       />
       {content}
     </>
