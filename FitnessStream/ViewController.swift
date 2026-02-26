@@ -26,6 +26,28 @@ final class ViewController: UIViewController {
         return f
     }()
 
+    private let pingButton: UIButton = {
+        let b = UIButton(type: .system)
+        b.translatesAutoresizingMaskIntoConstraints = false
+        var config = UIButton.Configuration.tinted()
+        config.title = "Test Connection"
+        config.image = UIImage(systemName: "antenna.radiowaves.left.and.right")
+        config.imagePadding = 6
+        config.cornerStyle = .medium
+        config.buttonSize = .small
+        b.configuration = config
+        return b
+    }()
+
+    private let pingStatusLabel: UILabel = {
+        let l = UILabel()
+        l.font = .preferredFont(forTextStyle: .caption1)
+        l.textColor = .secondaryLabel
+        l.numberOfLines = 2
+        l.translatesAutoresizingMaskIntoConstraints = false
+        return l
+    }()
+
     private let workoutsLabel: UILabel = {
         let l = UILabel()
         l.text = "Select Workout"
@@ -68,8 +90,13 @@ final class ViewController: UIViewController {
     private func setupUI() {
         view.addSubview(endpointLabel)
         view.addSubview(endpointField)
+        view.addSubview(pingButton)
+        view.addSubview(pingStatusLabel)
         view.addSubview(workoutsLabel)
         view.addSubview(tableView)
+
+        pingButton.addTarget(self, action: #selector(pingEndpoint), for: .touchUpInside)
+
         NSLayoutConstraint.activate([
             endpointLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 24),
             endpointLabel.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 20),
@@ -80,7 +107,14 @@ final class ViewController: UIViewController {
             endpointField.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -20),
             endpointField.heightAnchor.constraint(greaterThanOrEqualToConstant: 44),
 
-            workoutsLabel.topAnchor.constraint(equalTo: endpointField.bottomAnchor, constant: 24),
+            pingButton.topAnchor.constraint(equalTo: endpointField.bottomAnchor, constant: 10),
+            pingButton.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 20),
+
+            pingStatusLabel.centerYAnchor.constraint(equalTo: pingButton.centerYAnchor),
+            pingStatusLabel.leadingAnchor.constraint(equalTo: pingButton.trailingAnchor, constant: 10),
+            pingStatusLabel.trailingAnchor.constraint(lessThanOrEqualTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -20),
+
+            workoutsLabel.topAnchor.constraint(equalTo: pingButton.bottomAnchor, constant: 20),
             workoutsLabel.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 20),
 
             tableView.topAnchor.constraint(equalTo: workoutsLabel.bottomAnchor, constant: 8),
@@ -88,6 +122,62 @@ final class ViewController: UIViewController {
             tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
         ])
+    }
+
+    @objc private func pingEndpoint() {
+        endpointField.resignFirstResponder()
+
+        let raw = endpointField.text?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+        EndpointStorage.endpointURL = raw.isEmpty ? nil : raw
+
+        guard !raw.isEmpty, let url = URL(string: raw) else {
+            showPingResult(success: false, message: "Enter a URL first")
+            return
+        }
+
+        pingButton.isEnabled = false
+        pingButton.configuration?.showsActivityIndicator = true
+        pingStatusLabel.text = nil
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.httpBody = Data("{\"ping\":true}".utf8)
+        request.timeoutInterval = 5
+
+        let start = CFAbsoluteTimeGetCurrent()
+
+        URLSession.shared.dataTask(with: request) { [weak self] _, response, error in
+            let ms = Int((CFAbsoluteTimeGetCurrent() - start) * 1000)
+
+            DispatchQueue.main.async {
+                guard let self else { return }
+                self.pingButton.isEnabled = true
+                self.pingButton.configuration?.showsActivityIndicator = false
+
+                if let error {
+                    self.showPingResult(success: false, message: error.localizedDescription)
+                    return
+                }
+
+                guard let http = response as? HTTPURLResponse else {
+                    self.showPingResult(success: false, message: "No HTTP response")
+                    return
+                }
+
+                if (200...299).contains(http.statusCode) {
+                    self.showPingResult(success: true, message: "OK  \(http.statusCode) · \(ms) ms")
+                } else {
+                    self.showPingResult(success: false, message: "HTTP \(http.statusCode) · \(ms) ms")
+                }
+            }
+        }.resume()
+    }
+
+    private func showPingResult(success: Bool, message: String) {
+        let icon = success ? "✓" : "✗"
+        pingStatusLabel.text = "\(icon)  \(message)"
+        pingStatusLabel.textColor = success ? .systemGreen : .systemRed
     }
 }
 

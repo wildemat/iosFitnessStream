@@ -1,6 +1,7 @@
 import Combine
 import Foundation
 import HealthKit
+import os.log
 import WatchConnectivity
 
 enum WatchWorkoutState {
@@ -20,12 +21,15 @@ final class WorkoutCoordinator: NSObject, ObservableObject {
     @Published var elapsedSeconds: TimeInterval = 0
     @Published var isPhoneReachable = false
 
+    private static let log = Logger(subsystem: "FitnessStream", category: "WorkoutCoordinator")
+
     private let healthStore = HKHealthStore()
     private var session: HKWorkoutSession?
     private var builder: HKLiveWorkoutBuilder?
     private var startDate: Date?
     private var timer: Timer?
     private var currentActivityType: HKWorkoutActivityType = .other
+    private var lastHandledContextTimestamp: TimeInterval = 0
 
     override init() {
         super.init()
@@ -61,8 +65,14 @@ final class WorkoutCoordinator: NSObject, ObservableObject {
     }
 
     private func sendAllMetricsToPhone() {
-        guard WCSession.default.activationState == .activated,
-              WCSession.default.isReachable else { return }
+        guard WCSession.default.activationState == .activated else {
+            Self.log.warning("Cannot send metrics: WCSession not activated")
+            return
+        }
+        guard WCSession.default.isReachable else {
+            Self.log.debug("Cannot send metrics: phone not reachable")
+            return
+        }
 
         var payload: [String: Any] = ["source": "watch"]
         if heartRate > 0 { payload["heartRate"] = heartRate }
@@ -71,7 +81,10 @@ final class WorkoutCoordinator: NSObject, ObservableObject {
         if stepCount > 0 { payload["stepCount"] = Double(stepCount) }
         if paceMinPerKm > 0, paceMinPerKm.isFinite { payload["paceMinPerKm"] = paceMinPerKm }
 
-        WCSession.default.sendMessage(payload, replyHandler: nil) { _ in }
+        Self.log.debug("Sending metrics: HR=\(self.heartRate), cal=\(self.activeCalories)")
+        WCSession.default.sendMessage(payload, replyHandler: nil) { error in
+            Self.log.error("Failed to send metrics: \(error.localizedDescription)")
+        }
     }
 
     // MARK: - Workout lifecycle
@@ -209,26 +222,79 @@ extension WorkoutCoordinator: WCSessionDelegate {
         activationDidCompleteWith activationState: WCSessionActivationState,
         error: Error?
     ) {
+        Self.log.info("WCSession activated: \(activationState.rawValue), reachable: \(session.isReachable)")
         DispatchQueue.main.async {
             self.isPhoneReachable = session.isReachable
+        }
+        if activationState == .activated {
+            handleApplicationContext(session.receivedApplicationContext)
         }
     }
 
     func sessionReachabilityDidChange(_ session: WCSession) {
+        Self.log.info("Reachability changed: \(session.isReachable)")
         DispatchQueue.main.async {
             self.isPhoneReachable = session.isReachable
         }
     }
 
     func session(_ session: WCSession, didReceiveMessage message: [String: Any]) {
+        Self.log.info("didReceiveMessage (no reply): \(message.keys.joined(separator: ", "))")
+        handleCommand(from: message)
+    }
+
+    func session(
+        _ session: WCSession,
+        didReceiveMessage message: [String: Any],
+        replyHandler: @escaping ([String: Any]) -> Void
+    ) {
+        Self.log.info("didReceiveMessage (with reply): \(message.keys.joined(separator: ", "))")
+        handleCommand(from: message)
+        replyHandler(["received": true])
+    }
+
+    func session(_ session: WCSession, didReceiveApplicationContext applicationContext: [String: Any]) {
+        Self.log.info("didReceiveApplicationContext: \(applicationContext.keys.joined(separator: ", "))")
+        handleApplicationContext(applicationContext)
+    }
+
+    // MARK: - Command dispatch
+
+    private func handleCommand(from message: [String: Any]) {
         guard let command = message["command"] as? String,
               let name = message["workoutName"] as? String else { return }
+        Self.log.info("Handling command: \(command), workout: \(name)")
         DispatchQueue.main.async {
             switch command {
             case "start": self.startWorkout(name: name)
             case "pause": self.pauseWorkout()
             case "resume": self.resumeWorkout()
             case "end": self.endWorkout()
+            default: break
+            }
+        }
+    }
+
+    private func handleApplicationContext(_ context: [String: Any]) {
+        guard let command = context["command"] as? String,
+              let name = context["workoutName"] as? String,
+              let sentAt = context["sentAt"] as? TimeInterval else { return }
+
+        guard sentAt > lastHandledContextTimestamp else { return }
+
+        Self.log.info("Handling applicationContext command: \(command), workout: \(name)")
+        lastHandledContextTimestamp = sentAt
+
+        DispatchQueue.main.async {
+            switch command {
+            case "start":
+                if self.workoutState == .idle {
+                    self.startWorkout(name: name)
+                }
+            case "end":
+                if self.workoutState != .idle {
+                    self.endWorkout()
+                }
             default: break
             }
         }
