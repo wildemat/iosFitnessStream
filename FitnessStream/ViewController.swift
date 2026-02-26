@@ -49,6 +49,33 @@ final class ViewController: UIViewController {
         return f
     }()
 
+    private let frequencyLabel: UILabel = {
+        let l = UILabel()
+        l.text = "Write Frequency"
+        l.font = .preferredFont(forTextStyle: .subheadline)
+        l.textColor = .darkGray
+        l.translatesAutoresizingMaskIntoConstraints = false
+        return l
+    }()
+
+    private let frequencyValueLabel: UILabel = {
+        let l = UILabel()
+        l.font = .monospacedDigitSystemFont(ofSize: UIFont.preferredFont(forTextStyle: .subheadline).pointSize, weight: .medium)
+        l.textColor = .darkGray
+        l.textAlignment = .right
+        l.translatesAutoresizingMaskIntoConstraints = false
+        return l
+    }()
+
+    private let frequencySlider: UISlider = {
+        let s = UISlider()
+        s.minimumValue = 1
+        s.maximumValue = 30
+        s.isContinuous = true
+        s.translatesAutoresizingMaskIntoConstraints = false
+        return s
+    }()
+
     private let pingButton: UIButton = {
         let b = UIButton(type: .system)
         b.translatesAutoresizingMaskIntoConstraints = false
@@ -99,6 +126,8 @@ final class ViewController: UIViewController {
         endpointField.text = EndpointStorage.endpointURL
         apiKeyField.delegate = self
         apiKeyField.text = EndpointStorage.apiKey
+        frequencySlider.value = Float(EndpointStorage.writeFrequency)
+        updateFrequencyLabel()
         tableView.dataSource = self
         tableView.delegate = self
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: "WorkoutCell")
@@ -117,12 +146,16 @@ final class ViewController: UIViewController {
         view.addSubview(endpointField)
         view.addSubview(apiKeyLabel)
         view.addSubview(apiKeyField)
+        view.addSubview(frequencyLabel)
+        view.addSubview(frequencyValueLabel)
+        view.addSubview(frequencySlider)
         view.addSubview(pingButton)
         view.addSubview(pingStatusLabel)
         view.addSubview(workoutsLabel)
         view.addSubview(tableView)
 
         pingButton.addTarget(self, action: #selector(pingEndpoint), for: .touchUpInside)
+        frequencySlider.addTarget(self, action: #selector(frequencySliderChanged), for: .valueChanged)
 
         let margin: CGFloat = 20
         NSLayoutConstraint.activate([
@@ -144,7 +177,18 @@ final class ViewController: UIViewController {
             apiKeyField.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -margin),
             apiKeyField.heightAnchor.constraint(greaterThanOrEqualToConstant: 44),
 
-            pingButton.topAnchor.constraint(equalTo: apiKeyField.bottomAnchor, constant: 12),
+            frequencyLabel.topAnchor.constraint(equalTo: apiKeyField.bottomAnchor, constant: 16),
+            frequencyLabel.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: margin),
+
+            frequencyValueLabel.centerYAnchor.constraint(equalTo: frequencyLabel.centerYAnchor),
+            frequencyValueLabel.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -margin),
+            frequencyValueLabel.leadingAnchor.constraint(greaterThanOrEqualTo: frequencyLabel.trailingAnchor, constant: 8),
+
+            frequencySlider.topAnchor.constraint(equalTo: frequencyLabel.bottomAnchor, constant: 8),
+            frequencySlider.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: margin),
+            frequencySlider.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -margin),
+
+            pingButton.topAnchor.constraint(equalTo: frequencySlider.bottomAnchor, constant: 12),
             pingButton.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: margin),
 
             pingStatusLabel.centerYAnchor.constraint(equalTo: pingButton.centerYAnchor),
@@ -159,6 +203,18 @@ final class ViewController: UIViewController {
             tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
         ])
+    }
+
+    @objc private func frequencySliderChanged(_ sender: UISlider) {
+        let rounded = roundf(sender.value)
+        sender.value = rounded
+        EndpointStorage.writeFrequency = TimeInterval(rounded)
+        updateFrequencyLabel()
+    }
+
+    private func updateFrequencyLabel() {
+        let seconds = Int(EndpointStorage.writeFrequency)
+        frequencyValueLabel.text = seconds == 1 ? "1 second" : "\(seconds) seconds"
     }
 
     @objc private func pingEndpoint() {

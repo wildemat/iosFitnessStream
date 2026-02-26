@@ -17,8 +17,22 @@ enum EndpointStorage {
         set { writeKeychain(newValue) }
     }
 
+    private static let frequencyKey = "com.fitnessstream.writeFrequency"
+
+    /// How often metrics are POSTed to the endpoint, in seconds (1–30). Defaults to 5.
+    static var writeFrequency: TimeInterval {
+        get {
+            let value = UserDefaults.standard.double(forKey: frequencyKey)
+            return value >= 1 ? value : 5.0
+        }
+        set {
+            UserDefaults.standard.set(max(1, min(30, newValue)), forKey: frequencyKey)
+        }
+    }
+
     static func clear() {
         UserDefaults.standard.removeObject(forKey: urlKey)
+        UserDefaults.standard.removeObject(forKey: frequencyKey)
         writeKeychain(nil)
     }
 

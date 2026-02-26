@@ -191,13 +191,19 @@ final class WorkoutSessionManager: NSObject {
     }
 
     private var tickCount = 0
+    private var lastStreamTime: Date = .distantPast
 
     private func tick() {
         guard let start = startDate else { return }
         metrics.elapsedSeconds = Date().timeIntervalSince(start)
         metrics.timestamp = Date()
         delegate?.workoutSession(self, didUpdateMetrics: metrics)
-        streamClient.send(metrics)
+
+        let now = Date()
+        if now.timeIntervalSince(lastStreamTime) >= EndpointStorage.writeFrequency {
+            streamClient.send(metrics)
+            lastStreamTime = now
+        }
 
         tickCount += 1
         if tickCount % 5 == 0 {
