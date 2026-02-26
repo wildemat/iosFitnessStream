@@ -1,1 +1,3 @@
 - Pausing workout in the app sends a pause event to the server to keep UI updated
+- Require API key for GET on the fitness events
+- Save layout state of the overlays into loadable configs
