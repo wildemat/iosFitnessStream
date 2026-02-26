@@ -63,11 +63,11 @@ export default function App() {
           next.transparent !== undefined ? next.transparent : transparent,
         zoom: next.zoom !== undefined ? next.zoom : zoom,
         serverUrl:
-          next.serverUrl !== undefined ? next.serverUrl : DEFAULT_SERVER,
+          next.serverUrl !== undefined ? next.serverUrl : serverUrl,
       };
       pushParams(state);
     },
-    [overlay, transparent, zoom],
+    [overlay, transparent, zoom, serverUrl],
   );
 
   const handleOverlay = useCallback(
@@ -137,6 +137,7 @@ export default function App() {
         overlay={overlay}
         transparent={transparent}
         zoom={zoom}
+        serverUrl={serverUrl}
         onOverlayChange={handleOverlay}
         onTransparentChange={handleTransparent}
         onZoomChange={handleZoom}

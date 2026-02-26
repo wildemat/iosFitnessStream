@@ -81,6 +81,12 @@
   white-space: nowrap;
 }
 
+.control-bar__server-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
 .control-bar__input {
   padding: 5px 8px;
   border: 1px solid var(--color-border);
@@ -96,6 +102,16 @@
 .control-bar__input:focus {
   outline: none;
   border-color: var(--color-border-active);
+}
+
+.control-bar__btn--save {
+  font-weight: 600;
+}
+
+.control-bar__btn--save:disabled {
+  opacity: 0.35;
+  cursor: default;
+  pointer-events: none;
 }
 
 .control-bar__divider {

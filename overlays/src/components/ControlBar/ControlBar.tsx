@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useState } from "react";
 import "./ControlBar.css";
 
 const OVERLAYS = [
@@ -15,11 +15,11 @@ const OVERLAYS = [
 
 export const DEFAULT_SERVER = "http://localhost:8080/events";
 
-const DEBOUNCE_TIME = 2000; // 2 seconds
 export interface ControlBarProps {
   overlay: string | null;
   transparent: boolean;
   zoom: number | undefined;
+  serverUrl: string;
   onOverlayChange: (value: string | null) => void;
   onTransparentChange: (value: boolean) => void;
   onZoomChange: (value: number) => void;
@@ -30,25 +30,14 @@ export const ControlBar = ({
   overlay,
   transparent,
   zoom,
+  serverUrl: activeUrl,
   onOverlayChange,
   onTransparentChange,
   onZoomChange,
   onServerUrlChange,
 }: ControlBarProps) => {
-  const [serverUrl, setServerUrl] = useState(DEFAULT_SERVER);
-  const updateServerUrl = useCallback(
-    (v: string) => {
-      setServerUrl(v);
-      // Debounce the update
-      if ((onServerUrlChange as any)._debounceTimer) {
-        clearTimeout((onServerUrlChange as any)._debounceTimer);
-      }
-      (onServerUrlChange as any)._debounceTimer = setTimeout(() => {
-        onServerUrlChange(v);
-      }, DEBOUNCE_TIME);
-    },
-    [onServerUrlChange],
-  );
+  const [draft, setDraft] = useState(activeUrl);
+  const isDirty = draft !== activeUrl;
 
   return (
     <div className="control-bar">
@@ -109,13 +98,25 @@ export const ControlBar = ({
 
       <div className="control-bar__section">
         <span className="control-bar__label">Server</span>
-        <input
-          className="control-bar__input"
-          type="text"
-          value={serverUrl}
-          onChange={(e) => updateServerUrl(e.target.value)}
-          spellCheck={false}
-        />
+        <div className="control-bar__server-row">
+          <input
+            className="control-bar__input"
+            type="text"
+            value={draft}
+            onChange={(e) => setDraft(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && isDirty) onServerUrlChange(draft);
+            }}
+            spellCheck={false}
+          />
+          <button
+            className={`control-bar__btn control-bar__btn--save ${isDirty ? "control-bar__btn--active" : ""}`}
+            disabled={!isDirty}
+            onClick={() => onServerUrlChange(draft)}
+          >
+            Save
+          </button>
+        </div>
       </div>
     </div>
   );

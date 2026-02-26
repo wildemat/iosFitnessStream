@@ -13,3 +13,5 @@ DerivedData/
 
 # macOS
 .DS_Store
+
+.env

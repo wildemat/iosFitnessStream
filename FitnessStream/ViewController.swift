@@ -26,6 +26,29 @@ final class ViewController: UIViewController {
         return f
     }()
 
+    private let apiKeyLabel: UILabel = {
+        let l = UILabel()
+        l.text = "API Key (optional)"
+        l.font = .preferredFont(forTextStyle: .subheadline)
+        l.textColor = .darkGray
+        l.translatesAutoresizingMaskIntoConstraints = false
+        return l
+    }()
+
+    private let apiKeyField: UITextField = {
+        let f = UITextField()
+        f.placeholder = "Bearer token"
+        f.borderStyle = .roundedRect
+        f.autocapitalizationType = .none
+        f.autocorrectionType = .no
+        f.isSecureTextEntry = true
+        f.returnKeyType = .done
+        f.backgroundColor = .white
+        f.textColor = .black
+        f.translatesAutoresizingMaskIntoConstraints = false
+        return f
+    }()
+
     private let pingButton: UIButton = {
         let b = UIButton(type: .system)
         b.translatesAutoresizingMaskIntoConstraints = false
@@ -74,6 +97,8 @@ final class ViewController: UIViewController {
         setupUI()
         endpointField.delegate = self
         endpointField.text = EndpointStorage.endpointURL
+        apiKeyField.delegate = self
+        apiKeyField.text = EndpointStorage.apiKey
         tableView.dataSource = self
         tableView.delegate = self
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: "WorkoutCell")
@@ -90,6 +115,8 @@ final class ViewController: UIViewController {
     private func setupUI() {
         view.addSubview(endpointLabel)
         view.addSubview(endpointField)
+        view.addSubview(apiKeyLabel)
+        view.addSubview(apiKeyField)
         view.addSubview(pingButton)
         view.addSubview(pingStatusLabel)
         view.addSubview(workoutsLabel)
@@ -97,25 +124,35 @@ final class ViewController: UIViewController {
 
         pingButton.addTarget(self, action: #selector(pingEndpoint), for: .touchUpInside)
 
+        let margin: CGFloat = 20
         NSLayoutConstraint.activate([
             endpointLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 24),
-            endpointLabel.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 20),
-            endpointLabel.trailingAnchor.constraint(lessThanOrEqualTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -20),
+            endpointLabel.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: margin),
+            endpointLabel.trailingAnchor.constraint(lessThanOrEqualTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -margin),
 
             endpointField.topAnchor.constraint(equalTo: endpointLabel.bottomAnchor, constant: 8),
-            endpointField.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 20),
-            endpointField.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -20),
+            endpointField.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: margin),
+            endpointField.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -margin),
             endpointField.heightAnchor.constraint(greaterThanOrEqualToConstant: 44),
 
-            pingButton.topAnchor.constraint(equalTo: endpointField.bottomAnchor, constant: 10),
-            pingButton.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 20),
+            apiKeyLabel.topAnchor.constraint(equalTo: endpointField.bottomAnchor, constant: 16),
+            apiKeyLabel.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: margin),
+            apiKeyLabel.trailingAnchor.constraint(lessThanOrEqualTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -margin),
+
+            apiKeyField.topAnchor.constraint(equalTo: apiKeyLabel.bottomAnchor, constant: 8),
+            apiKeyField.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: margin),
+            apiKeyField.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -margin),
+            apiKeyField.heightAnchor.constraint(greaterThanOrEqualToConstant: 44),
+
+            pingButton.topAnchor.constraint(equalTo: apiKeyField.bottomAnchor, constant: 12),
+            pingButton.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: margin),
 
             pingStatusLabel.centerYAnchor.constraint(equalTo: pingButton.centerYAnchor),
             pingStatusLabel.leadingAnchor.constraint(equalTo: pingButton.trailingAnchor, constant: 10),
-            pingStatusLabel.trailingAnchor.constraint(lessThanOrEqualTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -20),
+            pingStatusLabel.trailingAnchor.constraint(lessThanOrEqualTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -margin),
 
             workoutsLabel.topAnchor.constraint(equalTo: pingButton.bottomAnchor, constant: 20),
-            workoutsLabel.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 20),
+            workoutsLabel.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: margin),
 
             tableView.topAnchor.constraint(equalTo: workoutsLabel.bottomAnchor, constant: 8),
             tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
@@ -126,9 +163,13 @@ final class ViewController: UIViewController {
 
     @objc private func pingEndpoint() {
         endpointField.resignFirstResponder()
+        apiKeyField.resignFirstResponder()
 
         let raw = endpointField.text?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
         EndpointStorage.endpointURL = raw.isEmpty ? nil : raw
+
+        let key = apiKeyField.text?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+        EndpointStorage.apiKey = key.isEmpty ? nil : key
 
         guard !raw.isEmpty, let url = URL(string: raw) else {
             showPingResult(success: false, message: "Enter a URL first")
@@ -142,6 +183,9 @@ final class ViewController: UIViewController {
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        if !key.isEmpty {
+            request.setValue(key, forHTTPHeaderField: "X-API-Key")
+        }
         request.httpBody = Data("{\"ping\":true}".utf8)
         request.timeoutInterval = 5
 
@@ -186,7 +230,12 @@ final class ViewController: UIViewController {
 extension ViewController: UITextFieldDelegate {
     func textFieldDidEndEditing(_ textField: UITextField) {
         let value = textField.text?.trimmingCharacters(in: .whitespacesAndNewlines)
-        EndpointStorage.endpointURL = value?.isEmpty == true ? nil : value
+        let stored = value?.isEmpty == true ? nil : value
+        if textField === endpointField {
+            EndpointStorage.endpointURL = stored
+        } else if textField === apiKeyField {
+            EndpointStorage.apiKey = stored
+        }
     }
 
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
