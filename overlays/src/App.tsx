@@ -10,9 +10,7 @@ import { ElevationOverlay } from "./components/ElevationOverlay/ElevationOverlay
 import { WorkoutTypeOverlay } from "./components/WorkoutTypeOverlay/WorkoutTypeOverlay";
 import { MinimapOverlay } from "./components/MinimapOverlay/MinimapOverlay";
 import { DashboardGrid } from "./components/DashboardGrid/DashboardGrid";
-import { ControlBar } from "./components/ControlBar/ControlBar";
-
-const DEFAULT_SERVER = "http://localhost:8080/events";
+import { ControlBar, DEFAULT_SERVER } from "./components/ControlBar/ControlBar";
 
 function readParams() {
   const p = new URLSearchParams(window.location.search);
@@ -48,7 +46,7 @@ export default function App() {
   const [overlay, setOverlay] = useState(init.overlay);
   const [transparent, setTransparent] = useState(init.transparent);
   const [zoom, setZoom] = useState(init.zoom);
-  const [serverUrl, setServerUrl] = useState(init.serverUrl);
+  const [serverUrl, setServerUrl] = useState(DEFAULT_SERVER);
 
   const sync = useCallback(
     (
@@ -64,11 +62,12 @@ export default function App() {
         transparent:
           next.transparent !== undefined ? next.transparent : transparent,
         zoom: next.zoom !== undefined ? next.zoom : zoom,
-        serverUrl: next.serverUrl !== undefined ? next.serverUrl : serverUrl,
+        serverUrl:
+          next.serverUrl !== undefined ? next.serverUrl : DEFAULT_SERVER,
       };
       pushParams(state);
     },
-    [overlay, transparent, zoom, serverUrl],
+    [overlay, transparent, zoom],
   );
 
   const handleOverlay = useCallback(
@@ -100,14 +99,10 @@ export default function App() {
 
   const handleServer = useCallback(
     (v: string) => {
-      // Debounce the update by 5 seconds (5000ms)
-      if ((handleServer as any)._debounceTimer) {
-        clearTimeout((handleServer as any)._debounceTimer);
-      }
-      (handleServer as any)._debounceTimer = setTimeout(() => {
-        setServerUrl(v);
-        sync({ serverUrl: v });
-      }, 5000);
+      // update url with params
+      sync({ serverUrl: v });
+      // update state to get new metrics stream
+      setServerUrl(v);
     },
     [sync],
   );
@@ -142,7 +137,6 @@ export default function App() {
         overlay={overlay}
         transparent={transparent}
         zoom={zoom}
-        serverUrl={serverUrl}
         onOverlayChange={handleOverlay}
         onTransparentChange={handleTransparent}
         onZoomChange={handleZoom}
