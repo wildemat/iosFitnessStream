@@ -46,7 +46,7 @@ export default function App() {
   const [overlay, setOverlay] = useState(init.overlay);
   const [transparent, setTransparent] = useState(init.transparent);
   const [zoom, setZoom] = useState(init.zoom);
-  const [serverUrl, setServerUrl] = useState(DEFAULT_SERVER);
+  const [serverUrl, setServerUrl] = useState(init.serverUrl);
 
   const sync = useCallback(
     (
