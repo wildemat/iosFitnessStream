@@ -13,7 +13,33 @@ if ! command -v bd >/dev/null 2>&1; then
     echo "Warning: bd command not found in PATH, skipping pre-push hook" >&2
     echo "  Install bd: brew install beads" >&2
     echo "  Or add bd to your PATH" >&2
-    exit 0
+else
+    bd hooks run pre-push "$@"
 fi
 
-exec bd hooks run pre-push "$@"
+# --- Version bump (minor) ---
+
+PLIST="FitnessStream/Info.plist"
+PBXPROJ="FitnessStream.xcodeproj/project.pbxproj"
+
+# If the most recent commit is already a version bump, let the push through.
+LAST_MSG=$(git log -1 --format=%s)
+case "$LAST_MSG" in
+    "Bump version"*) exit 0 ;;
+esac
+
+CURRENT=$(/usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" "$PLIST")
+MAJOR="${CURRENT%%.*}"
+MINOR="${CURRENT#*.}"
+NEW_MINOR=$((MINOR + 1))
+NEW="${MAJOR}.${NEW_MINOR}"
+
+/usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString $NEW" "$PLIST"
+sed -i '' "s/MARKETING_VERSION = ${CURRENT};/MARKETING_VERSION = ${NEW};/g" "$PBXPROJ"
+
+git add "$PLIST" "$PBXPROJ"
+git commit -m "Bump version to $NEW"
+
+echo ""
+echo "==> Version bumped to $NEW. Run 'git push' again to include the bump."
+exit 1
