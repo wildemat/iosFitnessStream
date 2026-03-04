@@ -15,7 +15,7 @@ interface OverlayWrapperProps {
  * Wraps every overlay component and manages three display states:
  *   empty   — waiting for first data (component mounted, no data yet)
  *   active  — data is live, renders normally
- *   delayed — no data received within 5 s; shows spinner + "Delayed" badge
+ *   delayed — no data received within 5 s; adds caution icon to widget heading
  */
 export function OverlayWrapper({
   hasData,
@@ -32,7 +32,6 @@ export function OverlayWrapper({
     if (hasData) {
       setStatus('active');
     } else {
-      // If already active and data disappears, wait 5 s before showing delayed
       timerRef.current = setTimeout(() => setStatus('delayed'), 5_000);
     }
 
@@ -47,13 +46,6 @@ export function OverlayWrapper({
       style={style}
     >
       <div className="overlay-wrapper__inner">{children}</div>
-
-      {status === 'delayed' && (
-        <div className="overlay-wrapper__delay-mask" aria-live="polite">
-          <div className="overlay-wrapper__spinner" aria-hidden="true" />
-          <span className="overlay-wrapper__delay-text">Delayed</span>
-        </div>
-      )}
     </div>
   );
 }

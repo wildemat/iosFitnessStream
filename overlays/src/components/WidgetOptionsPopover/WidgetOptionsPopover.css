@@ -5,21 +5,26 @@
 }
 
 .wop {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  min-width: 220px;
-  padding: 12px 14px;
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 240px;
+  padding: 16px 14px;
   background: var(--color-surface-raised);
-  border: 1px solid var(--color-border-active);
-  border-radius: var(--radius);
+  border-left: 1px solid var(--color-border-active);
   backdrop-filter: blur(var(--blur));
   -webkit-backdrop-filter: blur(var(--blur));
   display: flex;
   flex-direction: column;
   gap: 10px;
   pointer-events: auto;
+  animation: wop-slide-in 200ms var(--ease-out) both;
+}
+
+@keyframes wop-slide-in {
+  from { transform: translateX(100%); }
+  to   { transform: translateX(0); }
 }
 
 .wop__header {

@@ -1,4 +1,5 @@
 import React, { useCallback, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import {
   useLayoutStore,
   type PanelKey,
@@ -44,7 +45,6 @@ export function DraggablePanel({ panelKey, children }: DraggablePanelProps) {
   const handleMouseDown = useCallback(
     (e: React.MouseEvent) => {
       if ((e.target as HTMLElement).dataset.resize) return;
-      if ((e.target as HTMLElement).closest(".wop-backdrop")) return;
       if ((e.target as HTMLElement).closest(".draggable-panel__gear")) return;
       e.preventDefault();
       e.stopPropagation();
@@ -172,12 +172,14 @@ export function DraggablePanel({ panelKey, children }: DraggablePanelProps) {
         </>
       )}
 
-      {showOptions && (
-        <WidgetOptionsPopover
-          panelKey={panelKey}
-          onClose={() => setShowOptions(false)}
-        />
-      )}
+      {showOptions &&
+        createPortal(
+          <WidgetOptionsPopover
+            panelKey={panelKey}
+            onClose={() => setShowOptions(false)}
+          />,
+          document.body,
+        )}
     </div>
   );
 }
