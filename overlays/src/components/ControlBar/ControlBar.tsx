@@ -1,69 +1,56 @@
 import { useState } from "react";
-import { useLayoutStore } from "../../store/useLayoutStore";
+import {
+  useLayoutStore,
+  PANEL_KEYS,
+  type PanelKey,
+} from "../../store/useLayoutStore";
 import "./ControlBar.css";
 
-const OVERLAYS = [
-  { value: "heartrate", label: "Heart Rate" },
-  { value: "elapsed", label: "Time" },
-  { value: "pace", label: "Pace" },
-  { value: "distance", label: "Distance" },
-  { value: "calories", label: "Calories" },
-  { value: "steps", label: "Steps" },
-  { value: "elevation", label: "Elevation" },
-  { value: "workout", label: "Workout" },
-  { value: "minimap", label: "Minimap" },
-] as const;
+const WIDGET_LABELS: Record<PanelKey, string> = {
+  heartrate: "Heart Rate",
+  elapsed: "Time",
+  pace: "Pace",
+  distance: "Distance",
+  calories: "Calories",
+  steps: "Steps",
+  elevation: "Elevation",
+  workout: "Workout",
+  minimap: "Minimap",
+};
 
 export const DEFAULT_SERVER = "http://localhost:8080/events";
 
 export interface ControlBarProps {
-  overlay: string | null;
-  transparent: boolean;
-  zoom: number | undefined;
   serverUrl: string;
   listening: boolean;
-  onOverlayChange: (value: string | null) => void;
-  onTransparentChange: (value: boolean) => void;
-  onZoomChange: (value: number) => void;
   onServerUrlChange: (value: string) => void;
   onListeningChange: (value: boolean) => void;
 }
 
 export const ControlBar = ({
-  overlay,
-  transparent,
-  zoom,
   serverUrl: activeUrl,
   listening,
-  onOverlayChange,
-  onTransparentChange,
-  onZoomChange,
   onServerUrlChange,
   onListeningChange,
 }: ControlBarProps) => {
   const [draft, setDraft] = useState(activeUrl);
   const isDirty = draft !== activeUrl;
   const resetLayout = useLayoutStore((s) => s.resetLayout);
-  const isDashboard = overlay === null;
+  const toggleWidget = useLayoutStore((s) => s.toggleWidget);
+  const enabledWidgets = useLayoutStore((s) => s.enabledWidgets);
 
   return (
     <div className="control-bar">
       <div className="control-bar__section">
-        <span className="control-bar__label">View</span>
+        <span className="control-bar__label">Widgets</span>
         <div className="control-bar__group">
-          <button
-            className={`control-bar__btn ${overlay === null ? "control-bar__btn--active" : ""}`}
-            onClick={() => onOverlayChange(null)}
-          >
-            Dashboard
-          </button>
-          {OVERLAYS.map(({ value, label }) => (
+          {PANEL_KEYS.map((key) => (
             <button
-              key={value}
-              className={`control-bar__btn ${overlay === value ? "control-bar__btn--active" : ""}`}
-              onClick={() => onOverlayChange(overlay === value ? null : value)}
+              key={key}
+              className={`control-bar__btn ${enabledWidgets.has(key) ? "control-bar__btn--active" : ""}`}
+              onClick={() => toggleWidget(key)}
             >
-              {label}
+              {WIDGET_LABELS[key]}
             </button>
           ))}
         </div>
@@ -74,39 +61,9 @@ export const ControlBar = ({
       <div className="control-bar__section">
         <span className="control-bar__label">Options</span>
         <div className="control-bar__group">
-          <button
-            className={`control-bar__btn ${transparent ? "control-bar__btn--active" : ""}`}
-            onClick={() => onTransparentChange(!transparent)}
-          >
-            Transparent
+          <button className="control-bar__btn" onClick={() => resetLayout()}>
+            Reset Layout
           </button>
-
-          {isDashboard && (
-            <button
-              className="control-bar__btn"
-              onClick={() => resetLayout()}
-            >
-              Reset Layout
-            </button>
-          )}
-
-          {overlay === "minimap" && (
-            <div className="control-bar__zoom">
-              <button
-                className="control-bar__btn control-bar__btn--small"
-                onClick={() => onZoomChange((zoom ?? 15) - 1)}
-              >
-                &minus;
-              </button>
-              <span className="control-bar__zoom-value">Zoom {zoom ?? 15}</span>
-              <button
-                className="control-bar__btn control-bar__btn--small"
-                onClick={() => onZoomChange((zoom ?? 15) + 1)}
-              >
-                +
-              </button>
-            </div>
-          )}
         </div>
       </div>
 

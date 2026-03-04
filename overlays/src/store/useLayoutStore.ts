@@ -27,22 +27,29 @@ const PAD = 20;
 const MIN_W = 120;
 const MIN_H = 100;
 
-/** Compute the default 3-column grid positions for the current viewport. */
 export function computeGridLayout(
   controlBarHeight: number,
+  enabledKeys: PanelKey[] = [...PANEL_KEYS],
 ): Record<PanelKey, PanelRect> {
   const vw = window.innerWidth;
   const vh = window.innerHeight;
   const top = controlBarHeight + PAD;
-  const cellW = (vw - PAD * 2 - GAP * (COLS - 1)) / COLS;
-  const rows = Math.ceil(PANEL_KEYS.length / COLS);
+  const count = enabledKeys.length;
+  const cols = Math.min(COLS, count);
+  const cellW = cols > 0 ? (vw - PAD * 2 - GAP * (cols - 1)) / cols : 0;
+  const rows = cols > 0 ? Math.ceil(count / cols) : 0;
   const availH = vh - top - PAD;
-  const cellH = (availH - GAP * (rows - 1)) / rows;
+  const cellH = rows > 0 ? (availH - GAP * (rows - 1)) / rows : 0;
 
   const layout = {} as Record<PanelKey, PanelRect>;
-  PANEL_KEYS.forEach((key, i) => {
-    const col = i % COLS;
-    const row = Math.floor(i / COLS);
+
+  PANEL_KEYS.forEach((key) => {
+    layout[key] = { x: -9999, y: -9999, w: 0, h: 0 };
+  });
+
+  enabledKeys.forEach((key, i) => {
+    const col = i % cols;
+    const row = Math.floor(i / cols);
     layout[key] = {
       x: PAD + col * (cellW + GAP),
       y: top + row * (cellH + GAP),
@@ -50,6 +57,7 @@ export function computeGridLayout(
       h: cellH,
     };
   });
+
   return layout;
 }
 
@@ -57,30 +65,54 @@ interface LayoutState {
   panels: Record<PanelKey, PanelRect>;
   controlBarHeight: number;
   selectedPanel: PanelKey | null;
+  enabledWidgets: Set<PanelKey>;
 
-  /** Initialise (or reset) every panel to the default grid. */
   resetLayout: (controlBarHeight?: number) => void;
-
-  /** Move a single panel to a new position, clamped to the viewport. */
   movePanel: (key: PanelKey, x: number, y: number) => void;
-
-  /** Resize a single panel, clamped to minimums and viewport. */
   resizePanel: (key: PanelKey, w: number, h: number) => void;
-
-  /** Store the measured control-bar height so grid calc uses it. */
   setControlBarHeight: (h: number) => void;
-
   selectPanel: (key: PanelKey | null) => void;
+  toggleWidget: (key: PanelKey) => void;
+  getEnabledKeys: () => PanelKey[];
 }
 
 export const useLayoutStore = create<LayoutState>((set, get) => ({
   panels: computeGridLayout(0),
   controlBarHeight: 0,
   selectedPanel: null,
+  enabledWidgets: new Set<PanelKey>(PANEL_KEYS),
+
+  getEnabledKeys: () => {
+    const enabled = get().enabledWidgets;
+    return PANEL_KEYS.filter((k) => enabled.has(k));
+  },
 
   resetLayout: (cbh) => {
     const height = cbh ?? get().controlBarHeight;
-    set({ panels: computeGridLayout(height), controlBarHeight: height });
+    const enabledKeys = get().getEnabledKeys();
+    set({
+      panels: computeGridLayout(height, enabledKeys),
+      controlBarHeight: height,
+    });
+  },
+
+  toggleWidget: (key) => {
+    const prev = get().enabledWidgets;
+    const next = new Set(prev);
+    if (next.has(key)) {
+      next.delete(key);
+      if (get().selectedPanel === key) {
+        set({ selectedPanel: null });
+      }
+    } else {
+      next.add(key);
+    }
+    const height = get().controlBarHeight;
+    const enabledKeys = PANEL_KEYS.filter((k) => next.has(k));
+    set({
+      enabledWidgets: next,
+      panels: computeGridLayout(height, enabledKeys),
+    });
   },
 
   movePanel: (key, x, y) => {
