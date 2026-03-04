@@ -4,7 +4,7 @@
   "description": "Local HTTP server that receives and logs FitnessStream workout metrics",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js & sleep 1 && node emitter.js"
   },
   "engines": {
     "node": ">=18"
