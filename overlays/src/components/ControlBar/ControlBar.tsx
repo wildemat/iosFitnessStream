@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import {
   useLayoutStore,
   PANEL_KEYS,
@@ -27,6 +27,16 @@ export interface ControlBarProps {
   onListeningChange: (value: boolean) => void;
 }
 
+function downloadJson(json: string, filename: string) {
+  const blob = new Blob([json], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
 export const ControlBar = ({
   serverUrl: activeUrl,
   listening,
@@ -38,6 +48,34 @@ export const ControlBar = ({
   const resetLayout = useLayoutStore((s) => s.resetLayout);
   const toggleWidget = useLayoutStore((s) => s.toggleWidget);
   const enabledWidgets = useLayoutStore((s) => s.enabledWidgets);
+  const exportState = useLayoutStore((s) => s.exportState);
+  const importState = useLayoutStore((s) => s.importState);
+  const fileRef = useRef<HTMLInputElement>(null);
+
+  const handleExport = () => {
+    const json = exportState();
+    downloadJson(json, "overlay-config.json");
+  };
+
+  const handleImport = () => {
+    fileRef.current?.click();
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (typeof reader.result === "string") {
+        const ok = importState(reader.result);
+        if (!ok) {
+          alert("Invalid config file.");
+        }
+      }
+    };
+    reader.readAsText(file);
+    e.target.value = "";
+  };
 
   return (
     <div className="control-bar">
@@ -64,6 +102,19 @@ export const ControlBar = ({
           <button className="control-bar__btn" onClick={() => resetLayout()}>
             Reset Layout
           </button>
+          <button className="control-bar__btn" onClick={handleExport}>
+            Export
+          </button>
+          <button className="control-bar__btn" onClick={handleImport}>
+            Import
+          </button>
+          <input
+            ref={fileRef}
+            type="file"
+            accept=".json"
+            onChange={handleFileChange}
+            style={{ display: "none" }}
+          />
         </div>
       </div>
 

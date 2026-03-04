@@ -115,6 +115,12 @@ export function computeGridLayout(
   return layout;
 }
 
+export interface SerializedState {
+  enabledWidgets: PanelKey[];
+  widgetOptions: Record<PanelKey, WidgetOpts>;
+  panels: Record<PanelKey, PanelRect>;
+}
+
 interface LayoutState {
   panels: Record<PanelKey, PanelRect>;
   controlBarHeight: number;
@@ -132,6 +138,8 @@ interface LayoutState {
   getEnabledKeys: () => PanelKey[];
   setWidgetOption: (key: PanelKey, patch: Partial<WidgetOpts>) => void;
   setBaseDimension: (key: PanelKey, w: number, h: number) => void;
+  exportState: () => string;
+  importState: (json: string) => boolean;
 }
 
 export const useLayoutStore = create<LayoutState>((set, get) => ({
@@ -222,5 +230,54 @@ export const useLayoutStore = create<LayoutState>((set, get) => ({
   setBaseDimension: (key, w, h) => {
     const prev = get().baseDimensions;
     set({ baseDimensions: { ...prev, [key]: { w, h } } });
+  },
+
+  exportState: () => {
+    const { enabledWidgets, widgetOptions, panels } = get();
+    const payload: SerializedState = {
+      enabledWidgets: PANEL_KEYS.filter((k) => enabledWidgets.has(k)),
+      widgetOptions,
+      panels,
+    };
+    return JSON.stringify(payload, null, 2);
+  },
+
+  importState: (json) => {
+    try {
+      const data = JSON.parse(json) as SerializedState;
+      if (
+        !data.enabledWidgets ||
+        !Array.isArray(data.enabledWidgets) ||
+        !data.widgetOptions ||
+        !data.panels
+      ) {
+        return false;
+      }
+      const validKeys = new Set<string>(PANEL_KEYS);
+      const enabled = new Set<PanelKey>(
+        data.enabledWidgets.filter((k) => validKeys.has(k)),
+      );
+      const opts = { ...buildDefaultWidgetOptions() };
+      for (const k of PANEL_KEYS) {
+        if (data.widgetOptions[k]) {
+          opts[k] = { ...opts[k], ...data.widgetOptions[k] };
+        }
+      }
+      const panels = { ...computeGridLayout(get().controlBarHeight) };
+      for (const k of PANEL_KEYS) {
+        if (data.panels[k]) {
+          panels[k] = data.panels[k];
+        }
+      }
+      set({
+        enabledWidgets: enabled,
+        widgetOptions: opts,
+        panels,
+        selectedPanel: null,
+      });
+      return true;
+    } catch {
+      return false;
+    }
   },
 }));
