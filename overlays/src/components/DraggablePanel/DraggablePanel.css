@@ -59,6 +59,32 @@
   min-height: 0;
 }
 
+.draggable-panel__gear {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  color: var(--color-text-secondary);
+  font-size: 13px;
+  cursor: pointer;
+  pointer-events: auto;
+  z-index: 5;
+  transition: all 0.15s var(--ease-out);
+}
+
+.draggable-panel__gear:hover {
+  background: var(--color-surface-raised);
+  color: var(--color-text-primary);
+  border-color: var(--color-border-active);
+}
+
 .draggable-panel__resize-handle {
   position: absolute;
   right: 0;

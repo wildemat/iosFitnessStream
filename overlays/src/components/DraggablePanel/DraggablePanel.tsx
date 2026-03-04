@@ -1,5 +1,6 @@
-import React, { useCallback, useRef } from "react";
+import React, { useCallback, useRef, useState } from "react";
 import { useLayoutStore, type PanelKey } from "../../store/useLayoutStore";
+import { WidgetOptionsPopover } from "../WidgetOptionsPopover/WidgetOptionsPopover";
 import "./DraggablePanel.css";
 
 export interface DraggablePanelProps {
@@ -13,6 +14,9 @@ export function DraggablePanel({ panelKey, children }: DraggablePanelProps) {
   const movePanel = useLayoutStore((s) => s.movePanel);
   const resizePanel = useLayoutStore((s) => s.resizePanel);
   const selectPanel = useLayoutStore((s) => s.selectPanel);
+  const opts = useLayoutStore((s) => s.widgetOptions[panelKey]);
+
+  const [showOptions, setShowOptions] = useState(false);
 
   const dragRef = useRef<{
     startX: number;
@@ -32,6 +36,8 @@ export function DraggablePanel({ panelKey, children }: DraggablePanelProps) {
   const handleMouseDown = useCallback(
     (e: React.MouseEvent) => {
       if ((e.target as HTMLElement).dataset.resize) return;
+      if ((e.target as HTMLElement).closest(".wop-backdrop")) return;
+      if ((e.target as HTMLElement).closest(".draggable-panel__gear")) return;
       e.preventDefault();
       e.stopPropagation();
 
@@ -122,15 +128,36 @@ export function DraggablePanel({ panelKey, children }: DraggablePanelProps) {
         width: rect.w,
         height: rect.h,
         zIndex: isSelected ? 10 : 1,
+        opacity: opts.opacity,
       }}
       onMouseDown={handleMouseDown}
     >
       <div className="draggable-panel__content">{children}</div>
+
       {isSelected && (
-        <div
-          className="draggable-panel__resize-handle"
-          data-resize="true"
-          onMouseDown={handleResizeStart}
+        <>
+          <button
+            className="draggable-panel__gear"
+            onClick={(e) => {
+              e.stopPropagation();
+              setShowOptions((v) => !v);
+            }}
+            title="Widget options"
+          >
+            ⚙
+          </button>
+          <div
+            className="draggable-panel__resize-handle"
+            data-resize="true"
+            onMouseDown={handleResizeStart}
+          />
+        </>
+      )}
+
+      {showOptions && (
+        <WidgetOptionsPopover
+          panelKey={panelKey}
+          onClose={() => setShowOptions(false)}
         />
       )}
     </div>

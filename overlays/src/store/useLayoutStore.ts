@@ -21,6 +21,33 @@ export const PANEL_KEYS = [
 
 export type PanelKey = (typeof PANEL_KEYS)[number];
 
+export const THEMES = ["lofi", "light"] as const;
+export type ThemeId = (typeof THEMES)[number];
+
+export interface WidgetOpts {
+  theme: ThemeId;
+  transparent: boolean;
+  opacity: number;
+  zoom: number;
+}
+
+function defaultWidgetOpts(key: PanelKey): WidgetOpts {
+  return {
+    theme: "lofi",
+    transparent: false,
+    opacity: 1,
+    zoom: key === "minimap" ? 15 : 0,
+  };
+}
+
+function buildDefaultWidgetOptions(): Record<PanelKey, WidgetOpts> {
+  const opts = {} as Record<PanelKey, WidgetOpts>;
+  PANEL_KEYS.forEach((k) => {
+    opts[k] = defaultWidgetOpts(k);
+  });
+  return opts;
+}
+
 const COLS = 3;
 const GAP = 16;
 const PAD = 20;
@@ -66,6 +93,7 @@ interface LayoutState {
   controlBarHeight: number;
   selectedPanel: PanelKey | null;
   enabledWidgets: Set<PanelKey>;
+  widgetOptions: Record<PanelKey, WidgetOpts>;
 
   resetLayout: (controlBarHeight?: number) => void;
   movePanel: (key: PanelKey, x: number, y: number) => void;
@@ -74,6 +102,7 @@ interface LayoutState {
   selectPanel: (key: PanelKey | null) => void;
   toggleWidget: (key: PanelKey) => void;
   getEnabledKeys: () => PanelKey[];
+  setWidgetOption: (key: PanelKey, patch: Partial<WidgetOpts>) => void;
 }
 
 export const useLayoutStore = create<LayoutState>((set, get) => ({
@@ -81,6 +110,7 @@ export const useLayoutStore = create<LayoutState>((set, get) => ({
   controlBarHeight: 0,
   selectedPanel: null,
   enabledWidgets: new Set<PanelKey>(PANEL_KEYS),
+  widgetOptions: buildDefaultWidgetOptions(),
 
   getEnabledKeys: () => {
     const enabled = get().enabledWidgets;
@@ -112,6 +142,16 @@ export const useLayoutStore = create<LayoutState>((set, get) => ({
     set({
       enabledWidgets: next,
       panels: computeGridLayout(height, enabledKeys),
+    });
+  },
+
+  setWidgetOption: (key, patch) => {
+    const prev = get().widgetOptions;
+    set({
+      widgetOptions: {
+        ...prev,
+        [key]: { ...prev[key], ...patch },
+      },
     });
   },
 

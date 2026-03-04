@@ -1,6 +1,10 @@
 import React, { useEffect, useRef } from "react";
 import type { WorkoutMetrics } from "../../types/metrics";
-import { useLayoutStore, type PanelKey } from "../../store/useLayoutStore";
+import {
+  useLayoutStore,
+  type PanelKey,
+  type WidgetOpts,
+} from "../../store/useLayoutStore";
 import { DraggablePanel } from "../DraggablePanel/DraggablePanel";
 import { HeartRateOverlay } from "../HeartRateOverlay/HeartRateOverlay";
 import { ElapsedTimeOverlay } from "../ElapsedTimeOverlay/ElapsedTimeOverlay";
@@ -19,24 +23,48 @@ export interface DashboardGridProps {
 
 interface RendererProps {
   metrics: WorkoutMetrics | null;
+  opts: WidgetOpts;
 }
 
 const RENDERERS: Record<PanelKey, (p: RendererProps) => React.ReactNode> = {
-  workout: (p) => <WorkoutTypeOverlay metrics={p.metrics} />,
-  heartrate: (p) => <HeartRateOverlay metrics={p.metrics} />,
-  elapsed: (p) => <ElapsedTimeOverlay metrics={p.metrics} />,
-  pace: (p) => <PaceOverlay metrics={p.metrics} />,
-  distance: (p) => <DistanceOverlay metrics={p.metrics} />,
-  calories: (p) => <CaloriesOverlay metrics={p.metrics} />,
-  steps: (p) => <StepsOverlay metrics={p.metrics} />,
-  elevation: (p) => <ElevationOverlay metrics={p.metrics} />,
-  minimap: (p) => <MinimapOverlay metrics={p.metrics} />,
+  workout: (p) => (
+    <WorkoutTypeOverlay metrics={p.metrics} transparent={p.opts.transparent} />
+  ),
+  heartrate: (p) => (
+    <HeartRateOverlay metrics={p.metrics} transparent={p.opts.transparent} />
+  ),
+  elapsed: (p) => (
+    <ElapsedTimeOverlay metrics={p.metrics} transparent={p.opts.transparent} />
+  ),
+  pace: (p) => (
+    <PaceOverlay metrics={p.metrics} transparent={p.opts.transparent} />
+  ),
+  distance: (p) => (
+    <DistanceOverlay metrics={p.metrics} transparent={p.opts.transparent} />
+  ),
+  calories: (p) => (
+    <CaloriesOverlay metrics={p.metrics} transparent={p.opts.transparent} />
+  ),
+  steps: (p) => (
+    <StepsOverlay metrics={p.metrics} transparent={p.opts.transparent} />
+  ),
+  elevation: (p) => (
+    <ElevationOverlay metrics={p.metrics} transparent={p.opts.transparent} />
+  ),
+  minimap: (p) => (
+    <MinimapOverlay
+      metrics={p.metrics}
+      transparent={p.opts.transparent}
+      zoom={p.opts.zoom || 15}
+    />
+  ),
 };
 
 export function DashboardGrid({ metrics }: DashboardGridProps) {
   const resetLayout = useLayoutStore((s) => s.resetLayout);
   const setControlBarHeight = useLayoutStore((s) => s.setControlBarHeight);
   const getEnabledKeys = useLayoutStore((s) => s.getEnabledKeys);
+  const widgetOptions = useLayoutStore((s) => s.widgetOptions);
   const hasInit = useRef(false);
 
   useEffect(() => {
@@ -61,7 +89,7 @@ export function DashboardGrid({ metrics }: DashboardGridProps) {
     <div className="dashboard-canvas" onMouseDown={handleCanvasClick}>
       {enabledKeys.map((key) => (
         <DraggablePanel key={key} panelKey={key}>
-          {RENDERERS[key]({ metrics })}
+          {RENDERERS[key]({ metrics, opts: widgetOptions[key] })}
         </DraggablePanel>
       ))}
     </div>
