@@ -1,4 +1,5 @@
-import { useEffect, useSyncExternalStore } from "react";
+import { useEffect } from "react";
+import { createStore, useStore } from "zustand";
 import type { WorkoutMetrics } from "../types/metrics";
 
 interface BufferedEvent {
@@ -6,7 +7,13 @@ interface BufferedEvent {
   receivedAt: number;
 }
 
-// ── Module-level singleton state ──
+interface MetricsState {
+  metrics: WorkoutMetrics | null;
+}
+
+const metricsStore = createStore<MetricsState>(() => ({ metrics: null }));
+
+// ── Module-level stream engine ──
 // Persists across React re-renders; only resets on full page reload.
 
 let activeUrl = "";
@@ -21,28 +28,16 @@ const buffer: BufferedEvent[] = [];
 let bufferCursor = 0;
 let playbackTimer: ReturnType<typeof setInterval> | undefined;
 
-let latestMetrics: WorkoutMetrics | null = null;
-const listeners = new Set<() => void>();
-
-function emit() {
-  for (const fn of listeners) fn();
-}
-
-function getSnapshot(): WorkoutMetrics | null {
-  return latestMetrics;
-}
-
 function releaseBuffered() {
   const threshold = Date.now() - activeDelayMs;
-  let changed = false;
+  let latest: WorkoutMetrics | null = null;
 
   while (
     bufferCursor < buffer.length &&
     buffer[bufferCursor].receivedAt <= threshold
   ) {
-    latestMetrics = buffer[bufferCursor].data;
+    latest = buffer[bufferCursor].data;
     bufferCursor++;
-    changed = true;
   }
 
   if (bufferCursor > 200) {
@@ -50,13 +45,12 @@ function releaseBuffered() {
     bufferCursor = 0;
   }
 
-  if (changed) emit();
+  if (latest) metricsStore.setState({ metrics: latest });
 }
 
 function handleMetrics(data: WorkoutMetrics) {
   if (activeDelayMs <= 0) {
-    latestMetrics = data;
-    emit();
+    metricsStore.setState({ metrics: data });
   } else {
     buffer.push({ data, receivedAt: Date.now() });
   }
@@ -101,7 +95,6 @@ function resetStream(url: string, delayMs: number) {
   activeDelayMs = delayMs;
   buffer.length = 0;
   bufferCursor = 0;
-  latestMetrics = null;
 
   alive = true;
   connect();
@@ -110,7 +103,7 @@ function resetStream(url: string, delayMs: number) {
     playbackTimer = setInterval(releaseBuffered, 50);
   }
 
-  emit();
+  metricsStore.setState({ metrics: null });
 }
 
 function configure(url: string, delayMs: number, listening: boolean) {
@@ -140,13 +133,6 @@ function configure(url: string, delayMs: number, listening: boolean) {
   }
 }
 
-function subscribe(onStoreChange: () => void) {
-  listeners.add(onStoreChange);
-  return () => {
-    listeners.delete(onStoreChange);
-  };
-}
-
 /**
  * Connects to the SSE endpoint and returns the latest metrics.
  *
@@ -164,5 +150,5 @@ export function useMetricsStream(
     configure(url, delayMs, listening);
   }, [url, delayMs, listening]);
 
-  return useSyncExternalStore(subscribe, getSnapshot);
+  return useStore(metricsStore, (s) => s.metrics);
 }
