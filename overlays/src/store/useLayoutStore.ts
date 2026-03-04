@@ -48,6 +48,33 @@ function buildDefaultWidgetOptions(): Record<PanelKey, WidgetOpts> {
   return opts;
 }
 
+export interface BaseDims {
+  w: number;
+  h: number;
+}
+
+const DEFAULT_BASE: BaseDims = { w: 200, h: 130 };
+
+const BASE_DIMS_DEFAULTS: Record<PanelKey, BaseDims> = {
+  workout: { w: 200, h: 80 },
+  heartrate: { w: 200, h: 140 },
+  elapsed: { w: 200, h: 130 },
+  pace: { w: 200, h: 130 },
+  distance: { w: 200, h: 130 },
+  calories: { w: 200, h: 130 },
+  steps: { w: 200, h: 130 },
+  elevation: { w: 200, h: 130 },
+  minimap: { w: 280, h: 250 },
+};
+
+function buildDefaultBaseDims(): Record<PanelKey, BaseDims> {
+  const dims = {} as Record<PanelKey, BaseDims>;
+  PANEL_KEYS.forEach((k) => {
+    dims[k] = BASE_DIMS_DEFAULTS[k] ?? DEFAULT_BASE;
+  });
+  return dims;
+}
+
 const COLS = 3;
 const GAP = 16;
 const PAD = 20;
@@ -94,6 +121,7 @@ interface LayoutState {
   selectedPanel: PanelKey | null;
   enabledWidgets: Set<PanelKey>;
   widgetOptions: Record<PanelKey, WidgetOpts>;
+  baseDimensions: Record<PanelKey, BaseDims>;
 
   resetLayout: (controlBarHeight?: number) => void;
   movePanel: (key: PanelKey, x: number, y: number) => void;
@@ -103,6 +131,7 @@ interface LayoutState {
   toggleWidget: (key: PanelKey) => void;
   getEnabledKeys: () => PanelKey[];
   setWidgetOption: (key: PanelKey, patch: Partial<WidgetOpts>) => void;
+  setBaseDimension: (key: PanelKey, w: number, h: number) => void;
 }
 
 export const useLayoutStore = create<LayoutState>((set, get) => ({
@@ -111,6 +140,7 @@ export const useLayoutStore = create<LayoutState>((set, get) => ({
   selectedPanel: null,
   enabledWidgets: new Set<PanelKey>(PANEL_KEYS),
   widgetOptions: buildDefaultWidgetOptions(),
+  baseDimensions: buildDefaultBaseDims(),
 
   getEnabledKeys: () => {
     const enabled = get().enabledWidgets;
@@ -188,4 +218,9 @@ export const useLayoutStore = create<LayoutState>((set, get) => ({
   setControlBarHeight: (h) => set({ controlBarHeight: h }),
 
   selectPanel: (key) => set({ selectedPanel: key }),
+
+  setBaseDimension: (key, w, h) => {
+    const prev = get().baseDimensions;
+    set({ baseDimensions: { ...prev, [key]: { w, h } } });
+  },
 }));

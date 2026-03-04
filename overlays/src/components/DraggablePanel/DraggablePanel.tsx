@@ -1,5 +1,8 @@
 import React, { useCallback, useRef, useState } from "react";
-import { useLayoutStore, type PanelKey } from "../../store/useLayoutStore";
+import {
+  useLayoutStore,
+  type PanelKey,
+} from "../../store/useLayoutStore";
 import { WidgetOptionsPopover } from "../WidgetOptionsPopover/WidgetOptionsPopover";
 import "./DraggablePanel.css";
 
@@ -15,8 +18,13 @@ export function DraggablePanel({ panelKey, children }: DraggablePanelProps) {
   const resizePanel = useLayoutStore((s) => s.resizePanel);
   const selectPanel = useLayoutStore((s) => s.selectPanel);
   const opts = useLayoutStore((s) => s.widgetOptions[panelKey]);
+  const base = useLayoutStore((s) => s.baseDimensions[panelKey]);
 
   const [showOptions, setShowOptions] = useState(false);
+
+  const scaleX = base.w > 0 ? rect.w / base.w : 1;
+  const scaleY = base.h > 0 ? rect.h / base.h : 1;
+  const scale = Math.min(scaleX, scaleY);
 
   const dragRef = useRef<{
     startX: number;
@@ -132,7 +140,17 @@ export function DraggablePanel({ panelKey, children }: DraggablePanelProps) {
       }}
       onMouseDown={handleMouseDown}
     >
-      <div className="draggable-panel__content">{children}</div>
+      <div
+        className="draggable-panel__content"
+        style={{
+          width: base.w,
+          height: base.h,
+          transform: `scale(${scale})`,
+          transformOrigin: "top left",
+        }}
+      >
+        {children}
+      </div>
 
       {isSelected && (
         <>
