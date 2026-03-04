@@ -22,8 +22,9 @@ export const DEFAULT_SERVER = "http://localhost:8080/events";
 
 export interface ControlBarProps {
   serverUrl: string;
+  delayMs: number;
   listening: boolean;
-  onServerUrlChange: (value: string) => void;
+  onSave: (url: string, delayMs: number) => void;
   onListeningChange: (value: boolean) => void;
 }
 
@@ -39,12 +40,20 @@ function downloadJson(json: string, filename: string) {
 
 export const ControlBar = ({
   serverUrl: activeUrl,
+  delayMs: activeDelay,
   listening,
-  onServerUrlChange,
+  onSave,
   onListeningChange,
 }: ControlBarProps) => {
-  const [draft, setDraft] = useState(activeUrl);
-  const isDirty = draft !== activeUrl;
+  const [draftUrl, setDraftUrl] = useState(activeUrl);
+  const [draftDelay, setDraftDelay] = useState(String(activeDelay));
+  const parsedDelay = Math.max(0, parseInt(draftDelay, 10) || 0);
+  const isDirty = draftUrl !== activeUrl || parsedDelay !== activeDelay;
+
+  const handleSave = () => {
+    if (isDirty) onSave(draftUrl, parsedDelay);
+  };
+
   const resetLayout = useLayoutStore((s) => s.resetLayout);
   const toggleWidget = useLayoutStore((s) => s.toggleWidget);
   const enabledWidgets = useLayoutStore((s) => s.enabledWidgets);
@@ -132,17 +141,30 @@ export const ControlBar = ({
           <input
             className="control-bar__input"
             type="text"
-            value={draft}
-            onChange={(e) => setDraft(e.target.value)}
+            value={draftUrl}
+            onChange={(e) => setDraftUrl(e.target.value)}
             onKeyDown={(e) => {
-              if (e.key === "Enter" && isDirty) onServerUrlChange(draft);
+              if (e.key === "Enter" && isDirty) handleSave();
             }}
             spellCheck={false}
           />
+          <span className="control-bar__label">Delay</span>
+          <input
+            className="control-bar__input control-bar__input--delay"
+            type="number"
+            min="0"
+            step="100"
+            value={draftDelay}
+            onChange={(e) => setDraftDelay(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && isDirty) handleSave();
+            }}
+          />
+          <span className="control-bar__unit">ms</span>
           <button
             className={`control-bar__btn control-bar__btn--save ${isDirty ? "control-bar__btn--active" : ""}`}
             disabled={!isDirty}
-            onClick={() => onServerUrlChange(draft)}
+            onClick={handleSave}
           >
             Save
           </button>

@@ -5,20 +5,23 @@ import { ControlBar, DEFAULT_SERVER } from "./components/ControlBar/ControlBar";
 
 export default function App() {
   const [serverUrl, setServerUrl] = useState(DEFAULT_SERVER);
+  const [delayMs, setDelayMs] = useState(0);
   const [listening, setListening] = useState(true);
 
-  const handleServer = useCallback((v: string) => {
-    setServerUrl(v);
+  const handleSave = useCallback((url: string, delay: number) => {
+    setServerUrl(url);
+    setDelayMs(delay);
   }, []);
 
-  const metrics = useMetricsStream(serverUrl, listening);
+  const metrics = useMetricsStream(serverUrl, listening, delayMs);
 
   return (
     <>
       <ControlBar
         serverUrl={serverUrl}
+        delayMs={delayMs}
         listening={listening}
-        onServerUrlChange={handleServer}
+        onSave={handleSave}
         onListeningChange={setListening}
       />
       <DashboardGrid metrics={metrics} />

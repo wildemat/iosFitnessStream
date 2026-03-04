@@ -104,6 +104,23 @@
   border-color: var(--color-border-active);
 }
 
+.control-bar__input--delay {
+  min-width: 72px;
+  max-width: 90px;
+  text-align: right;
+}
+
+.control-bar__input--delay::-webkit-inner-spin-button,
+.control-bar__input--delay::-webkit-outer-spin-button {
+  opacity: 0.5;
+}
+
+.control-bar__unit {
+  font-size: 11px;
+  color: var(--color-text-dim);
+  white-space: nowrap;
+}
+
 .control-bar__btn--listening {
   color: #22c55e;
   border-color: #22c55e55;
