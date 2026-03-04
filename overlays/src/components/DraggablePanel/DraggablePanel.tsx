@@ -26,6 +26,8 @@ export function DraggablePanel({ panelKey, children }: DraggablePanelProps) {
   const scaleX = base.w > 0 ? rect.w / base.w : 1;
   const scaleY = base.h > 0 ? rect.h / base.h : 1;
   const scale = Math.min(scaleX, scaleY);
+  const actualW = base.w * scale;
+  const actualH = base.h * scale;
 
   const dragRef = useRef<{
     startX: number;
@@ -94,19 +96,19 @@ export function DraggablePanel({ panelKey, children }: DraggablePanelProps) {
       resizeRef.current = {
         startX: e.clientX,
         startY: e.clientY,
-        origW: rect.w,
-        origH: rect.h,
+        origW: actualW,
+        origH: actualH,
       };
 
       const onMove = (ev: MouseEvent) => {
         if (!resizeRef.current) return;
         const dw = ev.clientX - resizeRef.current.startX;
         const dh = ev.clientY - resizeRef.current.startY;
-        resizePanel(
-          panelKey,
-          resizeRef.current.origW + dw,
-          resizeRef.current.origH + dh,
+        const newScale = Math.min(
+          (resizeRef.current.origW + dw) / base.w,
+          (resizeRef.current.origH + dh) / base.h,
         );
+        resizePanel(panelKey, base.w * newScale, base.h * newScale);
       };
 
       const onUp = () => {
@@ -118,7 +120,7 @@ export function DraggablePanel({ panelKey, children }: DraggablePanelProps) {
       window.addEventListener("mousemove", onMove);
       window.addEventListener("mouseup", onUp);
     },
-    [panelKey, isSelected, rect.w, rect.h, resizePanel],
+    [panelKey, isSelected, actualW, actualH, base.w, base.h, resizePanel],
   );
 
   const cls = [
@@ -133,8 +135,8 @@ export function DraggablePanel({ panelKey, children }: DraggablePanelProps) {
       className={cls}
       style={{
         transform: `translate(${rect.x}px, ${rect.y}px)`,
-        width: rect.w,
-        height: rect.h,
+        width: actualW,
+        height: actualH,
         zIndex: isSelected ? 10 : 1,
         opacity: opts.opacity,
       }}

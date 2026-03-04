@@ -1,32 +1,7 @@
-.elapsed-overlay {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius);
-  padding: 16px 20px 14px;
-  backdrop-filter: blur(var(--blur));
-  -webkit-backdrop-filter: blur(var(--blur));
-  min-width: 168px;
-  user-select: none;
-}
-
-.elapsed-overlay__header {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  margin-bottom: 10px;
-}
+/* ─── Elapsed time: unique styles ────────────────────────────────────── */
 
 .elapsed-overlay__icon {
-  font-size: 13px;
   color: var(--accent-time);
-}
-
-.elapsed-overlay__label {
-  font-size: 11px;
-  font-weight: 500;
-  letter-spacing: 0.09em;
-  text-transform: uppercase;
-  color: var(--color-text-secondary);
 }
 
 .elapsed-overlay__value {
@@ -40,12 +15,4 @@
 
 .elapsed-overlay__value--empty {
   color: var(--color-text-dim);
-}
-
-/* ─── Transparent mode (no card chrome) ─────────────────────────── */
-.elapsed-overlay--transparent {
-  background: transparent;
-  border-color: transparent;
-  backdrop-filter: none;
-  -webkit-backdrop-filter: none;
 }

@@ -1,6 +1,8 @@
 .overlay-wrapper {
   position: relative;
   display: inline-block;
+  border-radius: var(--radius);
+  overflow: hidden;
 }
 
 /* ─── Content fade based on status ────────────────────────────── */

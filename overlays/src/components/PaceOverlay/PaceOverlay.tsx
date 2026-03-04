@@ -14,7 +14,7 @@ type TrendDir = 'faster' | 'slower' | 'steady';
 
 function getTrend(current: number, previous: number | null): TrendDir {
   if (previous === null) return 'steady';
-  const delta = current - previous; // lower pace = faster
+  const delta = current - previous;
   if (delta < -0.05) return 'faster';
   if (delta >  0.05) return 'slower';
   return 'steady';
@@ -52,17 +52,17 @@ export function PaceOverlay({ metrics, transparent = false }: PaceOverlayProps) 
 
   return (
     <OverlayWrapper hasData={hasData}>
-      <div className={`pace-overlay${transparent ? ' pace-overlay--transparent' : ''}`}>
-        <div className="pace-overlay__header">
-          <span className="pace-overlay__icon" aria-hidden="true">⟳</span>
-          <span className="pace-overlay__label">Pace</span>
+      <div className={`widget pace-overlay${transparent ? ' widget--transparent' : ''}`}>
+        <div className="widget__header">
+          <span className="widget__icon pace-overlay__icon" aria-hidden="true">⟳</span>
+          <span className="widget__label">Pace</span>
         </div>
 
-        <div className="pace-overlay__value">
-          <span className="pace-overlay__number" key={pace}>
+        <div className="widget__value pace-overlay__value">
+          <span className="widget__number" key={pace}>
             {pace != null ? formatPace(pace) : '—:——'}
           </span>
-          <span className="pace-overlay__unit">/km</span>
+          <span className="widget__unit">/km</span>
         </div>
 
         {hasData && (

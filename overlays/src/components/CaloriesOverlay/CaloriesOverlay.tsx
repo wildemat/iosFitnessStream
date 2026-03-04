@@ -13,17 +13,17 @@ export function CaloriesOverlay({ metrics, transparent = false }: CaloriesOverla
 
   return (
     <OverlayWrapper hasData={hasData}>
-      <div className={`calories-overlay${transparent ? ' calories-overlay--transparent' : ''}`}>
-        <div className="calories-overlay__header">
-          <span className="calories-overlay__icon" aria-hidden="true">◉</span>
-          <span className="calories-overlay__label">Calories</span>
+      <div className={`widget calories-overlay${transparent ? ' widget--transparent' : ''}`}>
+        <div className="widget__header">
+          <span className="widget__icon calories-overlay__icon" aria-hidden="true">◉</span>
+          <span className="widget__label">Calories</span>
         </div>
 
-        <div className="calories-overlay__value">
-          <span className="calories-overlay__number" key={kcal != null ? Math.round(kcal) : 'empty'}>
+        <div className="widget__value">
+          <span className="widget__number" key={kcal != null ? Math.round(kcal) : 'empty'}>
             {kcal != null ? Math.round(kcal) : '—'}
           </span>
-          <span className="calories-overlay__unit">kcal</span>
+          <span className="widget__unit">kcal</span>
         </div>
       </div>
     </OverlayWrapper>

@@ -43,17 +43,17 @@ export function ElevationOverlay({ metrics, transparent = false }: ElevationOver
 
   return (
     <OverlayWrapper hasData={hasData}>
-      <div className={`elevation-overlay${transparent ? ' elevation-overlay--transparent' : ''}`}>
-        <div className="elevation-overlay__header">
-          <span className="elevation-overlay__icon" aria-hidden="true">△</span>
-          <span className="elevation-overlay__label">Elevation</span>
+      <div className={`widget elevation-overlay${transparent ? ' widget--transparent' : ''}`}>
+        <div className="widget__header">
+          <span className="widget__icon elevation-overlay__icon" aria-hidden="true">△</span>
+          <span className="widget__label">Elevation</span>
         </div>
 
-        <div className="elevation-overlay__value">
-          <span className="elevation-overlay__number" key={elev != null ? Math.round(elev) : 'empty'}>
+        <div className="widget__value elevation-overlay__value">
+          <span className="widget__number" key={elev != null ? Math.round(elev) : 'empty'}>
             {elev != null ? Math.round(elev) : '—'}
           </span>
-          <span className="elevation-overlay__unit">m</span>
+          <span className="widget__unit">m</span>
         </div>
 
         {hasData && (

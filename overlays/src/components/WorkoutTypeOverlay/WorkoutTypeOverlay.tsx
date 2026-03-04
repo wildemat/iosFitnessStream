@@ -39,7 +39,6 @@ export function WorkoutTypeOverlay({ metrics, transparent = false }: WorkoutType
   const workoutType = metrics?.workout_type ?? '';
   const icon        = TYPE_ICONS[workoutType] ?? '◉';
 
-  // Local elapsed time counter (same trick as ElapsedTimeOverlay)
   const [displaySeconds, setDisplaySeconds] = useState(0);
   const baseSecondsRef = useRef(0);
   const baseWallRef    = useRef(Date.now());
@@ -66,7 +65,7 @@ export function WorkoutTypeOverlay({ metrics, transparent = false }: WorkoutType
 
   return (
     <OverlayWrapper hasData={hasData}>
-      <div className={`workout-overlay${transparent ? ' workout-overlay--transparent' : ''}`}>
+      <div className={`widget workout-overlay${transparent ? ' widget--transparent' : ''}`}>
         <div className="workout-overlay__top">
           <span className="workout-overlay__type-icon" aria-hidden="true">
             {hasData ? icon : '◉'}

@@ -24,13 +24,12 @@ export function HeartRateOverlay({ metrics, transparent = false }: HeartRateOver
 
   const zoneConfig = zone != null && zone >= 1 && zone <= 5 ? ZONE_CONFIG[zone] : null;
 
-  // Pulse animation duration derived from live BPM
   const pulseDuration = hr ? `${(60 / hr).toFixed(2)}s` : '1s';
 
   return (
     <OverlayWrapper hasData={hasData}>
-      <div className={`hr-overlay${transparent ? ' hr-overlay--transparent' : ''}`}>
-        <div className="hr-overlay__header">
+      <div className={`widget hr-overlay${transparent ? ' widget--transparent' : ''}`}>
+        <div className="widget__header">
           <span
             className={`hr-overlay__heart${hasData ? ' hr-overlay__heart--beating' : ''}`}
             style={{ '--pulse-duration': pulseDuration } as React.CSSProperties}
@@ -38,14 +37,14 @@ export function HeartRateOverlay({ metrics, transparent = false }: HeartRateOver
           >
             ♥
           </span>
-          <span className="hr-overlay__label">Heart Rate</span>
+          <span className="widget__label">Heart Rate</span>
         </div>
 
-        <div className="hr-overlay__value">
-          <span className="hr-overlay__number" key={hr != null ? Math.round(hr) : 'empty'}>
+        <div className="widget__value hr-overlay__value">
+          <span className="widget__number hr-overlay__number" key={hr != null ? Math.round(hr) : 'empty'}>
             {hr != null ? Math.round(hr) : '—'}
           </span>
-          <span className="hr-overlay__unit">bpm</span>
+          <span className="widget__unit">bpm</span>
         </div>
 
         {zoneConfig ? (

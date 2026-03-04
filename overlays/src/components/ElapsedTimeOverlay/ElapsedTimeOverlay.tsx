@@ -32,7 +32,6 @@ export function ElapsedTimeOverlay({ metrics, transparent = false }: ElapsedTime
   const baseWallRef    = useRef(Date.now());
   const intervalRef    = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  // Sync base whenever the server sends a new authoritative elapsed_seconds
   useEffect(() => {
     if (metrics?.elapsed_seconds != null) {
       baseSecondsRef.current = metrics.elapsed_seconds;
@@ -41,7 +40,6 @@ export function ElapsedTimeOverlay({ metrics, transparent = false }: ElapsedTime
     }
   }, [metrics?.elapsed_seconds]);
 
-  // Local tick so the counter keeps running between 1-second server updates
   useEffect(() => {
     if (!hasData) return;
 
@@ -57,10 +55,10 @@ export function ElapsedTimeOverlay({ metrics, transparent = false }: ElapsedTime
 
   return (
     <OverlayWrapper hasData={hasData}>
-      <div className={`elapsed-overlay${transparent ? ' elapsed-overlay--transparent' : ''}`}>
-        <div className="elapsed-overlay__header">
-          <span className="elapsed-overlay__icon" aria-hidden="true">◷</span>
-          <span className="elapsed-overlay__label">Elapsed</span>
+      <div className={`widget elapsed-overlay${transparent ? ' widget--transparent' : ''}`}>
+        <div className="widget__header">
+          <span className="widget__icon elapsed-overlay__icon" aria-hidden="true">◷</span>
+          <span className="widget__label">Elapsed</span>
         </div>
         <div className={`elapsed-overlay__value${!hasData ? ' elapsed-overlay__value--empty' : ''}`}>
           {hasData ? formatTime(displaySeconds) : '0:00'}

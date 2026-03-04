@@ -13,17 +13,17 @@ export function StepsOverlay({ metrics, transparent = false }: StepsOverlayProps
 
   return (
     <OverlayWrapper hasData={hasData}>
-      <div className={`steps-overlay${transparent ? ' steps-overlay--transparent' : ''}`}>
-        <div className="steps-overlay__header">
-          <span className="steps-overlay__icon" aria-hidden="true">⊹</span>
-          <span className="steps-overlay__label">Steps</span>
+      <div className={`widget steps-overlay${transparent ? ' widget--transparent' : ''}`}>
+        <div className="widget__header">
+          <span className="widget__icon steps-overlay__icon" aria-hidden="true">⊹</span>
+          <span className="widget__label">Steps</span>
         </div>
 
-        <div className="steps-overlay__value">
-          <span className="steps-overlay__number" key={steps}>
+        <div className="widget__value">
+          <span className="widget__number" key={steps}>
             {steps != null ? steps.toLocaleString() : '—'}
           </span>
-          <span className="steps-overlay__unit">steps</span>
+          <span className="widget__unit steps-overlay__unit">steps</span>
         </div>
       </div>
     </OverlayWrapper>

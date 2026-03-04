@@ -58,11 +58,12 @@ export interface MinimapOverlayProps {
   /** Initial zoom level (default 15 — street level) */
   zoom?: number;
   transparent?: boolean;
+  showCoords?: boolean;
 }
 
 const DEFAULT_CENTER: [number, number] = [0, 0];
 
-export function MinimapOverlay({ metrics, zoom = 15, transparent = false }: MinimapOverlayProps) {
+export function MinimapOverlay({ metrics, zoom = 15, transparent = false, showCoords = false }: MinimapOverlayProps) {
   const lat    = metrics?.latitude;
   const lon    = metrics?.longitude;
   const hasGPS = lat != null && lon != null;
@@ -110,14 +111,16 @@ export function MinimapOverlay({ metrics, zoom = 15, transparent = false }: Mini
           </div>
         )}
 
-        <div className="minimap-overlay__footer">
-          <div className="minimap-overlay__coords">
-            <span>{lat != null ? lat.toFixed(5) : '——.—————'}</span>
-            <span className="minimap-overlay__coords-sep">·</span>
-            <span>{lon != null ? lon.toFixed(5) : '——.—————'}</span>
+        {showCoords && (
+          <div className="minimap-overlay__footer">
+            <div className="minimap-overlay__coords">
+              <span>{lat != null ? lat.toFixed(5) : '——.—————'}</span>
+              <span className="minimap-overlay__coords-sep">·</span>
+              <span>{lon != null ? lon.toFixed(5) : '——.—————'}</span>
+            </div>
+            <span className="minimap-overlay__attribution">© OSM / CARTO</span>
           </div>
-          <span className="minimap-overlay__attribution">© OSM / CARTO</span>
-        </div>
+        )}
       </div>
     </OverlayWrapper>
   );

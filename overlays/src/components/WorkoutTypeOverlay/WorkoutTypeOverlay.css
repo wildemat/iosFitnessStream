@@ -1,15 +1,11 @@
+/* ─── Workout type: overrides & unique styles ────────────────────────── */
+
 .workout-overlay {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius);
   padding: 14px 18px;
-  backdrop-filter: blur(var(--blur));
-  -webkit-backdrop-filter: blur(var(--blur));
   min-width: 200px;
-  user-select: none;
 }
 
-/* ─── Top row: icon + name + live dot ─────────── */
+/* ─── Top row: icon + name + live dot ────────────────────────────────── */
 .workout-overlay__top {
   display: flex;
   align-items: center;
@@ -37,7 +33,7 @@
   font-weight: 400;
 }
 
-/* ─── Live status dot ──────────────────────────── */
+/* ─── Live status dot ────────────────────────────────────────────────── */
 .workout-overlay__status {
   display: flex;
   align-items: center;
@@ -65,14 +61,14 @@
   color: var(--color-text-secondary);
 }
 
-/* ─── Divider ──────────────────────────────────── */
+/* ─── Divider ────────────────────────────────────────────────────────── */
 .workout-overlay__divider {
   height: 1px;
   background: var(--color-border);
   margin-bottom: 10px;
 }
 
-/* ─── Time row ─────────────────────────────────── */
+/* ─── Time row ───────────────────────────────────────────────────────── */
 .workout-overlay__time-row {
   display: flex;
   align-items: baseline;
@@ -94,12 +90,4 @@
   font-variant-numeric: tabular-nums;
   color: var(--accent-time);
   letter-spacing: -0.01em;
-}
-
-/* ─── Transparent mode (no card chrome) ─────────────────────────── */
-.workout-overlay--transparent {
-  background: transparent;
-  border-color: transparent;
-  backdrop-filter: none;
-  -webkit-backdrop-filter: none;
 }

@@ -79,21 +79,34 @@ export function WidgetOptionsPopover({
         </label>
 
         {panelKey === "minimap" && (
-          <label className="wop__row">
-            <span className="wop__label">Zoom</span>
-            <input
-              className="wop__range"
-              type="range"
-              min={1}
-              max={20}
-              step={1}
-              value={opts.zoom}
-              onChange={(e) =>
-                setOpt(panelKey, { zoom: Number(e.target.value) })
-              }
-            />
-            <span className="wop__value">{opts.zoom}</span>
-          </label>
+          <>
+            <label className="wop__row">
+              <span className="wop__label">Zoom</span>
+              <input
+                className="wop__range"
+                type="range"
+                min={1}
+                max={20}
+                step={1}
+                value={opts.zoom}
+                onChange={(e) =>
+                  setOpt(panelKey, { zoom: Number(e.target.value) })
+                }
+              />
+              <span className="wop__value">{opts.zoom}</span>
+            </label>
+
+            <label className="wop__row">
+              <span className="wop__label">Coordinates</span>
+              <input
+                type="checkbox"
+                checked={opts.showCoords}
+                onChange={(e) =>
+                  setOpt(panelKey, { showCoords: e.target.checked })
+                }
+              />
+            </label>
+          </>
         )}
       </div>
     </div>

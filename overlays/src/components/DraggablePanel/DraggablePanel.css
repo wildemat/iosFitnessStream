@@ -4,24 +4,23 @@
   left: 0;
   will-change: transform;
   cursor: pointer;
-  border: 2px solid transparent;
-  border-radius: var(--radius);
-  transition: border-color 0.15s ease;
-  overflow: hidden;
+  outline: 2px solid transparent;
+  outline-offset: 0px;
+  transition: outline-color 0.15s ease;
 }
 
 .draggable-panel:hover {
-  border-color: var(--color-border-active);
+  outline-color: var(--color-border-active);
 }
 
 /* Selected: green outline, grab cursor for dragging */
 .draggable-panel--selected {
-  border-color: #5cb85c;
+  outline-color: #5cb85c;
   cursor: grab;
 }
 
 .draggable-panel--selected:hover {
-  border-color: #5cb85c;
+  outline-color: #5cb85c;
 }
 
 .draggable-panel--selected:active {
@@ -48,7 +47,8 @@
   flex: 1;
 }
 
-.draggable-panel__content [class$="-overlay"] {
+.draggable-panel__content .widget,
+.draggable-panel__content .minimap-overlay {
   width: 100%;
   height: 100%;
 }
@@ -60,7 +60,7 @@
 .draggable-panel__gear {
   position: absolute;
   top: 4px;
-  right: 4px;
+  left: 4px;
   width: 24px;
   height: 24px;
   display: flex;

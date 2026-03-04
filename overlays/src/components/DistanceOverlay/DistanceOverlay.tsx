@@ -19,17 +19,17 @@ export function DistanceOverlay({ metrics, transparent = false }: DistanceOverla
 
   return (
     <OverlayWrapper hasData={hasData}>
-      <div className={`distance-overlay${transparent ? ' distance-overlay--transparent' : ''}`}>
-        <div className="distance-overlay__header">
-          <span className="distance-overlay__icon" aria-hidden="true">◈</span>
-          <span className="distance-overlay__label">Distance</span>
+      <div className={`widget distance-overlay${transparent ? ' widget--transparent' : ''}`}>
+        <div className="widget__header">
+          <span className="widget__icon distance-overlay__icon" aria-hidden="true">◈</span>
+          <span className="widget__label">Distance</span>
         </div>
 
-        <div className="distance-overlay__value">
-          <span className="distance-overlay__number" key={displayNum}>
+        <div className="widget__value distance-overlay__value">
+          <span className="widget__number" key={displayNum}>
             {displayNum}
           </span>
-          <span className="distance-overlay__unit">{unit}</span>
+          <span className="widget__unit distance-overlay__unit">{unit}</span>
         </div>
 
         {isKm && meters != null && (
