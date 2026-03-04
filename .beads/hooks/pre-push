@@ -28,6 +28,24 @@ case "$LAST_MSG" in
     "Bump version"*) exit 0 ;;
 esac
 
+# Only bump when pushed commits touch FitnessStream* directories.
+# pre-push receives "<local_ref> <local_sha> <remote_ref> <remote_sha>" on stdin.
+TOUCHES_APP=false
+while read local_ref local_oid remote_ref remote_oid; do
+    if [ "$remote_oid" = "0000000000000000000000000000000000000000" ]; then
+        RANGE="$local_oid"
+    else
+        RANGE="${remote_oid}..${local_oid}"
+    fi
+    if git diff --name-only "$RANGE" -- 'FitnessStream*' | grep -q .; then
+        TOUCHES_APP=true
+        break
+    fi
+done
+if [ "$TOUCHES_APP" = false ]; then
+    exit 0
+fi
+
 CURRENT=$(/usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" "$PLIST")
 MAJOR="${CURRENT%%.*}"
 MINOR="${CURRENT#*.}"
