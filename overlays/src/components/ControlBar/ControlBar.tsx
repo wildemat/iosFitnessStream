@@ -1,9 +1,10 @@
-import { useRef, useState } from "react";
+import { useState } from "react";
 import {
   useLayoutStore,
   PANEL_KEYS,
   type PanelKey,
 } from "../../store/useLayoutStore";
+import { ImportModal } from "../ImportModal/ImportModal";
 import "./ControlBar.css";
 
 const WIDGET_LABELS: Record<PanelKey, string> = {
@@ -59,31 +60,11 @@ export const ControlBar = ({
   const enabledWidgets = useLayoutStore((s) => s.enabledWidgets);
   const exportState = useLayoutStore((s) => s.exportState);
   const importState = useLayoutStore((s) => s.importState);
-  const fileRef = useRef<HTMLInputElement>(null);
+  const [importOpen, setImportOpen] = useState(false);
 
   const handleExport = () => {
     const json = exportState();
     downloadJson(json, "overlay-config.json");
-  };
-
-  const handleImport = () => {
-    fileRef.current?.click();
-  };
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => {
-      if (typeof reader.result === "string") {
-        const ok = importState(reader.result);
-        if (!ok) {
-          alert("Invalid config file.");
-        }
-      }
-    };
-    reader.readAsText(file);
-    e.target.value = "";
   };
 
   return (
@@ -114,16 +95,9 @@ export const ControlBar = ({
           <button className="control-bar__btn" onClick={handleExport}>
             Export
           </button>
-          <button className="control-bar__btn" onClick={handleImport}>
+          <button className="control-bar__btn" onClick={() => setImportOpen(true)}>
             Import
           </button>
-          <input
-            ref={fileRef}
-            type="file"
-            accept=".json"
-            onChange={handleFileChange}
-            style={{ display: "none" }}
-          />
         </div>
       </div>
 
@@ -170,6 +144,12 @@ export const ControlBar = ({
           </button>
         </div>
       </div>
+      {importOpen && (
+        <ImportModal
+          onImport={importState}
+          onClose={() => setImportOpen(false)}
+        />
+      )}
     </div>
   );
 };
