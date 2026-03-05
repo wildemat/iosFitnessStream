@@ -58,7 +58,7 @@ export interface BaseDims {
 const DEFAULT_BASE: BaseDims = { w: 200, h: 130 };
 
 const BASE_DIMS_DEFAULTS: Record<PanelKey, BaseDims> = {
-  workout: { w: 200, h: 80 },
+  workout: { w: 200, h: 110 },
   heartrate: { w: 200, h: 140 },
   elapsed: { w: 200, h: 130 },
   pace: { w: 200, h: 130 },

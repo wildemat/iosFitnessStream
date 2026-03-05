@@ -24,15 +24,15 @@ const TILE_URL = 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
 interface MapContentProps {
   center: [number, number];
   trail: [number, number][];
+  zoom: number;
 }
 
-function MapContent({ center, trail }: MapContentProps) {
+function MapContent({ center, trail, zoom }: MapContentProps) {
   const map = useMap();
 
-  // Smooth pan to the latest GPS fix
   useEffect(() => {
-    map.setView(center, map.getZoom(), { animate: true, duration: 0.8 });
-  }, [map, center]);
+    map.setView(center, zoom, { animate: true, duration: 0.8 });
+  }, [map, center, zoom]);
 
   return (
     <>
@@ -102,7 +102,7 @@ export function MinimapOverlay({ metrics, zoom = 15, transparent = false, showCo
             keyboard={false}
             attributionControl={false}
           >
-            <MapContent center={center} trail={trail} />
+            <MapContent center={center} trail={trail} zoom={zoom} />
           </MapContainer>
         ) : (
           <div className="minimap-overlay__empty" aria-label="Waiting for GPS">
