@@ -246,13 +246,8 @@ export const useLayoutStore = create<LayoutState>((set, get) => ({
 
   importState: (json) => {
     try {
-      const data = JSON.parse(json) as SerializedState;
-      if (
-        !data.enabledWidgets ||
-        !Array.isArray(data.enabledWidgets) ||
-        !data.widgetOptions ||
-        !data.panels
-      ) {
+      const data = JSON.parse(json) as Partial<SerializedState>;
+      if (!data.enabledWidgets || !Array.isArray(data.enabledWidgets)) {
         return false;
       }
       const validKeys = new Set<string>(PANEL_KEYS);
@@ -260,15 +255,22 @@ export const useLayoutStore = create<LayoutState>((set, get) => ({
         data.enabledWidgets.filter((k) => validKeys.has(k)),
       );
       const opts = { ...buildDefaultWidgetOptions() };
-      for (const k of PANEL_KEYS) {
-        if (data.widgetOptions[k]) {
-          opts[k] = { ...opts[k], ...data.widgetOptions[k] };
+      if (data.widgetOptions) {
+        for (const k of PANEL_KEYS) {
+          if (data.widgetOptions[k]) {
+            opts[k] = { ...opts[k], ...data.widgetOptions[k] };
+          }
         }
       }
-      const panels = { ...computeGridLayout(get().controlBarHeight) };
-      for (const k of PANEL_KEYS) {
-        if (data.panels[k]) {
-          panels[k] = data.panels[k];
+      const enabledKeys = PANEL_KEYS.filter((k) => enabled.has(k));
+      const panels = {
+        ...computeGridLayout(get().controlBarHeight, enabledKeys),
+      };
+      if (data.panels) {
+        for (const k of PANEL_KEYS) {
+          if (data.panels[k]) {
+            panels[k] = data.panels[k];
+          }
         }
       }
       set({

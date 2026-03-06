@@ -154,6 +154,30 @@
   pointer-events: none;
 }
 
+.control-bar__select {
+  padding: 5px 10px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--color-text-secondary);
+  font-size: 12px;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.15s var(--ease-out);
+  white-space: nowrap;
+}
+
+.control-bar__select:hover {
+  background: var(--color-surface-raised);
+  color: var(--color-text-primary);
+  border-color: var(--color-border-active);
+}
+
+.control-bar__select:focus {
+  outline: none;
+  border-color: var(--color-border-active);
+}
+
 .control-bar__divider {
   width: 1px;
   height: 24px;

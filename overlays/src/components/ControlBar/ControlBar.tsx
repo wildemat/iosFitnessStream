@@ -5,7 +5,10 @@ import {
   type PanelKey,
 } from "../../store/useLayoutStore";
 import { ImportModal } from "../ImportModal/ImportModal";
+import { listPresetNames, loadPresetJson } from "../../utils/presets";
 import "./ControlBar.css";
+
+const PRESET_NAMES = listPresetNames();
 
 const WIDGET_LABELS: Record<PanelKey, string> = {
   heartrate: "Heart Rate",
@@ -67,6 +70,13 @@ export const ControlBar = ({
     downloadJson(json, "overlay-config.json");
   };
 
+  const handlePresetChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const name = e.target.value;
+    if (!name) return;
+    const json = loadPresetJson(name);
+    if (json) importState(json);
+  };
+
   return (
     <div className="control-bar">
       <div className="control-bar__section">
@@ -92,6 +102,22 @@ export const ControlBar = ({
           <button className="control-bar__btn" onClick={() => resetLayout()}>
             Reset Layout
           </button>
+          {PRESET_NAMES.length > 0 && (
+            <select
+              className="control-bar__select"
+              value=""
+              onChange={handlePresetChange}
+            >
+              <option value="" disabled>
+                Load Preset…
+              </option>
+              {PRESET_NAMES.map((name) => (
+                <option key={name} value={name}>
+                  {name}
+                </option>
+              ))}
+            </select>
+          )}
           <button className="control-bar__btn" onClick={handleExport}>
             Export
           </button>

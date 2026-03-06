@@ -1,0 +1,13 @@
+{
+  "enabledWidgets": [
+    "workout",
+    "heartrate",
+    "elapsed",
+    "pace",
+    "distance",
+    "calories",
+    "steps",
+    "elevation",
+    "minimap"
+  ]
+}

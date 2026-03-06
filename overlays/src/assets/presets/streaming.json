@@ -1,0 +1,13 @@
+{
+  "enabledWidgets": [
+    "workout",
+    "heartrate",
+    "elapsed",
+    "pace",
+    "distance",
+    "minimap"
+  ],
+  "widgetOptions": {
+    "minimap": { "zoom": 16 }
+  }
+}
