@@ -28,6 +28,24 @@ const buffer: BufferedEvent[] = [];
 let bufferCursor = 0;
 let playbackTimer: ReturnType<typeof setInterval> | undefined;
 
+// Null out the store when no fresh metrics arrive within this window.
+// The iOS app sends every ~1 s, so 5 s means 5 consecutive misses.
+const STALE_TIMEOUT_MS = 5_000;
+let stalenessTimer: ReturnType<typeof setTimeout> | undefined;
+
+function publishMetrics(data: WorkoutMetrics) {
+  metricsStore.setState({ metrics: data });
+  clearTimeout(stalenessTimer);
+  stalenessTimer = setTimeout(() => {
+    metricsStore.setState({ metrics: null });
+  }, STALE_TIMEOUT_MS);
+}
+
+function clearStalenessTimer() {
+  clearTimeout(stalenessTimer);
+  stalenessTimer = undefined;
+}
+
 function releaseBuffered() {
   const threshold = Date.now() - activeDelayMs;
   let latest: WorkoutMetrics | null = null;
@@ -45,12 +63,12 @@ function releaseBuffered() {
     bufferCursor = 0;
   }
 
-  if (latest) metricsStore.setState({ metrics: latest });
+  if (latest) publishMetrics(latest);
 }
 
 function handleMetrics(data: WorkoutMetrics) {
   if (activeDelayMs <= 0) {
-    metricsStore.setState({ metrics: data });
+    publishMetrics(data);
   } else {
     buffer.push({ data, receivedAt: Date.now() });
   }
@@ -80,6 +98,8 @@ function stopConnection() {
   source = null;
   clearTimeout(retryTimer);
   retryTimer = undefined;
+  clearStalenessTimer();
+  metricsStore.setState({ metrics: null });
 }
 
 function stopPlayback() {
