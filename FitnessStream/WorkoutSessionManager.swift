@@ -41,6 +41,16 @@ final class WorkoutSessionManager: NSObject {
     /// iPhone HealthKit queries skip updating any field in this set.
     private var watchProvidedMetrics: Set<String> = []
 
+    // MARK: - Test workout segment tracking
+
+    private var segmentTimer: Timer?
+    private var currentSegmentStart: Date?
+    private var segmentIndex: Int = 0
+
+    private var isTestWorkout: Bool {
+        workoutType.displayName == "Test"
+    }
+
     init(workoutType: WorkoutType) {
         self.workoutType = workoutType
         super.init()
@@ -104,6 +114,14 @@ final class WorkoutSessionManager: NSObject {
 
         state = .running
         delegate?.workoutSession(self, didChangeState: state)
+
+        if isTestWorkout {
+            segmentIndex = 0
+            currentSegmentStart = now
+            segmentTimer = Timer.scheduledTimer(withTimeInterval: 10.0, repeats: true) { [weak self] _ in
+                self?.rotateSegment()
+            }
+        }
     }
 
     func pauseWorkout() {
@@ -137,7 +155,15 @@ final class WorkoutSessionManager: NSObject {
         state = .ended
         delegate?.workoutSession(self, didChangeState: state)
 
-        saveWorkoutToHealthKit()
+        if isTestWorkout {
+            segmentTimer?.invalidate()
+            segmentTimer = nil
+            finalizeCurrentSegment { [weak self] in
+                self?.saveWorkoutToHealthKit()
+            }
+        } else {
+            saveWorkoutToHealthKit()
+        }
     }
 
     // MARK: - Save workout to HealthKit (Fitness app)
@@ -179,6 +205,67 @@ final class WorkoutSessionManager: NSObject {
                 }
             }
         }
+    }
+
+    // MARK: - Test workout segments
+
+    private func rotateSegment() {
+        finalizeCurrentSegment()
+        currentSegmentStart = Date()
+    }
+
+    private func finalizeCurrentSegment(completion: (() -> Void)? = nil) {
+        guard let builder = workoutBuilder,
+              let segmentStart = currentSegmentStart else {
+            completion?()
+            return
+        }
+
+        let segmentEnd = endDate ?? Date()
+        segmentIndex += 1
+
+        let config = HKWorkoutConfiguration()
+        config.activityType = .highIntensityIntervalTraining
+        config.locationType = .indoor
+
+        let metadata: [String: Any] = [
+            "exercise_name": "Exercise \(segmentIndex)",
+            "reps_count": NSNumber(value: 50),
+            "load_lb": NSNumber(value: 120),
+        ]
+
+        let activity = HKWorkoutActivity(
+            workoutConfiguration: config,
+            start: segmentStart,
+            end: segmentEnd,
+            metadata: metadata
+        )
+
+        let event = HKWorkoutEvent(
+            type: .segment,
+            dateInterval: DateInterval(start: segmentStart, end: segmentEnd),
+            metadata: metadata
+        )
+
+        let group = DispatchGroup()
+
+        group.enter()
+        builder.addWorkoutActivity(activity) { _, error in
+            if let error { print("[Test] Failed to add activity: \(error)") }
+            group.leave()
+        }
+
+        group.enter()
+        builder.addWorkoutEvents([event]) { _, error in
+            if let error { print("[Test] Failed to add event: \(error)") }
+            group.leave()
+        }
+
+        group.notify(queue: .main) {
+            completion?()
+        }
+
+        currentSegmentStart = nil
     }
 
     // MARK: - Timer

@@ -17,6 +17,7 @@ struct WorkoutType: Equatable {
         WorkoutType(activityType: .elliptical, displayName: "Elliptical"),
         WorkoutType(activityType: .socialDance, displayName: "Dance"),
         WorkoutType(activityType: .cooldown, displayName: "Cooldown"),
+        WorkoutType(activityType: .highIntensityIntervalTraining, displayName: "Test"),
     ]
 
     static func == (lhs: WorkoutType, rhs: WorkoutType) -> Bool {

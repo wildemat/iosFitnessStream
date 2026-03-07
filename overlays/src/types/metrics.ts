@@ -3,7 +3,7 @@ export interface WorkoutMetrics {
   workout_type: string;
   elapsed_seconds: number;
   heart_rate?: number;
-  heart_rate_zone?: number;         // 1–5
+  heart_rate_zone?: number; // 1–5
   active_energy_kcal?: number;
   distance_meters?: number;
   pace_min_per_km?: number;
@@ -11,11 +11,11 @@ export interface WorkoutMetrics {
   latitude?: number;
   longitude?: number;
   elevation_meters?: number;
-  timestamp: string;                // ISO 8601
+  timestamp: string; // ISO 8601
 }
 
 export const MOCK_METRICS: WorkoutMetrics = {
-  workout_type: 'Running',
+  workout_type: "Running",
   elapsed_seconds: 1845,
   heart_rate: 148,
   heart_rate_zone: 4,
@@ -26,5 +26,5 @@ export const MOCK_METRICS: WorkoutMetrics = {
   latitude: 37.7749,
   longitude: -122.4194,
   elevation_meters: 48,
-  timestamp: '2026-02-24T12:30:45Z',
+  timestamp: "2026-02-24T12:30:45Z",
 };
