@@ -27,28 +27,29 @@
 ## How It Works
 
 ```
-┌──────────────┐  POST /           ┌──────────────┐  SSE /events   ┌──────────────┐
-│  iPhone App  │ ───────────────▶  │  Local API   │ ─────────────▶ │   Overlay    │
-│ (FitnessStream)                  │  (server.js) │                │   (React)    │
-└──────┬───────┘                   └──────────────┘                └──────┬───────┘
-       │                                                                  │
-       │  RTSP stream (Moblin)                          OBS Browser Source │
-       ▼                                                                  ▼
-┌──────────────┐                                       ┌──────────────────────────┐
-│   Moblin App │ ──── RTSP ──────────────────────────▶ │          OBS             │
-│  (iPhone)    │                                       │  • Camera via RTSP       │
-└──────────────┘                                       │  • Overlays via Browser  │
-                                                       └──────────────────────────┘
+┌────────────────┐  POST /       ┌───────┐  SSE /events  ┌──────────────────┐
+│   iPhone App   │ ────────────▶ │  API  │ ────────────▶ │  Client website  │
+│ (FitnessStream)│               └───────┘               │     (React)      │
+└────────────────┘                                       └────────┬─────────┘
+                                                                  │
+                                                       OBS Browser Source
+                                                                  │
+┌────────────────┐  RTSP         ┌────────────┐                   ▼
+│  Video source  │ ────────────▶ │ Moblin App │ ─── RTSP ───▶ ┌──────────────────────────┐
+│ (iPhone/GoPro) │               │  (iPhone)  │               │          OBS             │
+└────────────────┘               └────────────┘               │  • Camera via RTSP       │
+                                                              │  • Overlays via Browser  │
+                                                              └──────────────────────────┘
 ```
 
 There are four pieces to set up:
 
 | #   | Component              | What it does                                                                            | Runs on                      |
 | --- | ---------------------- | --------------------------------------------------------------------------------------- | ---------------------------- |
-| 1   | **Local API server**   | Receives metrics from the iPhone app and broadcasts them as a Server-Sent Events stream | Your Mac/PC                  |
-| 2   | **Overlay client**     | React app that renders live widgets (HR, pace, map, etc.) from the SSE stream           | Your Mac/PC (served by Vite) |
-| 3   | **OBS Browser Source** | Loads the overlay client directly inside OBS as a transparent layer                     | OBS on your Mac/PC           |
-| 4   | **OBS RTSP Source**    | Receives the live camera feed from Moblin on your iPhone                                | OBS on your Mac/PC           |
+| 1   | **API**                | Receives metrics from the iPhone app and broadcasts them as a Server-Sent Events stream | External service             |
+| 2   | **Client website**     | React app that renders live widgets (HR, pace, map, etc.) from the SSE stream           | Your Mac/PC (served by Vite) |
+| 3   | **OBS Browser Source** | Loads the client website directly inside OBS as a transparent layer                     | OBS on your Mac/PC           |
+| 4   | **OBS RTSP Source**    | Receives the live camera feed from Moblin, sourced from an iPhone or GoPro              | OBS on your Mac/PC           |
 
 ## Prerequisites
 
