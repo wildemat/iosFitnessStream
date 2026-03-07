@@ -1,6 +1,26 @@
-# Fitness Stream
+<p align="center">
+  <a href="https://apps.apple.com/us/app/fitness-stream/id6759740524">
+    <img src="FitnessStream/Assets.xcassets/AppIcon.appiconset/AppIcon.png" width="140" height="140" alt="Fitness Stream" />
+  </a>
+</p>
 
-Stream live workout metrics from your iPhone into OBS overlays — heart rate, pace, distance, GPS minimap, and more — entirely self-hosted on your own machine, for free.
+<h1 align="center">Fitness Stream (Proof of Concept)</h1>
+
+<p align="center">
+  Stream live workout metrics from your iPhone into OBS overlays — heart rate, pace, distance, GPS minimap, and more — entirely self-hosted on your own machine, for free.
+</p>
+
+<p align="center">
+  <a href="https://apps.apple.com/us/app/fitness-stream/id6759740524">
+    <img src="https://img.shields.io/badge/Download_on_the-App_Store-000000?style=for-the-badge&logo=app-store&logoColor=white" alt="Download on the App Store" />
+  </a>
+</p>
+
+<p align="center">
+  Demo livestream: <a href="https://youtube.com/live/KvPspU89zE4">youtube.com/live/KvPspU89zE4</a>
+</p>
+
+<br/>
 
 <img src='overlays/assets/overlays.png'/>
 
@@ -23,12 +43,12 @@ Stream live workout metrics from your iPhone into OBS overlays — heart rate, p
 
 There are four pieces to set up:
 
-| # | Component | What it does | Runs on |
-|---|-----------|-------------|---------|
-| 1 | **Local API server** | Receives metrics from the iPhone app and broadcasts them as a Server-Sent Events stream | Your Mac/PC |
-| 2 | **Overlay client** | React app that renders live widgets (HR, pace, map, etc.) from the SSE stream | Your Mac/PC (served by Vite) |
-| 3 | **OBS Browser Source** | Loads the overlay client directly inside OBS as a transparent layer | OBS on your Mac/PC |
-| 4 | **OBS RTSP Source** | Receives the live camera feed from Moblin on your iPhone | OBS on your Mac/PC |
+| #   | Component              | What it does                                                                            | Runs on                      |
+| --- | ---------------------- | --------------------------------------------------------------------------------------- | ---------------------------- |
+| 1   | **Local API server**   | Receives metrics from the iPhone app and broadcasts them as a Server-Sent Events stream | Your Mac/PC                  |
+| 2   | **Overlay client**     | React app that renders live widgets (HR, pace, map, etc.) from the SSE stream           | Your Mac/PC (served by Vite) |
+| 3   | **OBS Browser Source** | Loads the overlay client directly inside OBS as a transparent layer                     | OBS on your Mac/PC           |
+| 4   | **OBS RTSP Source**    | Receives the live camera feed from Moblin on your iPhone                                | OBS on your Mac/PC           |
 
 ## Prerequisites
 
@@ -314,6 +334,7 @@ cloudflared tunnel run fitness-stream
 ```
 
 Then in OBS:
+
 - [ ] Add a **Media Source** for the Moblin RTSP stream (`rtsp://<iphone-ip>:7447`)
 - [ ] Add a **Browser Source** for the overlay (`http://localhost:5173/`)
 - [ ] Start Moblin on iPhone and tap Go Live
