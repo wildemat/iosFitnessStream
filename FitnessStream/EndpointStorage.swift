@@ -30,6 +30,17 @@ enum EndpointStorage {
         }
     }
 
+    private static let streamEnabledKey = "com.fitnessstream.streamEnabled"
+
+    /// Whether streaming to the endpoint is enabled. Defaults to true.
+    static var streamEnabled: Bool {
+        get {
+            if UserDefaults.standard.object(forKey: streamEnabledKey) == nil { return true }
+            return UserDefaults.standard.bool(forKey: streamEnabledKey)
+        }
+        set { UserDefaults.standard.set(newValue, forKey: streamEnabledKey) }
+    }
+
     static func clear() {
         UserDefaults.standard.removeObject(forKey: urlKey)
         UserDefaults.standard.removeObject(forKey: frequencyKey)

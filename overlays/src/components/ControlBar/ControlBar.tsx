@@ -22,7 +22,7 @@ const WIDGET_LABELS: Record<PanelKey, string> = {
   minimap: "Minimap",
 };
 
-export const DEFAULT_SERVER = "http://localhost:8080/events";
+export const DEFAULT_SERVER = "https://api.wildmat.dev/fitness/events";
 
 export interface ControlBarProps {
   serverUrl: string;
@@ -121,7 +121,10 @@ export const ControlBar = ({
           <button className="control-bar__btn" onClick={handleExport}>
             Export
           </button>
-          <button className="control-bar__btn" onClick={() => setImportOpen(true)}>
+          <button
+            className="control-bar__btn"
+            onClick={() => setImportOpen(true)}
+          >
             Import
           </button>
         </div>

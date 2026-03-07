@@ -98,6 +98,21 @@ final class ViewController: UIViewController {
         return l
     }()
 
+    private let streamToggleLabel: UILabel = {
+        let l = UILabel()
+        l.text = "Stream data"
+        l.font = .preferredFont(forTextStyle: .subheadline)
+        l.textColor = .darkGray
+        l.translatesAutoresizingMaskIntoConstraints = false
+        return l
+    }()
+
+    private let streamToggle: UISwitch = {
+        let s = UISwitch()
+        s.translatesAutoresizingMaskIntoConstraints = false
+        return s
+    }()
+
     private let workoutsLabel: UILabel = {
         let l = UILabel()
         l.text = "Select Workout"
@@ -117,6 +132,16 @@ final class ViewController: UIViewController {
 
     private let workoutTypes = WorkoutType.all
 
+    private var workoutsTopToStream: NSLayoutConstraint!
+    private var workoutsTopToToggle: NSLayoutConstraint!
+
+    private lazy var streamingViews: [UIView] = [
+        endpointLabel, endpointField,
+        apiKeyLabel, apiKeyField,
+        frequencyLabel, frequencyValueLabel, frequencySlider,
+        pingButton, pingStatusLabel,
+    ]
+
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemGray6
@@ -131,6 +156,8 @@ final class ViewController: UIViewController {
         tableView.dataSource = self
         tableView.delegate = self
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: "WorkoutCell")
+        streamToggle.isOn = EndpointStorage.streamEnabled
+        updateStreamingVisibility()
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -142,6 +169,8 @@ final class ViewController: UIViewController {
     }
 
     private func setupUI() {
+        view.addSubview(streamToggleLabel)
+        view.addSubview(streamToggle)
         view.addSubview(endpointLabel)
         view.addSubview(endpointField)
         view.addSubview(apiKeyLabel)
@@ -156,10 +185,17 @@ final class ViewController: UIViewController {
 
         pingButton.addTarget(self, action: #selector(pingEndpoint), for: .touchUpInside)
         frequencySlider.addTarget(self, action: #selector(frequencySliderChanged), for: .valueChanged)
+        streamToggle.addTarget(self, action: #selector(streamToggleChanged), for: .valueChanged)
 
         let margin: CGFloat = 20
         NSLayoutConstraint.activate([
-            endpointLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 24),
+            streamToggleLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 24),
+            streamToggleLabel.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: margin),
+
+            streamToggle.centerYAnchor.constraint(equalTo: streamToggleLabel.centerYAnchor),
+            streamToggle.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -margin),
+
+            endpointLabel.topAnchor.constraint(equalTo: streamToggle.bottomAnchor, constant: 16),
             endpointLabel.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: margin),
             endpointLabel.trailingAnchor.constraint(lessThanOrEqualTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -margin),
 
@@ -195,7 +231,6 @@ final class ViewController: UIViewController {
             pingStatusLabel.leadingAnchor.constraint(equalTo: pingButton.trailingAnchor, constant: 10),
             pingStatusLabel.trailingAnchor.constraint(lessThanOrEqualTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -margin),
 
-            workoutsLabel.topAnchor.constraint(equalTo: pingButton.bottomAnchor, constant: 20),
             workoutsLabel.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: margin),
 
             tableView.topAnchor.constraint(equalTo: workoutsLabel.bottomAnchor, constant: 8),
@@ -203,6 +238,9 @@ final class ViewController: UIViewController {
             tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
         ])
+
+        workoutsTopToStream = workoutsLabel.topAnchor.constraint(equalTo: pingButton.bottomAnchor, constant: 20)
+        workoutsTopToToggle = workoutsLabel.topAnchor.constraint(equalTo: streamToggle.bottomAnchor, constant: 20)
     }
 
     @objc private func frequencySliderChanged(_ sender: UISlider) {
@@ -278,6 +316,21 @@ final class ViewController: UIViewController {
         let icon = success ? "✓" : "✗"
         pingStatusLabel.text = "\(icon)  \(message)"
         pingStatusLabel.textColor = success ? .systemGreen : .systemRed
+    }
+
+    @objc private func streamToggleChanged(_ sender: UISwitch) {
+        EndpointStorage.streamEnabled = sender.isOn
+        UIView.animate(withDuration: 0.25) {
+            self.updateStreamingVisibility()
+            self.view.layoutIfNeeded()
+        }
+    }
+
+    private func updateStreamingVisibility() {
+        let show = streamToggle.isOn
+        streamingViews.forEach { $0.isHidden = !show }
+        workoutsTopToStream.isActive = show
+        workoutsTopToToggle.isActive = !show
     }
 }
 

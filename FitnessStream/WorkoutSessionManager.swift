@@ -287,7 +287,8 @@ final class WorkoutSessionManager: NSObject {
         delegate?.workoutSession(self, didUpdateMetrics: metrics)
 
         let now = Date()
-        if now.timeIntervalSince(lastStreamTime) >= EndpointStorage.writeFrequency {
+        if EndpointStorage.streamEnabled,
+           now.timeIntervalSince(lastStreamTime) >= EndpointStorage.writeFrequency {
             streamClient.send(metrics)
             lastStreamTime = now
         }
