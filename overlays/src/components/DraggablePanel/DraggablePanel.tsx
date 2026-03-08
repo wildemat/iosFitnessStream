@@ -12,6 +12,14 @@ export interface DraggablePanelProps {
   children: React.ReactNode;
 }
 
+function clientXY(e: MouseEvent | TouchEvent | React.MouseEvent | React.TouchEvent) {
+  if ("touches" in e) {
+    const t = e.touches[0] ?? (e as TouchEvent).changedTouches[0];
+    return { x: t.clientX, y: t.clientY };
+  }
+  return { x: (e as MouseEvent).clientX, y: (e as MouseEvent).clientY };
+}
+
 export function DraggablePanel({ panelKey, children }: DraggablePanelProps) {
   const rect = useLayoutStore((s) => s.panels[panelKey]);
   const isSelected = useLayoutStore((s) => s.selectedPanel === panelKey);
@@ -44,8 +52,8 @@ export function DraggablePanel({ panelKey, children }: DraggablePanelProps) {
     origH: number;
   } | null>(null);
 
-  const handleMouseDown = useCallback(
-    (e: React.MouseEvent) => {
+  const startDrag = useCallback(
+    (e: React.MouseEvent | React.TouchEvent) => {
       if ((e.target as HTMLElement).dataset.resize) return;
       if ((e.target as HTMLElement).closest(".draggable-panel__gear")) return;
       e.preventDefault();
@@ -56,54 +64,47 @@ export function DraggablePanel({ panelKey, children }: DraggablePanelProps) {
         return;
       }
 
-      dragRef.current = {
-        startX: e.clientX,
-        startY: e.clientY,
-        origX: rect.x,
-        origY: rect.y,
-        moved: false,
-      };
+      const { x, y } = clientXY(e);
+      dragRef.current = { startX: x, startY: y, origX: rect.x, origY: rect.y, moved: false };
 
-      const onMove = (ev: MouseEvent) => {
+      const onMove = (ev: MouseEvent | TouchEvent) => {
         if (!dragRef.current) return;
+        ev.preventDefault();
         dragRef.current.moved = true;
-        const dx = ev.clientX - dragRef.current.startX;
-        const dy = ev.clientY - dragRef.current.startY;
-        movePanel(
-          panelKey,
-          dragRef.current.origX + dx,
-          dragRef.current.origY + dy,
-        );
+        const pos = clientXY(ev);
+        movePanel(panelKey, dragRef.current.origX + pos.x - dragRef.current.startX, dragRef.current.origY + pos.y - dragRef.current.startY);
       };
 
       const onUp = () => {
         dragRef.current = null;
         window.removeEventListener("mousemove", onMove);
         window.removeEventListener("mouseup", onUp);
+        window.removeEventListener("touchmove", onMove);
+        window.removeEventListener("touchend", onUp);
       };
 
-      window.addEventListener("mousemove", onMove);
+      window.addEventListener("mousemove", onMove, { passive: false });
       window.addEventListener("mouseup", onUp);
+      window.addEventListener("touchmove", onMove, { passive: false });
+      window.addEventListener("touchend", onUp);
     },
     [panelKey, isSelected, rect.x, rect.y, movePanel, selectPanel],
   );
 
-  const handleResizeStart = useCallback(
-    (e: React.MouseEvent) => {
+  const startResize = useCallback(
+    (e: React.MouseEvent | React.TouchEvent) => {
       if (!isSelected) return;
       e.preventDefault();
       e.stopPropagation();
-      resizeRef.current = {
-        startX: e.clientX,
-        startY: e.clientY,
-        origW: actualW,
-        origH: actualH,
-      };
+      const { x, y } = clientXY(e);
+      resizeRef.current = { startX: x, startY: y, origW: actualW, origH: actualH };
 
-      const onMove = (ev: MouseEvent) => {
+      const onMove = (ev: MouseEvent | TouchEvent) => {
         if (!resizeRef.current) return;
-        const dw = ev.clientX - resizeRef.current.startX;
-        const dh = ev.clientY - resizeRef.current.startY;
+        ev.preventDefault();
+        const pos = clientXY(ev);
+        const dw = pos.x - resizeRef.current.startX;
+        const dh = pos.y - resizeRef.current.startY;
         const newScale = Math.min(
           (resizeRef.current.origW + dw) / base.w,
           (resizeRef.current.origH + dh) / base.h,
@@ -115,10 +116,14 @@ export function DraggablePanel({ panelKey, children }: DraggablePanelProps) {
         resizeRef.current = null;
         window.removeEventListener("mousemove", onMove);
         window.removeEventListener("mouseup", onUp);
+        window.removeEventListener("touchmove", onMove);
+        window.removeEventListener("touchend", onUp);
       };
 
-      window.addEventListener("mousemove", onMove);
+      window.addEventListener("mousemove", onMove, { passive: false });
       window.addEventListener("mouseup", onUp);
+      window.addEventListener("touchmove", onMove, { passive: false });
+      window.addEventListener("touchend", onUp);
     },
     [panelKey, isSelected, actualW, actualH, base.w, base.h, resizePanel],
   );
@@ -139,8 +144,10 @@ export function DraggablePanel({ panelKey, children }: DraggablePanelProps) {
         height: actualH,
         zIndex: isSelected ? 10 : 1,
         opacity: opts.opacity,
+        touchAction: "none",
       }}
-      onMouseDown={handleMouseDown}
+      onMouseDown={startDrag}
+      onTouchStart={startDrag}
     >
       <div
         className="draggable-panel__content"
@@ -169,7 +176,8 @@ export function DraggablePanel({ panelKey, children }: DraggablePanelProps) {
           <div
             className="draggable-panel__resize-handle"
             data-resize="true"
-            onMouseDown={handleResizeStart}
+            onMouseDown={startResize}
+            onTouchStart={startResize}
           />
         </>
       )}
