@@ -79,9 +79,10 @@ function buildDefaultBaseDims(): Record<PanelKey, BaseDims> {
 
 const COLS = 3;
 const GAP = 16;
-const PAD = 20;
+export const PAD = 20;
 const MIN_W = 120;
 const MIN_H = 100;
+const MIN_CELL_H = 110;
 
 export function computeGridLayout(
   controlBarHeight: number,
@@ -89,13 +90,14 @@ export function computeGridLayout(
 ): Record<PanelKey, PanelRect> {
   const vw = window.innerWidth;
   const vh = window.innerHeight;
-  const top = controlBarHeight + PAD;
+  const top = PAD;
   const count = enabledKeys.length;
   const cols = Math.min(COLS, count);
   const cellW = cols > 0 ? (vw - PAD * 2 - GAP * (cols - 1)) / cols : 0;
   const rows = cols > 0 ? Math.ceil(count / cols) : 0;
-  const availH = vh - top - PAD;
-  const cellH = rows > 0 ? (availH - GAP * (rows - 1)) / rows : 0;
+  const availH = vh - controlBarHeight - PAD * 2;
+  const naturalCellH = rows > 0 ? (availH - GAP * (rows - 1)) / rows : 0;
+  const cellH = Math.max(naturalCellH, MIN_CELL_H);
 
   const layout = {} as Record<PanelKey, PanelRect>;
 
@@ -197,7 +199,6 @@ export const useLayoutStore = create<LayoutState>((set, get) => ({
 
   movePanel: (key, x, y) => {
     const vw = window.innerWidth;
-    const vh = window.innerHeight;
     const rect = get().panels[key];
     set({
       panels: {
@@ -205,7 +206,7 @@ export const useLayoutStore = create<LayoutState>((set, get) => ({
         [key]: {
           ...rect,
           x: Math.max(0, Math.min(x, vw - rect.w)),
-          y: Math.max(0, Math.min(y, vh - rect.h)),
+          y: Math.max(0, y),
         },
       },
     });
@@ -213,10 +214,9 @@ export const useLayoutStore = create<LayoutState>((set, get) => ({
 
   resizePanel: (key, w, h) => {
     const vw = window.innerWidth;
-    const vh = window.innerHeight;
     const rect = get().panels[key];
     const clampedW = Math.max(MIN_W, Math.min(w, vw - rect.x));
-    const clampedH = Math.max(MIN_H, Math.min(h, vh - rect.y));
+    const clampedH = Math.max(MIN_H, h);
     set({
       panels: {
         ...get().panels,

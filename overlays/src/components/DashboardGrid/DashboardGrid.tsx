@@ -1,7 +1,8 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import type { WorkoutMetrics } from "../../types/metrics";
 import {
   useLayoutStore,
+  PAD,
   type PanelKey,
   type WidgetOpts,
 } from "../../store/useLayoutStore";
@@ -61,12 +62,19 @@ const RENDERERS: Record<PanelKey, (p: RendererProps) => React.ReactNode> = {
   ),
 };
 
+function getViewportHeight() {
+  return window.visualViewport?.height ?? window.innerHeight;
+}
+
 export function DashboardGrid({ metrics }: DashboardGridProps) {
   const resetLayout = useLayoutStore((s) => s.resetLayout);
   const setControlBarHeight = useLayoutStore((s) => s.setControlBarHeight);
   const getEnabledKeys = useLayoutStore((s) => s.getEnabledKeys);
   const widgetOptions = useLayoutStore((s) => s.widgetOptions);
+  const panels = useLayoutStore((s) => s.panels);
+  const controlBarHeight = useLayoutStore((s) => s.controlBarHeight);
   const hasInit = useRef(false);
+  const [vpHeight, setVpHeight] = useState(getViewportHeight);
 
   useEffect(() => {
     const bar = document.querySelector(".control-bar");
@@ -78,6 +86,21 @@ export function DashboardGrid({ metrics }: DashboardGridProps) {
     }
   }, [resetLayout, setControlBarHeight]);
 
+  useEffect(() => {
+    const onResize = () => {
+      setVpHeight(getViewportHeight());
+      const bar = document.querySelector(".control-bar");
+      const cbh = bar ? bar.getBoundingClientRect().height : 0;
+      setControlBarHeight(cbh);
+    };
+    window.addEventListener("resize", onResize);
+    window.visualViewport?.addEventListener("resize", onResize);
+    return () => {
+      window.removeEventListener("resize", onResize);
+      window.visualViewport?.removeEventListener("resize", onResize);
+    };
+  }, [setControlBarHeight]);
+
   const selectPanel = useLayoutStore((s) => s.selectPanel);
 
   const handleCanvasClick = (e: React.MouseEvent) => {
@@ -86,8 +109,18 @@ export function DashboardGrid({ metrics }: DashboardGridProps) {
 
   const enabledKeys = getEnabledKeys();
 
+  const panelBottom = enabledKeys.reduce((max, key) => {
+    const p = panels[key];
+    return Math.max(max, p.y + p.h);
+  }, 0);
+  const canvasH = Math.max(vpHeight - controlBarHeight, panelBottom + PAD);
+
   return (
-    <div className="dashboard-canvas" onMouseDown={handleCanvasClick}>
+    <div
+      className="dashboard-canvas"
+      style={{ minHeight: canvasH }}
+      onMouseDown={handleCanvasClick}
+    >
       {enabledKeys.map((key) => (
         <DraggablePanel key={key} panelKey={key}>
           {RENDERERS[key]({ metrics, opts: widgetOptions[key] })}
