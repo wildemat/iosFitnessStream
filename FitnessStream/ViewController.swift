@@ -6,6 +6,7 @@ final class ViewController: UIViewController {
     private let streamStatusLabel: UILabel = {
         let l = UILabel()
         l.font = .systemFont(ofSize: 13, weight: .semibold)
+        l.translatesAutoresizingMaskIntoConstraints = false
         return l
     }()
 
@@ -33,15 +34,11 @@ final class ViewController: UIViewController {
         view.backgroundColor = .systemGray6
         title = "Fitness Stream"
 
-        let gearButton = UIButton(type: .system)
-        gearButton.setImage(UIImage(systemName: "gearshape"), for: .normal)
-        gearButton.addTarget(self, action: #selector(openSettings), for: .touchUpInside)
-
-        let navStack = UIStackView(arrangedSubviews: [streamStatusLabel, gearButton])
-        navStack.axis = .horizontal
-        navStack.spacing = 8
-        navStack.alignment = .center
-        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: navStack)
+        navigationItem.rightBarButtonItem = UIBarButtonItem(
+            image: UIImage(systemName: "gearshape"),
+            style: .plain,
+            target: self,
+            action: #selector(openSettings))
 
         setupUI()
         tableView.dataSource = self
@@ -66,12 +63,17 @@ final class ViewController: UIViewController {
 
     private func setupUI() {
         view.addSubview(workoutsLabel)
+        view.addSubview(streamStatusLabel)
         view.addSubview(tableView)
 
         let margin: CGFloat = 20
         NSLayoutConstraint.activate([
             workoutsLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16),
             workoutsLabel.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: margin),
+
+            streamStatusLabel.centerYAnchor.constraint(equalTo: workoutsLabel.centerYAnchor),
+            streamStatusLabel.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -margin),
+            streamStatusLabel.leadingAnchor.constraint(greaterThanOrEqualTo: workoutsLabel.trailingAnchor, constant: 8),
 
             tableView.topAnchor.constraint(equalTo: workoutsLabel.bottomAnchor, constant: 8),
             tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
@@ -83,6 +85,9 @@ final class ViewController: UIViewController {
     @objc private func openSettings() {
         let settings = StreamSettingsViewController()
         settings.modalPresentationStyle = .formSheet
+        settings.onDismiss = { [weak self] in
+            self?.updateStreamStatus()
+        }
         present(settings, animated: true)
     }
 }

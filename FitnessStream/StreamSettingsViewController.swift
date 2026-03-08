@@ -2,6 +2,8 @@ import UIKit
 
 final class StreamSettingsViewController: UIViewController {
 
+    var onDismiss: (() -> Void)?
+
     // MARK: - Stream toggle
 
     private let streamToggle: UISwitch = {
@@ -104,6 +106,7 @@ final class StreamSettingsViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemGray6
+        presentationController?.delegate = self
         buildLayout()
         loadValues()
         wireActions()
@@ -426,7 +429,9 @@ final class StreamSettingsViewController: UIViewController {
         endpointField.resignFirstResponder()
         apiKeyField.resignFirstResponder()
         persistTextFields()
-        dismiss(animated: true)
+        dismiss(animated: true) { [weak self] in
+            self?.onDismiss?()
+        }
     }
 
     @objc private func streamToggleChanged(_ sender: UISwitch) {
@@ -536,6 +541,14 @@ final class StreamSettingsViewController: UIViewController {
         } else {
             apply()
         }
+    }
+}
+
+// MARK: - UIAdaptivePresentationControllerDelegate
+
+extension StreamSettingsViewController: UIAdaptivePresentationControllerDelegate {
+    func presentationControllerDidDismiss(_ presentationController: UIPresentationController) {
+        onDismiss?()
     }
 }
 

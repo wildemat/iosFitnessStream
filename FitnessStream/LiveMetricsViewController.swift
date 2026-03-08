@@ -51,6 +51,7 @@ final class LiveMetricsViewController: UIViewController {
     private let streamStatusLabel: UILabel = {
         let l = UILabel()
         l.font = .systemFont(ofSize: 13, weight: .semibold)
+        l.translatesAutoresizingMaskIntoConstraints = false
         return l
     }()
 
@@ -81,15 +82,11 @@ final class LiveMetricsViewController: UIViewController {
         title = workoutType.displayName
         navigationItem.hidesBackButton = true
 
-        let gearButton = UIButton(type: .system)
-        gearButton.setImage(UIImage(systemName: "gearshape"), for: .normal)
-        gearButton.addTarget(self, action: #selector(openSettings), for: .touchUpInside)
-
-        let navStack = UIStackView(arrangedSubviews: [streamStatusLabel, gearButton])
-        navStack.axis = .horizontal
-        navStack.spacing = 8
-        navStack.alignment = .center
-        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: navStack)
+        navigationItem.rightBarButtonItem = UIBarButtonItem(
+            image: UIImage(systemName: "gearshape"),
+            style: .plain,
+            target: self,
+            action: #selector(openSettings))
 
         buildLayout()
         pauseButton.addTarget(self, action: #selector(pauseTapped), for: .touchUpInside)
@@ -156,6 +153,7 @@ final class LiveMetricsViewController: UIViewController {
         buttonStack.distribution = .fillEqually
         buttonStack.translatesAutoresizingMaskIntoConstraints = false
 
+        view.addSubview(streamStatusLabel)
         view.addSubview(elapsedLabel)
         view.addSubview(scroll)
         view.addSubview(buttonStack)
@@ -163,7 +161,10 @@ final class LiveMetricsViewController: UIViewController {
         scroll.addSubview(grid)
 
         NSLayoutConstraint.activate([
-            elapsedLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16),
+            streamStatusLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 4),
+            streamStatusLabel.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -20),
+
+            elapsedLabel.topAnchor.constraint(equalTo: streamStatusLabel.bottomAnchor, constant: 8),
             elapsedLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
 
             scroll.topAnchor.constraint(equalTo: elapsedLabel.bottomAnchor, constant: 20),
@@ -221,6 +222,9 @@ final class LiveMetricsViewController: UIViewController {
     @objc private func openSettings() {
         let settings = StreamSettingsViewController()
         settings.modalPresentationStyle = .formSheet
+        settings.onDismiss = { [weak self] in
+            self?.updateStreamStatus()
+        }
         present(settings, animated: true)
     }
 
