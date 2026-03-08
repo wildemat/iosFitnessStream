@@ -19,6 +19,8 @@
 		A1B2C3D4E5F6000100010027 /* WorkoutNotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6000100010026 /* WorkoutNotificationManager.swift */; };
 		A1B2C3D4E5F6000100010029 /* WatchSessionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6000100010028 /* WatchSessionManager.swift */; };
 		A1B2C3D4E5F600010001002B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F600010001002A /* Assets.xcassets */; };
+		A1B2C3D4E5F600010001002D /* StreamSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F600010001002C /* StreamSettingsViewController.swift */; };
+		A1B2C3D4E5F600010001002F /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F600010001002E /* SceneDelegate.swift */; };
 		BEB71A062F47B6BB006B21FC /* FitnessStream Watch App Watch App.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = BEB719FC2F47B6BA006B21FC /* FitnessStream Watch App Watch App.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
@@ -62,6 +64,8 @@
 		A1B2C3D4E5F6000100010026 /* WorkoutNotificationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutNotificationManager.swift; sourceTree = "<group>"; };
 		A1B2C3D4E5F6000100010028 /* WatchSessionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchSessionManager.swift; sourceTree = "<group>"; };
 		A1B2C3D4E5F600010001002A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		A1B2C3D4E5F600010001002C /* StreamSettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamSettingsViewController.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F600010001002E /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		BEB719FC2F47B6BA006B21FC /* FitnessStream Watch App Watch App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "FitnessStream Watch App Watch App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -91,6 +95,7 @@
 			isa = PBXGroup;
 			children = (
 				A1B2C3D4E5F6000100010007 /* AppDelegate.swift */,
+				A1B2C3D4E5F600010001002E /* SceneDelegate.swift */,
 				A1B2C3D4E5F6000100010018 /* EndpointStorage.swift */,
 				A1B2C3D4E5F6000100010008 /* ViewController.swift */,
 				A1B2C3D4E5F600010001001A /* WorkoutType.swift */,
@@ -101,6 +106,7 @@
 				A1B2C3D4E5F6000100010024 /* LiveMetricsViewController.swift */,
 				A1B2C3D4E5F6000100010026 /* WorkoutNotificationManager.swift */,
 				A1B2C3D4E5F6000100010028 /* WatchSessionManager.swift */,
+				A1B2C3D4E5F600010001002C /* StreamSettingsViewController.swift */,
 				A1B2C3D4E5F600010001002A /* Assets.xcassets */,
 				A1B2C3D4E5F600010001001B /* FitnessStream.entitlements */,
 				A1B2C3D4E5F6000100010009 /* Info.plist */,
@@ -238,6 +244,8 @@
 				A1B2C3D4E5F6000100010025 /* LiveMetricsViewController.swift in Sources */,
 				A1B2C3D4E5F6000100010027 /* WorkoutNotificationManager.swift in Sources */,
 				A1B2C3D4E5F6000100010029 /* WatchSessionManager.swift in Sources */,
+				A1B2C3D4E5F600010001002D /* StreamSettingsViewController.swift in Sources */,
+				A1B2C3D4E5F600010001002F /* SceneDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -3,114 +3,10 @@ import HealthKit
 
 final class ViewController: UIViewController {
 
-    private let endpointLabel: UILabel = {
+    private let streamStatusLabel: UILabel = {
         let l = UILabel()
-        l.text = "Endpoint URL"
-        l.font = .preferredFont(forTextStyle: .subheadline)
-        l.textColor = .darkGray
-        l.translatesAutoresizingMaskIntoConstraints = false
+        l.font = .systemFont(ofSize: 13, weight: .semibold)
         return l
-    }()
-
-    private let endpointField: UITextField = {
-        let f = UITextField()
-        f.placeholder = "https://example.com/stream"
-        f.borderStyle = .roundedRect
-        f.autocapitalizationType = .none
-        f.autocorrectionType = .no
-        f.keyboardType = .URL
-        f.returnKeyType = .done
-        f.backgroundColor = .white
-        f.textColor = .black
-        f.translatesAutoresizingMaskIntoConstraints = false
-        return f
-    }()
-
-    private let apiKeyLabel: UILabel = {
-        let l = UILabel()
-        l.text = "API Key (optional)"
-        l.font = .preferredFont(forTextStyle: .subheadline)
-        l.textColor = .darkGray
-        l.translatesAutoresizingMaskIntoConstraints = false
-        return l
-    }()
-
-    private let apiKeyField: UITextField = {
-        let f = UITextField()
-        f.placeholder = "Bearer token"
-        f.borderStyle = .roundedRect
-        f.autocapitalizationType = .none
-        f.autocorrectionType = .no
-        f.isSecureTextEntry = true
-        f.returnKeyType = .done
-        f.backgroundColor = .white
-        f.textColor = .black
-        f.translatesAutoresizingMaskIntoConstraints = false
-        return f
-    }()
-
-    private let frequencyLabel: UILabel = {
-        let l = UILabel()
-        l.text = "Write Frequency"
-        l.font = .preferredFont(forTextStyle: .subheadline)
-        l.textColor = .darkGray
-        l.translatesAutoresizingMaskIntoConstraints = false
-        return l
-    }()
-
-    private let frequencyValueLabel: UILabel = {
-        let l = UILabel()
-        l.font = .monospacedDigitSystemFont(ofSize: UIFont.preferredFont(forTextStyle: .subheadline).pointSize, weight: .medium)
-        l.textColor = .darkGray
-        l.textAlignment = .right
-        l.translatesAutoresizingMaskIntoConstraints = false
-        return l
-    }()
-
-    private let frequencySlider: UISlider = {
-        let s = UISlider()
-        s.minimumValue = 1
-        s.maximumValue = 30
-        s.isContinuous = true
-        s.translatesAutoresizingMaskIntoConstraints = false
-        return s
-    }()
-
-    private let pingButton: UIButton = {
-        let b = UIButton(type: .system)
-        b.translatesAutoresizingMaskIntoConstraints = false
-        var config = UIButton.Configuration.tinted()
-        config.title = "Test Connection"
-        config.image = UIImage(systemName: "antenna.radiowaves.left.and.right")
-        config.imagePadding = 6
-        config.cornerStyle = .medium
-        config.buttonSize = .small
-        b.configuration = config
-        return b
-    }()
-
-    private let pingStatusLabel: UILabel = {
-        let l = UILabel()
-        l.font = .preferredFont(forTextStyle: .caption1)
-        l.textColor = .secondaryLabel
-        l.numberOfLines = 2
-        l.translatesAutoresizingMaskIntoConstraints = false
-        return l
-    }()
-
-    private let streamToggleLabel: UILabel = {
-        let l = UILabel()
-        l.text = "Stream data"
-        l.font = .preferredFont(forTextStyle: .subheadline)
-        l.textColor = .darkGray
-        l.translatesAutoresizingMaskIntoConstraints = false
-        return l
-    }()
-
-    private let streamToggle: UISwitch = {
-        let s = UISwitch()
-        s.translatesAutoresizingMaskIntoConstraints = false
-        return s
     }()
 
     private let workoutsLabel: UILabel = {
@@ -132,32 +28,25 @@ final class ViewController: UIViewController {
 
     private let workoutTypes = WorkoutType.all
 
-    private var workoutsTopToStream: NSLayoutConstraint!
-    private var workoutsTopToToggle: NSLayoutConstraint!
-
-    private lazy var streamingViews: [UIView] = [
-        endpointLabel, endpointField,
-        apiKeyLabel, apiKeyField,
-        frequencyLabel, frequencyValueLabel, frequencySlider,
-        pingButton, pingStatusLabel,
-    ]
-
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemGray6
         title = "Fitness Stream"
+
+        let gearButton = UIButton(type: .system)
+        gearButton.setImage(UIImage(systemName: "gearshape"), for: .normal)
+        gearButton.addTarget(self, action: #selector(openSettings), for: .touchUpInside)
+
+        let navStack = UIStackView(arrangedSubviews: [streamStatusLabel, gearButton])
+        navStack.axis = .horizontal
+        navStack.spacing = 8
+        navStack.alignment = .center
+        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: navStack)
+
         setupUI()
-        endpointField.delegate = self
-        endpointField.text = EndpointStorage.endpointURL
-        apiKeyField.delegate = self
-        apiKeyField.text = EndpointStorage.apiKey
-        frequencySlider.value = Float(EndpointStorage.writeFrequency)
-        updateFrequencyLabel()
         tableView.dataSource = self
         tableView.delegate = self
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: "WorkoutCell")
-        streamToggle.isOn = EndpointStorage.streamEnabled
-        updateStreamingVisibility()
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -166,71 +55,22 @@ final class ViewController: UIViewController {
         if let selected = tableView.indexPathForSelectedRow {
             tableView.deselectRow(at: selected, animated: animated)
         }
+        updateStreamStatus()
+    }
+
+    private func updateStreamStatus() {
+        let enabled = EndpointStorage.streamEnabled
+        streamStatusLabel.text = enabled ? "Streaming Enabled" : "Streaming Disabled"
+        streamStatusLabel.textColor = enabled ? .systemBlue : .systemRed
     }
 
     private func setupUI() {
-        view.addSubview(streamToggleLabel)
-        view.addSubview(streamToggle)
-        view.addSubview(endpointLabel)
-        view.addSubview(endpointField)
-        view.addSubview(apiKeyLabel)
-        view.addSubview(apiKeyField)
-        view.addSubview(frequencyLabel)
-        view.addSubview(frequencyValueLabel)
-        view.addSubview(frequencySlider)
-        view.addSubview(pingButton)
-        view.addSubview(pingStatusLabel)
         view.addSubview(workoutsLabel)
         view.addSubview(tableView)
 
-        pingButton.addTarget(self, action: #selector(pingEndpoint), for: .touchUpInside)
-        frequencySlider.addTarget(self, action: #selector(frequencySliderChanged), for: .valueChanged)
-        streamToggle.addTarget(self, action: #selector(streamToggleChanged), for: .valueChanged)
-
         let margin: CGFloat = 20
         NSLayoutConstraint.activate([
-            streamToggleLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 24),
-            streamToggleLabel.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: margin),
-
-            streamToggle.centerYAnchor.constraint(equalTo: streamToggleLabel.centerYAnchor),
-            streamToggle.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -margin),
-
-            endpointLabel.topAnchor.constraint(equalTo: streamToggle.bottomAnchor, constant: 16),
-            endpointLabel.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: margin),
-            endpointLabel.trailingAnchor.constraint(lessThanOrEqualTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -margin),
-
-            endpointField.topAnchor.constraint(equalTo: endpointLabel.bottomAnchor, constant: 8),
-            endpointField.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: margin),
-            endpointField.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -margin),
-            endpointField.heightAnchor.constraint(greaterThanOrEqualToConstant: 44),
-
-            apiKeyLabel.topAnchor.constraint(equalTo: endpointField.bottomAnchor, constant: 16),
-            apiKeyLabel.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: margin),
-            apiKeyLabel.trailingAnchor.constraint(lessThanOrEqualTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -margin),
-
-            apiKeyField.topAnchor.constraint(equalTo: apiKeyLabel.bottomAnchor, constant: 8),
-            apiKeyField.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: margin),
-            apiKeyField.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -margin),
-            apiKeyField.heightAnchor.constraint(greaterThanOrEqualToConstant: 44),
-
-            frequencyLabel.topAnchor.constraint(equalTo: apiKeyField.bottomAnchor, constant: 16),
-            frequencyLabel.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: margin),
-
-            frequencyValueLabel.centerYAnchor.constraint(equalTo: frequencyLabel.centerYAnchor),
-            frequencyValueLabel.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -margin),
-            frequencyValueLabel.leadingAnchor.constraint(greaterThanOrEqualTo: frequencyLabel.trailingAnchor, constant: 8),
-
-            frequencySlider.topAnchor.constraint(equalTo: frequencyLabel.bottomAnchor, constant: 8),
-            frequencySlider.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: margin),
-            frequencySlider.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -margin),
-
-            pingButton.topAnchor.constraint(equalTo: frequencySlider.bottomAnchor, constant: 12),
-            pingButton.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: margin),
-
-            pingStatusLabel.centerYAnchor.constraint(equalTo: pingButton.centerYAnchor),
-            pingStatusLabel.leadingAnchor.constraint(equalTo: pingButton.trailingAnchor, constant: 10),
-            pingStatusLabel.trailingAnchor.constraint(lessThanOrEqualTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -margin),
-
+            workoutsLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16),
             workoutsLabel.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: margin),
 
             tableView.topAnchor.constraint(equalTo: workoutsLabel.bottomAnchor, constant: 8),
@@ -238,118 +78,12 @@ final class ViewController: UIViewController {
             tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
         ])
-
-        workoutsTopToStream = workoutsLabel.topAnchor.constraint(equalTo: pingButton.bottomAnchor, constant: 20)
-        workoutsTopToToggle = workoutsLabel.topAnchor.constraint(equalTo: streamToggle.bottomAnchor, constant: 20)
     }
 
-    @objc private func frequencySliderChanged(_ sender: UISlider) {
-        let rounded = roundf(sender.value)
-        sender.value = rounded
-        EndpointStorage.writeFrequency = TimeInterval(rounded)
-        updateFrequencyLabel()
-    }
-
-    private func updateFrequencyLabel() {
-        let seconds = Int(EndpointStorage.writeFrequency)
-        frequencyValueLabel.text = seconds == 1 ? "1 second" : "\(seconds) seconds"
-    }
-
-    @objc private func pingEndpoint() {
-        endpointField.resignFirstResponder()
-        apiKeyField.resignFirstResponder()
-
-        let raw = endpointField.text?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
-        EndpointStorage.endpointURL = raw.isEmpty ? nil : raw
-
-        let key = apiKeyField.text?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
-        EndpointStorage.apiKey = key.isEmpty ? nil : key
-
-        guard !raw.isEmpty, let url = URL(string: raw) else {
-            showPingResult(success: false, message: "Enter a URL first")
-            return
-        }
-
-        pingButton.isEnabled = false
-        pingButton.configuration?.showsActivityIndicator = true
-        pingStatusLabel.text = nil
-
-        var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        if !key.isEmpty {
-            request.setValue(key, forHTTPHeaderField: "X-API-Key")
-        }
-        request.httpBody = Data("{\"ping\":true}".utf8)
-        request.timeoutInterval = 5
-
-        let start = CFAbsoluteTimeGetCurrent()
-
-        URLSession.shared.dataTask(with: request) { [weak self] _, response, error in
-            let ms = Int((CFAbsoluteTimeGetCurrent() - start) * 1000)
-
-            DispatchQueue.main.async {
-                guard let self else { return }
-                self.pingButton.isEnabled = true
-                self.pingButton.configuration?.showsActivityIndicator = false
-
-                if let error {
-                    self.showPingResult(success: false, message: error.localizedDescription)
-                    return
-                }
-
-                guard let http = response as? HTTPURLResponse else {
-                    self.showPingResult(success: false, message: "No HTTP response")
-                    return
-                }
-
-                if (200...299).contains(http.statusCode) {
-                    self.showPingResult(success: true, message: "OK  \(http.statusCode) · \(ms) ms")
-                } else {
-                    self.showPingResult(success: false, message: "HTTP \(http.statusCode) · \(ms) ms")
-                }
-            }
-        }.resume()
-    }
-
-    private func showPingResult(success: Bool, message: String) {
-        let icon = success ? "✓" : "✗"
-        pingStatusLabel.text = "\(icon)  \(message)"
-        pingStatusLabel.textColor = success ? .systemGreen : .systemRed
-    }
-
-    @objc private func streamToggleChanged(_ sender: UISwitch) {
-        EndpointStorage.streamEnabled = sender.isOn
-        UIView.animate(withDuration: 0.25) {
-            self.updateStreamingVisibility()
-            self.view.layoutIfNeeded()
-        }
-    }
-
-    private func updateStreamingVisibility() {
-        let show = streamToggle.isOn
-        streamingViews.forEach { $0.isHidden = !show }
-        workoutsTopToStream.isActive = show
-        workoutsTopToToggle.isActive = !show
-    }
-}
-
-// MARK: - UITextFieldDelegate
-
-extension ViewController: UITextFieldDelegate {
-    func textFieldDidEndEditing(_ textField: UITextField) {
-        let value = textField.text?.trimmingCharacters(in: .whitespacesAndNewlines)
-        let stored = value?.isEmpty == true ? nil : value
-        if textField === endpointField {
-            EndpointStorage.endpointURL = stored
-        } else if textField === apiKeyField {
-            EndpointStorage.apiKey = stored
-        }
-    }
-
-    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        textField.resignFirstResponder()
-        return true
+    @objc private func openSettings() {
+        let settings = StreamSettingsViewController()
+        settings.modalPresentationStyle = .formSheet
+        present(settings, animated: true)
     }
 }
 

@@ -289,7 +289,7 @@ final class WorkoutSessionManager: NSObject {
         let now = Date()
         if EndpointStorage.streamEnabled,
            now.timeIntervalSince(lastStreamTime) >= EndpointStorage.writeFrequency {
-            streamClient.send(metrics)
+            streamClient.send(filteredMetrics())
             lastStreamTime = now
         }
 
@@ -300,6 +300,19 @@ final class WorkoutSessionManager: NSObject {
                 elapsed: metrics.elapsedSeconds
             )
         }
+    }
+
+    private func filteredMetrics() -> WorkoutMetrics {
+        var m = metrics
+        if !EndpointStorage.heartRateEnabled { m.heartRate = nil }
+        if !EndpointStorage.heartRateZoneEnabled { m.heartRateZone = nil }
+        if !EndpointStorage.activeEnergyEnabled { m.activeEnergyKcal = nil }
+        if !EndpointStorage.distanceEnabled { m.distanceMeters = nil }
+        if !EndpointStorage.paceEnabled { m.paceMinPerKm = nil }
+        if !EndpointStorage.stepCountEnabled { m.stepCount = nil }
+        if !EndpointStorage.locationEnabled { m.latitude = nil; m.longitude = nil }
+        if !EndpointStorage.elevationEnabled { m.elevationMeters = nil }
+        return m
     }
 
     // MARK: - HealthKit queries

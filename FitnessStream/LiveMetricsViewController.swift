@@ -48,12 +48,10 @@ final class LiveMetricsViewController: UIViewController {
         return b
     }()
 
-    private let streamButton: UIButton = {
-        let b = UIButton(type: .system)
-        b.translatesAutoresizingMaskIntoConstraints = false
-        b.layer.cornerRadius = 12
-        b.clipsToBounds = true
-        return b
+    private let streamStatusLabel: UILabel = {
+        let l = UILabel()
+        l.font = .systemFont(ofSize: 13, weight: .semibold)
+        return l
     }()
 
     private let statusLabel: UILabel = {
@@ -83,14 +81,21 @@ final class LiveMetricsViewController: UIViewController {
         title = workoutType.displayName
         navigationItem.hidesBackButton = true
 
+        let gearButton = UIButton(type: .system)
+        gearButton.setImage(UIImage(systemName: "gearshape"), for: .normal)
+        gearButton.addTarget(self, action: #selector(openSettings), for: .touchUpInside)
+
+        let navStack = UIStackView(arrangedSubviews: [streamStatusLabel, gearButton])
+        navStack.axis = .horizontal
+        navStack.spacing = 8
+        navStack.alignment = .center
+        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: navStack)
+
         buildLayout()
         pauseButton.addTarget(self, action: #selector(pauseTapped), for: .touchUpInside)
         endButton.addTarget(self, action: #selector(endTapped), for: .touchUpInside)
-        streamButton.addTarget(self, action: #selector(streamTapped), for: .touchUpInside)
         pauseButton.isHidden = true
         endButton.isHidden = true
-        streamButton.isHidden = true
-        applyStreamButtonAppearance()
 
         statusLabel.text = "Requesting authorization…"
         manager.delegate = self
@@ -105,6 +110,17 @@ final class LiveMetricsViewController: UIViewController {
                 }
             }
         }
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        updateStreamStatus()
+    }
+
+    private func updateStreamStatus() {
+        let enabled = EndpointStorage.streamEnabled
+        streamStatusLabel.text = enabled ? "Streaming Enabled" : "Streaming Disabled"
+        streamStatusLabel.textColor = enabled ? .systemBlue : .systemRed
     }
 
     // MARK: - Layout
@@ -134,7 +150,7 @@ final class LiveMetricsViewController: UIViewController {
         let scroll = UIScrollView()
         scroll.translatesAutoresizingMaskIntoConstraints = false
 
-        let buttonStack = UIStackView(arrangedSubviews: [streamButton, pauseButton, endButton])
+        let buttonStack = UIStackView(arrangedSubviews: [pauseButton, endButton])
         buttonStack.axis = .horizontal
         buttonStack.spacing = 16
         buttonStack.distribution = .fillEqually
@@ -162,7 +178,6 @@ final class LiveMetricsViewController: UIViewController {
 
             buttonStack.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
             buttonStack.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
-            streamButton.heightAnchor.constraint(equalToConstant: 50),
             pauseButton.heightAnchor.constraint(equalToConstant: 50),
             endButton.heightAnchor.constraint(equalToConstant: 50),
 
@@ -203,40 +218,18 @@ final class LiveMetricsViewController: UIViewController {
 
     // MARK: - Actions
 
+    @objc private func openSettings() {
+        let settings = StreamSettingsViewController()
+        settings.modalPresentationStyle = .formSheet
+        present(settings, animated: true)
+    }
+
     @objc private func pauseTapped() {
         if manager.state == .running {
             manager.pauseWorkout()
         } else if manager.state == .paused {
             manager.resumeWorkout()
         }
-    }
-
-    @objc private func streamTapped() {
-        EndpointStorage.streamEnabled.toggle()
-        applyStreamButtonAppearance()
-        updateStatusForStreamState()
-    }
-
-    private func applyStreamButtonAppearance() {
-        let on = EndpointStorage.streamEnabled
-        var config = UIButton.Configuration.filled()
-        config.title = on ? "Stream" : "Stream"
-        config.image = UIImage(systemName: on
-            ? "antenna.radiowaves.left.and.right"
-            : "antenna.radiowaves.left.and.right.slash")
-        config.imagePadding = 4
-        config.cornerStyle = .medium
-        config.buttonSize = .small
-        config.baseBackgroundColor = on ? .systemGreen : .systemGray3
-        config.baseForegroundColor = .white
-        streamButton.configuration = config
-    }
-
-    private func updateStatusForStreamState() {
-        guard manager.state == .running else { return }
-        statusLabel.text = EndpointStorage.streamEnabled
-            ? "Streaming to endpoint…"
-            : "Streaming paused"
     }
 
     @objc private func endTapped() {
@@ -295,11 +288,9 @@ extension LiveMetricsViewController: WorkoutSessionDelegate {
     func workoutSession(_ manager: WorkoutSessionManager, didChangeState state: WorkoutState) {
         switch state {
         case .running:
-            statusLabel.text = EndpointStorage.streamEnabled
-                ? "Streaming to endpoint…" : "Streaming paused"
+            statusLabel.text = "Workout active"
             pauseButton.isHidden = false
             endButton.isHidden = false
-            streamButton.isHidden = false
             pauseButton.setTitle("Pause", for: .normal)
             pauseButton.backgroundColor = .darkGray
         case .paused:
@@ -310,7 +301,6 @@ extension LiveMetricsViewController: WorkoutSessionDelegate {
             statusLabel.text = "Saving to Fitness…"
             pauseButton.isHidden = true
             endButton.isHidden = true
-            streamButton.isHidden = true
             navigationItem.hidesBackButton = false
         case .notStarted: break
         }

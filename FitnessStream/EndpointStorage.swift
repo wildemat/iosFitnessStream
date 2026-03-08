@@ -41,6 +41,53 @@ enum EndpointStorage {
         set { UserDefaults.standard.set(newValue, forKey: streamEnabledKey) }
     }
 
+    // MARK: - Data-point toggles (all default to true)
+
+    static var heartRateEnabled: Bool {
+        get { dataPointEnabled(forKey: "com.fitnessstream.dp.heartRate") }
+        set { UserDefaults.standard.set(newValue, forKey: "com.fitnessstream.dp.heartRate") }
+    }
+
+    static var heartRateZoneEnabled: Bool {
+        get { dataPointEnabled(forKey: "com.fitnessstream.dp.heartRateZone") }
+        set { UserDefaults.standard.set(newValue, forKey: "com.fitnessstream.dp.heartRateZone") }
+    }
+
+    static var activeEnergyEnabled: Bool {
+        get { dataPointEnabled(forKey: "com.fitnessstream.dp.activeEnergy") }
+        set { UserDefaults.standard.set(newValue, forKey: "com.fitnessstream.dp.activeEnergy") }
+    }
+
+    static var distanceEnabled: Bool {
+        get { dataPointEnabled(forKey: "com.fitnessstream.dp.distance") }
+        set { UserDefaults.standard.set(newValue, forKey: "com.fitnessstream.dp.distance") }
+    }
+
+    static var paceEnabled: Bool {
+        get { dataPointEnabled(forKey: "com.fitnessstream.dp.pace") }
+        set { UserDefaults.standard.set(newValue, forKey: "com.fitnessstream.dp.pace") }
+    }
+
+    static var stepCountEnabled: Bool {
+        get { dataPointEnabled(forKey: "com.fitnessstream.dp.stepCount") }
+        set { UserDefaults.standard.set(newValue, forKey: "com.fitnessstream.dp.stepCount") }
+    }
+
+    static var locationEnabled: Bool {
+        get { dataPointEnabled(forKey: "com.fitnessstream.dp.location") }
+        set { UserDefaults.standard.set(newValue, forKey: "com.fitnessstream.dp.location") }
+    }
+
+    static var elevationEnabled: Bool {
+        get { dataPointEnabled(forKey: "com.fitnessstream.dp.elevation") }
+        set { UserDefaults.standard.set(newValue, forKey: "com.fitnessstream.dp.elevation") }
+    }
+
+    private static func dataPointEnabled(forKey key: String) -> Bool {
+        if UserDefaults.standard.object(forKey: key) == nil { return true }
+        return UserDefaults.standard.bool(forKey: key)
+    }
+
     static func clear() {
         UserDefaults.standard.removeObject(forKey: urlKey)
         UserDefaults.standard.removeObject(forKey: frequencyKey)
