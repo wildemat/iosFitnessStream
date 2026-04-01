@@ -1,20 +1,25 @@
 import { useState, useCallback, useEffect } from "react";
 import { useMetricsStream } from "./hooks/useMetricsStream";
 import { DashboardGrid } from "./components/DashboardGrid/DashboardGrid";
-import { ControlBar, DEFAULT_SERVER } from "./components/ControlBar/ControlBar";
+import { ControlBar } from "./components/ControlBar/ControlBar";
 import { useLayoutStore } from "./store/useLayoutStore";
 import { loadPresetJson } from "./utils/presets";
+import { parseUrlParams } from "./utils/parseUrlParams";
+
+const { server: initServer, delayMs: initDelay, preset, configJson } = parseUrlParams();
 
 export default function App() {
-  const [serverUrl, setServerUrl] = useState(DEFAULT_SERVER);
-  const [delayMs, setDelayMs] = useState(0);
+  const [serverUrl, setServerUrl] = useState(initServer);
+  const [delayMs, setDelayMs] = useState(initDelay);
   const [listening, setListening] = useState(true);
 
   useEffect(() => {
-    const name = new URLSearchParams(window.location.search).get("preset");
-    if (!name) return;
-    const json = loadPresetJson(name);
-    if (json) useLayoutStore.getState().importState(json);
+    if (configJson) {
+      useLayoutStore.getState().importState(configJson);
+    } else if (preset) {
+      const json = loadPresetJson(preset);
+      if (json) useLayoutStore.getState().importState(json);
+    }
   }, []);
 
   const handleSave = useCallback((url: string, delay: number) => {
