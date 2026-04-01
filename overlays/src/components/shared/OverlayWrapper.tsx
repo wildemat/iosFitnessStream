@@ -1,7 +1,8 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import './OverlayWrapper.css';
+import { useIsStale } from '../../hooks/useMetricsStream';
 
-type OverlayStatus = 'empty' | 'active' | 'delayed';
+type OverlayStatus = 'empty' | 'active' | 'stale' | 'disabled';
 
 interface OverlayWrapperProps {
   /** True once meaningful data is present for this overlay */
@@ -12,10 +13,11 @@ interface OverlayWrapperProps {
 }
 
 /**
- * Wraps every overlay component and manages three display states:
- *   empty   — waiting for first data (component mounted, no data yet)
- *   active  — data is live, renders normally
- *   delayed — no data received within 5 s; adds caution icon to widget heading
+ * Wraps every overlay component and manages four display states:
+ *   empty    — waiting for first data (component mounted, no data yet)
+ *   active   — data is live and fresh
+ *   stale    — data is stale (5–10 s window), shows last value with subtle indicator
+ *   disabled — no data for 10+ seconds, shows empty state
  */
 export function OverlayWrapper({
   hasData,
@@ -23,22 +25,23 @@ export function OverlayWrapper({
   className = '',
   style,
 }: OverlayWrapperProps) {
-  const [status, setStatus] = useState<OverlayStatus>('empty');
-  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const isStale = useIsStale();
+  const [everHadData, setEverHadData] = useState(false);
 
   useEffect(() => {
-    if (timerRef.current) clearTimeout(timerRef.current);
-
-    if (hasData) {
-      setStatus('active');
-    } else {
-      timerRef.current = setTimeout(() => setStatus('delayed'), 5_000);
-    }
-
-    return () => {
-      if (timerRef.current) clearTimeout(timerRef.current);
-    };
+    if (hasData) setEverHadData(true);
   }, [hasData]);
+
+  let status: OverlayStatus;
+  if (!everHadData) {
+    status = 'empty';
+  } else if (!hasData) {
+    status = 'disabled';
+  } else if (isStale) {
+    status = 'stale';
+  } else {
+    status = 'active';
+  }
 
   return (
     <div

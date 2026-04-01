@@ -9,9 +9,13 @@ interface BufferedEvent {
 
 interface MetricsState {
   metrics: WorkoutMetrics | null;
+  isStale: boolean;
 }
 
-const metricsStore = createStore<MetricsState>(() => ({ metrics: null }));
+export const metricsStore = createStore<MetricsState>(() => ({
+  metrics: null,
+  isStale: false,
+}));
 
 // ── Module-level stream engine ──
 // Persists across React re-renders; only resets on full page reload.
@@ -28,22 +32,35 @@ const buffer: BufferedEvent[] = [];
 let bufferCursor = 0;
 let playbackTimer: ReturnType<typeof setInterval> | undefined;
 
-// Null out the store when no fresh metrics arrive within this window.
-// The iOS app sends every ~1 s, so 5 s means 5 consecutive misses.
-const STALE_TIMEOUT_MS = 5_000;
-let stalenessTimer: ReturnType<typeof setTimeout> | undefined;
+// After STALE_MS with no fresh data: mark stale but keep last known metrics.
+// After DISABLE_MS: null out metrics entirely (complete loss).
+const STALE_MS = 5_000;
+const DISABLE_MS = 10_000;
 
-function publishMetrics(data: WorkoutMetrics) {
-  metricsStore.setState({ metrics: data });
-  clearTimeout(stalenessTimer);
-  stalenessTimer = setTimeout(() => {
-    metricsStore.setState({ metrics: null });
-  }, STALE_TIMEOUT_MS);
+let staleTimer: ReturnType<typeof setTimeout> | undefined;
+let disableTimer: ReturnType<typeof setTimeout> | undefined;
+let lastGoodMetrics: WorkoutMetrics | null = null;
+
+function clearStalenessTimers() {
+  clearTimeout(staleTimer);
+  staleTimer = undefined;
+  clearTimeout(disableTimer);
+  disableTimer = undefined;
 }
 
-function clearStalenessTimer() {
-  clearTimeout(stalenessTimer);
-  stalenessTimer = undefined;
+function publishMetrics(data: WorkoutMetrics) {
+  lastGoodMetrics = data;
+  metricsStore.setState({ metrics: data, isStale: false });
+
+  clearStalenessTimers();
+
+  staleTimer = setTimeout(() => {
+    metricsStore.setState({ metrics: lastGoodMetrics, isStale: true });
+  }, STALE_MS);
+
+  disableTimer = setTimeout(() => {
+    metricsStore.setState({ metrics: null, isStale: false });
+  }, DISABLE_MS);
 }
 
 function releaseBuffered() {
@@ -98,8 +115,8 @@ function stopConnection() {
   source = null;
   clearTimeout(retryTimer);
   retryTimer = undefined;
-  clearStalenessTimer();
-  metricsStore.setState({ metrics: null });
+  clearStalenessTimers();
+  metricsStore.setState({ metrics: null, isStale: false });
 }
 
 function stopPlayback() {
@@ -123,7 +140,7 @@ function resetStream(url: string, delayMs: number) {
     playbackTimer = setInterval(releaseBuffered, 50);
   }
 
-  metricsStore.setState({ metrics: null });
+  metricsStore.setState({ metrics: null, isStale: false });
 }
 
 function configure(url: string, delayMs: number, listening: boolean) {
@@ -153,22 +170,49 @@ function configure(url: string, delayMs: number, listening: boolean) {
   }
 }
 
+export interface MetricsStreamResult {
+  metrics: WorkoutMetrics | null;
+  isStale: boolean;
+}
+
 /**
- * Connects to the SSE endpoint and returns the latest metrics.
+ * Connects to the SSE endpoint and returns the latest metrics plus staleness state.
  *
  * When `delayMs > 0`, incoming events are buffered and released only after
  * the delay has elapsed (relative to each event's arrival time), creating a
- * time-shifted stream.  The buffer lives at module scope so component
+ * time-shifted stream. The buffer lives at module scope so component
  * re-renders never reset the delay counter — only a page reload does.
+ *
+ * Staleness behaviour:
+ *   - After 5 s with no new data: isStale = true, metrics = last known value
+ *   - After 10 s with no new data: metrics = null, isStale = false (disabled)
  */
 export function useMetricsStream(
   url = "http://localhost:8080/events",
   listening = true,
   delayMs = 0,
-): WorkoutMetrics | null {
+): MetricsStreamResult {
   useEffect(() => {
     configure(url, delayMs, listening);
   }, [url, delayMs, listening]);
 
-  return useStore(metricsStore, (s) => s.metrics);
+  return useStore(metricsStore, (s) => ({ metrics: s.metrics, isStale: s.isStale }));
+}
+
+/**
+ * Lightweight hook to read only the staleness flag from the metrics store.
+ * Useful in components that don't need the full metrics object.
+ */
+export function useIsStale(): boolean {
+  return useStore(metricsStore, (s) => s.isStale);
+}
+
+// ── Test helpers (not used in production code) ──────────────────────────────
+/** @internal Exposed for unit tests only. Simulates receiving a new data event. */
+export { publishMetrics as _publishMetrics };
+/** @internal Exposed for unit tests only. Resets all module-level state. */
+export function _resetForTests() {
+  clearStalenessTimers();
+  lastGoodMetrics = null;
+  metricsStore.setState({ metrics: null, isStale: false });
 }
