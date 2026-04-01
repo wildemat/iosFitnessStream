@@ -78,6 +78,19 @@ export function WidgetOptionsPopover({
           <span className="wop__value">{Math.round(opts.opacity * 100)}%</span>
         </label>
 
+        {(panelKey === "pace" || panelKey === "distance") && (
+          <label className="wop__row">
+            <span className="wop__label">Imperial (mi)</span>
+            <input
+              type="checkbox"
+              checked={opts.useImperial}
+              onChange={(e) =>
+                setOpt(panelKey, { useImperial: e.target.checked })
+              }
+            />
+          </label>
+        )}
+
         {panelKey === "minimap" && (
           <>
             <label className="wop__row">

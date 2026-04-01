@@ -38,10 +38,10 @@ const RENDERERS: Record<PanelKey, (p: RendererProps) => React.ReactNode> = {
     <ElapsedTimeOverlay metrics={p.metrics} transparent={p.opts.transparent} />
   ),
   pace: (p) => (
-    <PaceOverlay metrics={p.metrics} transparent={p.opts.transparent} />
+    <PaceOverlay metrics={p.metrics} transparent={p.opts.transparent} useImperial={p.opts.useImperial} />
   ),
   distance: (p) => (
-    <DistanceOverlay metrics={p.metrics} transparent={p.opts.transparent} />
+    <DistanceOverlay metrics={p.metrics} transparent={p.opts.transparent} useImperial={p.opts.useImperial} />
   ),
   calories: (p) => (
     <CaloriesOverlay metrics={p.metrics} transparent={p.opts.transparent} />

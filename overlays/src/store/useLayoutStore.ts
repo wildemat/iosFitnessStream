@@ -30,6 +30,7 @@ export interface WidgetOpts {
   opacity: number;
   zoom: number;
   showCoords: boolean;
+  useImperial: boolean;
 }
 
 function defaultWidgetOpts(key: PanelKey): WidgetOpts {
@@ -39,6 +40,7 @@ function defaultWidgetOpts(key: PanelKey): WidgetOpts {
     opacity: 1,
     zoom: key === "minimap" ? 15 : 0,
     showCoords: false,
+    useImperial: false,
   };
 }
 
