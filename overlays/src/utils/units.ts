@@ -16,7 +16,9 @@ export function paceKmToMi(minPerKm: number): number {
 /** Format a distance in imperial units */
 export function formatImperialDistance(meters: number): { value: string; unit: string } {
   const miles = metersToMiles(meters);
-  if (miles < 0.1) {
+  // Show yards only when there's meaningful distance but not yet 0.1 mi.
+  // At exactly 0 (workout start) show "0.00 mi" — "0 yd" looks wrong.
+  if (meters > 0 && miles < 0.1) {
     const yards = Math.round(metersToYards(meters));
     return { value: String(yards), unit: 'yd' };
   }

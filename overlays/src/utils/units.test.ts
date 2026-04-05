@@ -29,6 +29,13 @@ describe('paceKmToMi', () => {
 });
 
 describe('formatImperialDistance', () => {
+  it('shows 0.00 mi at 0 meters (workout start)', () => {
+    // "0 yd" looks wrong at the start of a run; show miles with 2dp instead
+    const { value, unit } = formatImperialDistance(0);
+    expect(unit).toBe('mi');
+    expect(value).toBe('0.00');
+  });
+
   it('shows yards below 0.1 miles (~161m)', () => {
     const { value, unit } = formatImperialDistance(100);
     expect(unit).toBe('yd');
