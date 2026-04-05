@@ -17,6 +17,41 @@
   -webkit-backdrop-filter: none;
 }
 
+/* Contrast enhancement for transparent mode — dark text-shadow halo keeps
+   text legible against any video background (bright sky, white, dark scenes). */
+.widget--transparent .widget__number,
+.widget--transparent .widget__label,
+.widget--transparent .widget__unit,
+.widget--transparent .widget__icon {
+  text-shadow:
+    0 0 8px rgba(0, 0, 0, 0.95),
+    0 1px 4px rgba(0, 0, 0, 0.90),
+    0 -1px 4px rgba(0, 0, 0, 0.90),
+    1px 0 4px rgba(0, 0, 0, 0.90),
+    -1px 0 4px rgba(0, 0, 0, 0.90);
+}
+
+/* Component-specific text elements in transparent mode */
+.widget--transparent .pace-overlay__trend,
+.widget--transparent .distance-overlay__sub,
+.widget--transparent .hr-overlay__zone-badge,
+.widget--transparent .hr-overlay__zone-empty,
+.widget--transparent .elevation-overlay__delta {
+  text-shadow:
+    0 0 8px rgba(0, 0, 0, 0.95),
+    0 1px 4px rgba(0, 0, 0, 0.90),
+    0 -1px 4px rgba(0, 0, 0, 0.90),
+    1px 0 4px rgba(0, 0, 0, 0.90),
+    -1px 0 4px rgba(0, 0, 0, 0.90);
+}
+
+/* HR zone badge has an inline background set by JavaScript (color-mix).
+   In transparent mode override it with a dark background so the zone-colored
+   text remains readable against any video background regardless of brightness. */
+.widget--transparent .hr-overlay__zone-badge {
+  background: rgba(0, 0, 0, 0.65) !important;
+}
+
 /* ─── Header row (icon + label) ──────────────────────────────────────── */
 .widget__header {
   display: flex;
