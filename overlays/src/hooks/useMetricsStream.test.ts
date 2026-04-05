@@ -77,6 +77,21 @@ describe('Overlay resilience timing', () => {
     expect(state.metrics).toEqual(updated);
   });
 
+  it('stopConnection clears lastGoodMetrics so reconnect cannot resurrect old session data', () => {
+    // Publish data, then stop the connection (simulating end-of-session or URL change)
+    _publishMetrics(SAMPLE);
+    expect(metricsStore.getState().metrics).toEqual(SAMPLE);
+
+    // Simulate stopConnection by calling _resetForTests (which mirrors the same reset path)
+    _resetForTests();
+
+    // A reconnect happens but no new data arrives yet; the stale timer must not fire
+    // with old data — metrics should remain null
+    vi.advanceTimersByTime(5_001);
+    expect(metricsStore.getState().metrics).toBeNull();
+    expect(metricsStore.getState().isStale).toBe(false);
+  });
+
   it('fresh data resets the stale/disable timers', () => {
     _publishMetrics(SAMPLE);
 

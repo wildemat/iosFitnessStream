@@ -116,6 +116,9 @@ function stopConnection() {
   clearTimeout(retryTimer);
   retryTimer = undefined;
   clearStalenessTimers();
+  // Clear last-known value so a reconnect can't resurrect data from a previous
+  // session if the stale timer fires before any new event arrives.
+  lastGoodMetrics = null;
   metricsStore.setState({ metrics: null, isStale: false });
 }
 
