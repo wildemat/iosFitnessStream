@@ -1,0 +1,133 @@
+{
+  "enabledWidgets": [
+    "workout",
+    "heartrate",
+    "elapsed",
+    "pace",
+    "distance",
+    "calories",
+    "steps",
+    "minimap"
+  ],
+  "widgetOptions": {
+    "workout": {
+      "theme": "lofi",
+      "transparent": false,
+      "opacity": 1,
+      "zoom": 0,
+      "showCoords": false
+    },
+    "heartrate": {
+      "theme": "lofi",
+      "transparent": false,
+      "opacity": 1,
+      "zoom": 0,
+      "showCoords": false
+    },
+    "elapsed": {
+      "theme": "lofi",
+      "transparent": false,
+      "opacity": 1,
+      "zoom": 0,
+      "showCoords": false
+    },
+    "pace": {
+      "theme": "lofi",
+      "transparent": false,
+      "opacity": 1,
+      "zoom": 0,
+      "showCoords": false
+    },
+    "distance": {
+      "theme": "lofi",
+      "transparent": false,
+      "opacity": 1,
+      "zoom": 0,
+      "showCoords": false
+    },
+    "calories": {
+      "theme": "lofi",
+      "transparent": false,
+      "opacity": 1,
+      "zoom": 0,
+      "showCoords": false
+    },
+    "steps": {
+      "theme": "lofi",
+      "transparent": false,
+      "opacity": 1,
+      "zoom": 0,
+      "showCoords": false
+    },
+    "elevation": {
+      "theme": "lofi",
+      "transparent": false,
+      "opacity": 1,
+      "zoom": 0,
+      "showCoords": false
+    },
+    "minimap": {
+      "theme": "lofi",
+      "transparent": false,
+      "opacity": 1,
+      "zoom": 15,
+      "showCoords": false
+    }
+  },
+  "panels": {
+    "workout": {
+      "x": 14,
+      "y": 10,
+      "w": 146.06060606060603,
+      "h": 100
+    },
+    "heartrate": {
+      "x": 577,
+      "y": 9,
+      "w": 120,
+      "h": 100
+    },
+    "elapsed": {
+      "x": 714,
+      "y": 7,
+      "w": 120,
+      "h": 100
+    },
+    "pace": {
+      "x": 31,
+      "y": 311.33333333333326,
+      "w": 120,
+      "h": 100
+    },
+    "distance": {
+      "x": 175,
+      "y": 10.333333333333314,
+      "w": 120,
+      "h": 100
+    },
+    "calories": {
+      "x": 714,
+      "y": 99.33333333333331,
+      "w": 120,
+      "h": 100
+    },
+    "steps": {
+      "x": 180,
+      "y": 308.66666666666663,
+      "w": 120,
+      "h": 100
+    },
+    "elevation": {
+      "x": -9999,
+      "y": -9999,
+      "w": 0,
+      "h": 0
+    },
+    "minimap": {
+      "x": 22,
+      "y": 175.66666666666663,
+      "w": 122.17333333333332,
+      "h": 109.08333333333333
+    }
+  }
+}

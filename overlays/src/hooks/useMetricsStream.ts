@@ -199,7 +199,9 @@ export function useMetricsStream(
     configure(url, delayMs, listening);
   }, [url, delayMs, listening]);
 
-  return useStore(metricsStore, (s) => ({ metrics: s.metrics, isStale: s.isStale }));
+  const metrics = useStore(metricsStore, (s) => s.metrics);
+  const isStale = useStore(metricsStore, (s) => s.isStale);
+  return { metrics, isStale };
 }
 
 /**

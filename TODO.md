@@ -29,6 +29,7 @@
 ### Custom segments
 
 #### Workout history & export
+
 - Workout history screen listing past workouts saved by the app (HKSampleQuery on HKWorkoutType, filtered to app source)
 - Workout detail screen showing summary, segment activities, events, and metadata
 - Export button on detail screen that queries HealthKit for the full workout including HKWorkoutActivity segments, HKWorkoutEvents, and all custom metadata
@@ -37,10 +38,12 @@
 - Data exporter handler to serialize the model to JSON and present via UIActivityViewController (AirDrop, Files, share sheet)
 
 #### Streaming protocol
+
 - Include current segment metadata in the streaming payload (current_exercise, segment_index, exercise_reps, exercise_load_lb as optional fields on WorkoutMetrics)
 - Update TypeScript WorkoutMetrics interface and Node server pretty-print to match
 
 #### Custom workout builder
+
 - Workout creation screen where the user builds a workout by adding ordered segments, each with a title, rep count, and weight amount
 - Persist custom workout templates (local storage or Core Data) so they can be reused
 - When running a custom workout, the phone LiveMetricsViewController shows: current workout name, active segment (title, reps, weight), segment progress (e.g. 3/8), plus the standard metrics (HR, energy, distance, etc.)
@@ -49,3 +52,7 @@
 - Phone UI also has a "Next Segment" button as a fallback for advancing without the watch
 - Segment durations (actual elapsed time per segment) recorded in each HKWorkoutActivity's metadata alongside exercise_name, reps_count, and load_lb
 - Final segment auto-completes when the user ends the workout
+
+4-5
+
+- need snapshot tests to use for ai dev validation
