@@ -106,6 +106,15 @@ export function WidgetOptionsPopover({
                 }
               />
             </label>
+
+            <label className="wop__row">
+              <span className="wop__label">Hide labels</span>
+              <input
+                type="checkbox"
+                checked={opts.hideLabels}
+                onChange={(e) => setOpt(panelKey, { hideLabels: e.target.checked })}
+              />
+            </label>
           </>
         )}
       </div>

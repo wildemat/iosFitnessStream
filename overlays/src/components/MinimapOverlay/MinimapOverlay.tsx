@@ -4,6 +4,7 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import type { WorkoutMetrics } from '../../types/metrics';
 import { OverlayWrapper } from '../shared/OverlayWrapper';
+import { getTileUrl } from '../../utils/mapTiles';
 import './MinimapOverlay.css';
 
 // ─── Pulsing custom marker ─────────────────────────────────────────────────
@@ -17,17 +18,15 @@ const PULSING_ICON = L.divIcon({
   iconAnchor: [12, 12],
 });
 
-// CartoDB Dark Matter — free, no API key, matches lofi palette
-const TILE_URL = 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
-
 // ─── Inner component: must live inside <MapContainer> to use useMap() ──────
 interface MapContentProps {
   center: [number, number];
   trail: [number, number][];
   zoom: number;
+  tileUrl: string;
 }
 
-function MapContent({ center, trail, zoom }: MapContentProps) {
+function MapContent({ center, trail, zoom, tileUrl }: MapContentProps) {
   const map = useMap();
 
   useEffect(() => {
@@ -36,7 +35,7 @@ function MapContent({ center, trail, zoom }: MapContentProps) {
 
   return (
     <>
-      <TileLayer url={TILE_URL} />
+      <TileLayer url={tileUrl} />
 
       {/* Route trail — accumulated positions drawn as a polyline */}
       {trail.length > 1 && (
@@ -59,16 +58,19 @@ export interface MinimapOverlayProps {
   zoom?: number;
   transparent?: boolean;
   showCoords?: boolean;
+  hideLabels?: boolean;
 }
 
 const DEFAULT_CENTER: [number, number] = [0, 0];
 
-export function MinimapOverlay({ metrics, zoom = 15, transparent = false, showCoords = false }: MinimapOverlayProps) {
+export function MinimapOverlay({ metrics, zoom = 15, transparent = false, showCoords = false, hideLabels = false }: MinimapOverlayProps) {
   const lat    = metrics?.latitude;
   const lon    = metrics?.longitude;
   const hasGPS = lat != null && lon != null;
 
   const center: [number, number] = hasGPS ? [lat!, lon!] : DEFAULT_CENTER;
+
+  const tileUrl = getTileUrl(hideLabels);
 
   // Accumulate route trail (capped at 500 points to bound memory)
   const trailRef = useRef<[number, number][]>([]);
@@ -102,7 +104,7 @@ export function MinimapOverlay({ metrics, zoom = 15, transparent = false, showCo
             keyboard={false}
             attributionControl={false}
           >
-            <MapContent center={center} trail={trail} zoom={zoom} />
+            <MapContent center={center} trail={trail} zoom={zoom} tileUrl={tileUrl} />
           </MapContainer>
         ) : (
           <div className="minimap-overlay__empty" aria-label="Waiting for GPS">

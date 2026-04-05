@@ -58,6 +58,7 @@ const RENDERERS: Record<PanelKey, (p: RendererProps) => React.ReactNode> = {
       transparent={p.opts.transparent}
       zoom={p.opts.zoom || 15}
       showCoords={p.opts.showCoords}
+      hideLabels={p.opts.hideLabels}
     />
   ),
 };
