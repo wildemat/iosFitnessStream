@@ -22,7 +22,7 @@ export default function App() {
     setDelayMs(delay);
   }, []);
 
-  const metrics = useMetricsStream(serverUrl, listening, delayMs);
+  const { metrics } = useMetricsStream(serverUrl, listening, delayMs);
 
   return (
     <>

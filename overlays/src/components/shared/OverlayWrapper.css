@@ -7,6 +7,9 @@
 
 /* ─── Content fade based on status ────────────────────────────── */
 .overlay-wrapper__inner {
+  /* position: relative so ::after pseudo-elements on __inner are not
+     clipped by overflow:hidden on the parent .overlay-wrapper */
+  position: relative;
   transition: opacity 500ms var(--ease-out), filter 500ms var(--ease-out);
 }
 
@@ -19,12 +22,24 @@
   filter: none;
 }
 
-/* ─── Delayed: caution icon prepended to widget heading ───────── */
-.overlay-wrapper--delayed [class*="__label"]::before,
-.overlay-wrapper--delayed .workout-overlay__name::before,
-.overlay-wrapper--delayed .minimap-overlay__coords::before {
-  content: '⚠';
-  margin-right: 4px;
-  color: #f0ad4e;
-  font-style: normal;
+/* ─── Disabled: same dim as empty (10s+ with no data) ─────────── */
+.overlay-wrapper--disabled .overlay-wrapper__inner {
+  opacity: 0.45;
+}
+
+/* ─── Stale: slight dim + pause indicator in corner ───────────── */
+.overlay-wrapper--stale .overlay-wrapper__inner {
+  opacity: 0.85;
+}
+
+/* Pause icon on __inner (not the wrapper itself) so it isn't clipped
+   by overflow:hidden + border-radius on .overlay-wrapper */
+.overlay-wrapper--stale .overlay-wrapper__inner::after {
+  content: '⏸';
+  position: absolute;
+  top: 4px;
+  right: 6px;
+  font-size: 10px;
+  color: var(--color-text-dim, rgba(155, 147, 184, 0.40));
+  pointer-events: none;
 }
