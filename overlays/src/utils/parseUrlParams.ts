@@ -10,7 +10,16 @@ export interface UrlParamConfig {
 export function parseUrlParams(search: string = window.location.search): UrlParamConfig {
   const params = new URLSearchParams(search);
 
-  const server = params.get('server') ?? DEFAULT_SERVER;
+  const rawServer = params.get('server');
+  let server = DEFAULT_SERVER;
+  if (rawServer) {
+    try {
+      new URL(rawServer);   // throws if not a valid URL
+      server = rawServer;
+    } catch {
+      // malformed ?server= value — fall back to default silently
+    }
+  }
   const delayRaw = params.get('delay');
   const delayMs = delayRaw != null ? Math.max(0, parseInt(delayRaw, 10) || 0) : 0;
   const preset = params.get('preset');

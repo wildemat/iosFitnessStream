@@ -47,6 +47,16 @@ describe('parseUrlParams', () => {
     expect(parseUrlParams('?config=!!!invalid!!!').configJson).toBeNull();
   });
 
+  it('falls back to default server for invalid URL in ?server param', () => {
+    expect(parseUrlParams('?server=notaurl').server)
+      .toBe('https://api.wildmat.dev/fitness/events');
+  });
+
+  it('falls back to default server for empty ?server param', () => {
+    expect(parseUrlParams('?server=').server)
+      .toBe('https://api.wildmat.dev/fitness/events');
+  });
+
   it('combines multiple params', () => {
     const r = parseUrlParams('?server=http://localhost:8080/events&delay=3000&preset=test');
     expect(r.server).toBe('http://localhost:8080/events');
