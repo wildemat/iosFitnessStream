@@ -45,6 +45,13 @@
     -1px 0 4px rgba(0, 0, 0, 0.90);
 }
 
+/* HR zone badge has an inline background set by JavaScript (color-mix).
+   In transparent mode override it with a dark background so the zone-colored
+   text remains readable against any video background regardless of brightness. */
+.widget--transparent .hr-overlay__zone-badge {
+  background: rgba(0, 0, 0, 0.65) !important;
+}
+
 /* ─── Header row (icon + label) ──────────────────────────────────────── */
 .widget__header {
   display: flex;
