@@ -1,21 +1,25 @@
 import type { WorkoutMetrics } from '../../types/metrics';
 import { OverlayWrapper } from '../shared/OverlayWrapper';
+import { formatImperialDistance, formatMetricDistance } from '../../utils/units';
 import './DistanceOverlay.css';
 
 export interface DistanceOverlayProps {
   metrics: WorkoutMetrics | null;
   transparent?: boolean;
+  useImperial?: boolean;
 }
 
-export function DistanceOverlay({ metrics, transparent = false }: DistanceOverlayProps) {
+export function DistanceOverlay({ metrics, transparent = false, useImperial = false }: DistanceOverlayProps) {
   const meters  = metrics?.distance_meters;
   const hasData = meters != null;
 
-  const isKm        = (meters ?? 0) >= 1000;
-  const displayNum  = meters == null ? '—' : isKm
-    ? (meters / 1000).toFixed(2)
-    : String(Math.round(meters));
-  const unit        = isKm ? 'km' : 'm';
+  const { value: displayNum, unit } = meters == null
+    ? { value: '—', unit: useImperial ? 'mi' : 'km' }
+    : useImperial
+      ? formatImperialDistance(meters)
+      : formatMetricDistance(meters);
+
+  const isKm = !useImperial && (meters ?? 0) >= 1000;
 
   return (
     <OverlayWrapper hasData={hasData}>

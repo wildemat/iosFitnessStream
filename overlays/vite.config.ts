@@ -1,4 +1,4 @@
-import { defineConfig, type Plugin } from 'vite';
+import { defineConfig, type Plugin } from 'vitest/config';
 import react from '@vitejs/plugin-react';
 import sirv from 'sirv';
 import { existsSync, cpSync } from 'node:fs';
@@ -50,4 +50,8 @@ function storybookPlugin(): Plugin {
 
 export default defineConfig({
   plugins: [react(), storybookPlugin()],
+  test: {
+    environment: 'jsdom',
+    globals: true,
+  },
 });

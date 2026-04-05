@@ -1,14 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import type { WorkoutMetrics } from '../../types/metrics';
 import { OverlayWrapper } from '../shared/OverlayWrapper';
+import { paceKmToMi, formatPaceValue } from '../../utils/units';
 import './PaceOverlay.css';
-
-function formatPace(minPerKm: number): string {
-  const totalSecs = minPerKm * 60;
-  const mins = Math.floor(totalSecs / 60);
-  const secs = Math.round(totalSecs % 60);
-  return `${mins}:${String(secs).padStart(2, '0')}`;
-}
 
 type TrendDir = 'faster' | 'slower' | 'steady';
 
@@ -23,9 +17,10 @@ function getTrend(current: number, previous: number | null): TrendDir {
 export interface PaceOverlayProps {
   metrics: WorkoutMetrics | null;
   transparent?: boolean;
+  useImperial?: boolean;
 }
 
-export function PaceOverlay({ metrics, transparent = false }: PaceOverlayProps) {
+export function PaceOverlay({ metrics, transparent = false, useImperial = false }: PaceOverlayProps) {
   const pace    = metrics?.pace_min_per_km;
   const hasData = pace != null;
 
@@ -50,6 +45,11 @@ export function PaceOverlay({ metrics, transparent = false }: PaceOverlayProps) 
     steady: 'steady',
   };
 
+  const displayPace = pace != null
+    ? formatPaceValue(useImperial ? paceKmToMi(pace) : pace)
+    : '—:——';
+  const paceUnit = useImperial ? '/mi' : '/km';
+
   return (
     <OverlayWrapper hasData={hasData}>
       <div className={`widget pace-overlay${transparent ? ' widget--transparent' : ''}`}>
@@ -60,9 +60,9 @@ export function PaceOverlay({ metrics, transparent = false }: PaceOverlayProps) 
 
         <div className="widget__value pace-overlay__value">
           <span className="widget__number" key={pace}>
-            {pace != null ? formatPace(pace) : '—:——'}
+            {displayPace}
           </span>
-          <span className="widget__unit">/km</span>
+          <span className="widget__unit">{paceUnit}</span>
         </div>
 
         {hasData && (
