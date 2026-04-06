@@ -5,6 +5,7 @@ import {
   type PanelKey,
 } from "../../store/useLayoutStore";
 import { ImportModal } from "../ImportModal/ImportModal";
+import { ExportModal } from "../ExportModal/ExportModal";
 import { listPresetNames, loadPresetJson } from "../../utils/presets";
 import "./ControlBar.css";
 
@@ -33,16 +34,6 @@ export interface ControlBarProps {
   onListeningChange: (value: boolean) => void;
 }
 
-function downloadJson(json: string, filename: string) {
-  const blob = new Blob([json], { type: "application/json" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = filename;
-  a.click();
-  URL.revokeObjectURL(url);
-}
-
 export const ControlBar = ({
   serverUrl: activeUrl,
   delayMs: activeDelay,
@@ -67,11 +58,7 @@ export const ControlBar = ({
   const exportState = useLayoutStore((s) => s.exportState);
   const importState = useLayoutStore((s) => s.importState);
   const [importOpen, setImportOpen] = useState(false);
-
-  const handleExport = () => {
-    const json = exportState();
-    downloadJson(json, "overlay-config.json");
-  };
+  const [exportOpen, setExportOpen] = useState(false);
 
   const handlePresetChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const name = e.target.value;
@@ -121,7 +108,7 @@ export const ControlBar = ({
               ))}
             </select>
           )}
-          <button className="control-bar__btn" onClick={handleExport}>
+          <button className="control-bar__btn" onClick={() => setExportOpen(true)}>
             Export
           </button>
           <button
@@ -188,6 +175,12 @@ export const ControlBar = ({
           </button>
         </div>
       </div>
+      {exportOpen && (
+        <ExportModal
+          json={exportState()}
+          onClose={() => setExportOpen(false)}
+        />
+      )}
       {importOpen && (
         <ImportModal
           onImport={importState}

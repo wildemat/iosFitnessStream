@@ -9,7 +9,7 @@ export default function App() {
   const [serverUrl, setServerUrl] = useState(DEFAULT_SERVER);
   const [delayMs, setDelayMs] = useState(0);
   const [listening, setListening] = useState(true);
-  const [apiKey, setApiKey] = useState(import.meta.env.VITE_OVERLAYS_API_KEY ?? "");
+  const [apiKey, setApiKey] = useState(() => localStorage.getItem("overlays_api_key") ?? "");
 
   useEffect(() => {
     const name = new URLSearchParams(window.location.search).get("preset");
@@ -22,6 +22,11 @@ export default function App() {
     setServerUrl(url);
     setDelayMs(delay);
     setApiKey(key);
+    if (key) {
+      localStorage.setItem("overlays_api_key", key);
+    } else {
+      localStorage.removeItem("overlays_api_key");
+    }
   }, []);
 
   const effectiveUrl = apiKey ? `${serverUrl}?key=${apiKey}` : serverUrl;
