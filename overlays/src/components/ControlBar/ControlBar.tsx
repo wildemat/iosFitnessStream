@@ -27,8 +27,9 @@ export const DEFAULT_SERVER = "https://api.wildmat.dev/fitness/events";
 export interface ControlBarProps {
   serverUrl: string;
   delayMs: number;
+  apiKey: string;
   listening: boolean;
-  onSave: (url: string, delayMs: number) => void;
+  onSave: (url: string, delayMs: number, apiKey: string) => void;
   onListeningChange: (value: boolean) => void;
 }
 
@@ -45,17 +46,19 @@ function downloadJson(json: string, filename: string) {
 export const ControlBar = ({
   serverUrl: activeUrl,
   delayMs: activeDelay,
+  apiKey: activeApiKey,
   listening,
   onSave,
   onListeningChange,
 }: ControlBarProps) => {
   const [draftUrl, setDraftUrl] = useState(activeUrl);
   const [draftDelay, setDraftDelay] = useState(String(activeDelay));
+  const [draftApiKey, setDraftApiKey] = useState(activeApiKey);
   const parsedDelay = Math.max(0, parseInt(draftDelay, 10) || 0);
-  const isDirty = draftUrl !== activeUrl || parsedDelay !== activeDelay;
+  const isDirty = draftUrl !== activeUrl || parsedDelay !== activeDelay || draftApiKey !== activeApiKey;
 
   const handleSave = () => {
-    if (isDirty) onSave(draftUrl, parsedDelay);
+    if (isDirty) onSave(draftUrl, parsedDelay, draftApiKey);
   };
 
   const resetLayout = useLayoutStore((s) => s.resetLayout);
@@ -146,6 +149,18 @@ export const ControlBar = ({
             type="text"
             value={draftUrl}
             onChange={(e) => setDraftUrl(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && isDirty) handleSave();
+            }}
+            spellCheck={false}
+          />
+          <span className="control-bar__label">API Key</span>
+          <input
+            className="control-bar__input control-bar__input--apikey"
+            type="password"
+            value={draftApiKey}
+            placeholder="optional"
+            onChange={(e) => setDraftApiKey(e.target.value)}
             onKeyDown={(e) => {
               if (e.key === "Enter" && isDirty) handleSave();
             }}

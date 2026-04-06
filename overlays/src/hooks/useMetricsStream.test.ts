@@ -40,21 +40,30 @@ describe('Overlay resilience timing', () => {
     expect(state.isStale).toBe(false);
   });
 
-  it('marks stale after 5 s of no new data, but retains last known metrics', () => {
+  it('marks stale after 20 s of no new data, but retains last known metrics', () => {
     _publishMetrics(SAMPLE);
 
-    // Advance past the stale threshold
-    vi.advanceTimersByTime(5_001);
+    vi.advanceTimersByTime(20_001);
 
     const state = metricsStore.getState();
     expect(state.isStale).toBe(true);
     expect(state.metrics).toEqual(SAMPLE);
   });
 
-  it('nulls out metrics after 10 s of no new data', () => {
+  it('does not mark stale before 20 s', () => {
     _publishMetrics(SAMPLE);
 
-    vi.advanceTimersByTime(10_001);
+    vi.advanceTimersByTime(19_000);
+
+    const state = metricsStore.getState();
+    expect(state.isStale).toBe(false);
+    expect(state.metrics).toEqual(SAMPLE);
+  });
+
+  it('nulls out metrics after 30 s of no new data', () => {
+    _publishMetrics(SAMPLE);
+
+    vi.advanceTimersByTime(30_001);
 
     const state = metricsStore.getState();
     expect(state.metrics).toBeNull();
@@ -64,11 +73,9 @@ describe('Overlay resilience timing', () => {
   it('receiving new data after stale period resets isStale to false', () => {
     _publishMetrics(SAMPLE);
 
-    // Let it go stale
-    vi.advanceTimersByTime(5_001);
+    vi.advanceTimersByTime(20_001);
     expect(metricsStore.getState().isStale).toBe(true);
 
-    // Fresh data arrives
     const updated: WorkoutMetrics = { ...SAMPLE, heart_rate: 160 };
     _publishMetrics(updated);
 
@@ -78,16 +85,12 @@ describe('Overlay resilience timing', () => {
   });
 
   it('stopConnection clears lastGoodMetrics so reconnect cannot resurrect old session data', () => {
-    // Publish data, then stop the connection (simulating end-of-session or URL change)
     _publishMetrics(SAMPLE);
     expect(metricsStore.getState().metrics).toEqual(SAMPLE);
 
-    // Simulate stopConnection by calling _resetForTests (which mirrors the same reset path)
     _resetForTests();
 
-    // A reconnect happens but no new data arrives yet; the stale timer must not fire
-    // with old data — metrics should remain null
-    vi.advanceTimersByTime(5_001);
+    vi.advanceTimersByTime(20_001);
     expect(metricsStore.getState().metrics).toBeNull();
     expect(metricsStore.getState().isStale).toBe(false);
   });
@@ -95,21 +98,21 @@ describe('Overlay resilience timing', () => {
   it('fresh data resets the stale/disable timers', () => {
     _publishMetrics(SAMPLE);
 
-    // Advance 4 s (not yet stale)
-    vi.advanceTimersByTime(4_000);
+    // Advance 15 s (not yet stale at 20 s threshold)
+    vi.advanceTimersByTime(15_000);
     expect(metricsStore.getState().isStale).toBe(false);
 
-    // New data arrives at t=4 s, resetting both timers
+    // New data arrives at t=15 s, resetting both timers
     _publishMetrics({ ...SAMPLE, heart_rate: 155 });
 
-    // Advance another 4 s (total 8 s from first publish, but only 4 s from second)
-    vi.advanceTimersByTime(4_000);
+    // Advance another 15 s (total 30 s from first publish, but only 15 s from second)
+    vi.advanceTimersByTime(15_000);
 
-    // Should still be fresh (timer restarted from t=4)
+    // Should still be fresh (timer restarted from t=15)
     expect(metricsStore.getState().isStale).toBe(false);
 
-    // Advance past 5 s from the second publish
-    vi.advanceTimersByTime(1_100);
+    // Advance past 20 s from the second publish
+    vi.advanceTimersByTime(5_100);
     expect(metricsStore.getState().isStale).toBe(true);
   });
 });

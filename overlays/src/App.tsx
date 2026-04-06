@@ -9,6 +9,7 @@ export default function App() {
   const [serverUrl, setServerUrl] = useState(DEFAULT_SERVER);
   const [delayMs, setDelayMs] = useState(0);
   const [listening, setListening] = useState(true);
+  const [apiKey, setApiKey] = useState(import.meta.env.VITE_OVERLAYS_API_KEY ?? "");
 
   useEffect(() => {
     const name = new URLSearchParams(window.location.search).get("preset");
@@ -17,18 +18,21 @@ export default function App() {
     if (json) useLayoutStore.getState().importState(json);
   }, []);
 
-  const handleSave = useCallback((url: string, delay: number) => {
+  const handleSave = useCallback((url: string, delay: number, key: string) => {
     setServerUrl(url);
     setDelayMs(delay);
+    setApiKey(key);
   }, []);
 
-  const { metrics } = useMetricsStream(serverUrl, listening, delayMs);
+  const effectiveUrl = apiKey ? `${serverUrl}?key=${apiKey}` : serverUrl;
+  const { metrics } = useMetricsStream(effectiveUrl, listening, delayMs);
 
   return (
     <>
       <ControlBar
         serverUrl={serverUrl}
         delayMs={delayMs}
+        apiKey={apiKey}
         listening={listening}
         onSave={handleSave}
         onListeningChange={setListening}

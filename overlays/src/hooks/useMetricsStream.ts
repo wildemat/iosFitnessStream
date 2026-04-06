@@ -34,8 +34,9 @@ let playbackTimer: ReturnType<typeof setInterval> | undefined;
 
 // After STALE_MS with no fresh data: mark stale but keep last known metrics.
 // After DISABLE_MS: null out metrics entirely (complete loss).
-const STALE_MS = 5_000;
-const DISABLE_MS = 10_000;
+// The iOS app POSTs every ~5 s, so allow several missed cycles before reacting.
+const STALE_MS = 20_000;
+const DISABLE_MS = 30_000;
 
 let staleTimer: ReturnType<typeof setTimeout> | undefined;
 let disableTimer: ReturnType<typeof setTimeout> | undefined;
@@ -187,8 +188,8 @@ export interface MetricsStreamResult {
  * re-renders never reset the delay counter — only a page reload does.
  *
  * Staleness behaviour:
- *   - After 5 s with no new data: isStale = true, metrics = last known value
- *   - After 10 s with no new data: metrics = null, isStale = false (disabled)
+ *   - After 20 s with no new data: isStale = true, metrics = last known value
+ *   - After 30 s with no new data: metrics = null, isStale = false (disabled)
  */
 export function useMetricsStream(
   url = "http://localhost:8080/events",

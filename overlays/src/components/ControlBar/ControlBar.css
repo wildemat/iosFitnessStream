@@ -113,6 +113,11 @@
   text-align: right;
 }
 
+.control-bar__input--apikey {
+  min-width: 120px;
+  max-width: 160px;
+}
+
 .control-bar__input--delay::-webkit-inner-spin-button,
 .control-bar__input--delay::-webkit-outer-spin-button {
   opacity: 0.5;
